@@ -1,0 +1,2 @@
+He decidit treballar amb classes ya que la aplicacio es molt extensa i consta de moltes pantalles diferents, d'aquesta manera
+es fa molt mes facil gestionar el fluxe de l'aplicacio i esta mes segmentada
