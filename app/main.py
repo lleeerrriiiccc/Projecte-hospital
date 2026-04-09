@@ -1,6 +1,8 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import tkinter as tk
+from tkinter import messagebox
+import tools.manager as m
 
 
 # ========================
@@ -76,7 +78,7 @@ class LoginScreen(ttk.Frame):
             text="Iniciar sesió",
             bootstyle="success",
             width=25,
-            command=lambda: controller.show_frame(HomeScreen)
+            command=lambda: controller.show_frame(HomeScreen) if m.login(self.username.get(), self.password.get()) else tk.messagebox.showerror("Error", "Credencials incorrectes")
         ).pack(pady=20)
         
         # ========================

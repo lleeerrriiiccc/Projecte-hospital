@@ -37,4 +37,3 @@ def new_user(username, password, id_intern):
     cur.close()
     con.close()
 
-new_user("Eric", "1234", 1)
