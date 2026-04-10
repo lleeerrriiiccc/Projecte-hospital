@@ -61,28 +61,42 @@ def login():
     password = request.form.get('password')
 
     if m.login(username, password):
-        token = jwt.encode(
-            {
-                "username": username,
-                "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
-            },
-            app.config["SECRET_KEY"],
-            algorithm="HS256"
-        )
-        if isinstance(token, bytes):
-            token = token.decode('utf-8')
+        print("Login successful for user:", username)
+        return redirect(url_for('home'))
+    else:
+        print(m.login(username, password))
+        print("Login failed for user:", username)
+        return redirect(url_for('login'))
 
-        resp = make_response(redirect(url_for('dashboard')))
-        resp.set_cookie(
-            "token",
-            token,
-            httponly=True,
-            samesite="Strict"
-        )
-        return resp
 
-    return redirect(url_for('login'))
-        
+
+############
+# REGISTER ROUTE
+############
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html', error=None)
+
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+    confirm_password = request.form.get('confirm_password', '')
+    id_intern_raw = request.form.get('id_intern', '').strip()
+
+    if not username or not password or not confirm_password or not id_intern_raw:
+        return render_template('register.html', error='Completa todos los campos.')
+
+    if password != confirm_password:
+        return render_template('register.html', error='Las contraseñas no coinciden.')
+
+    if not id_intern_raw.isdigit():
+        return render_template('register.html', error='El id_intern debe ser un numero entero.')
+
+    ok, error = m.register(username, password, int(id_intern_raw))
+    if ok:
+        return redirect(url_for('login'))
+
+    return render_template('register.html', error=error)
 
 
 

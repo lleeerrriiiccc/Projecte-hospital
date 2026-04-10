@@ -5,6 +5,8 @@
     --text-main: #1e2d3d;
     --text-muted: #5a6c7f;
     --border: #d3e0eb;
+    --danger: #b22a2a;
+    --danger-bg: #fcebec;
 }
 
 * {
@@ -25,9 +27,9 @@ body {
     padding: 1.5rem;
 }
 
-.login-card {
+.register-card {
     width: 100%;
-    max-width: 420px;
+    max-width: 460px;
     background-color: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
@@ -35,41 +37,51 @@ body {
     box-shadow: 0 10px 24px rgba(12, 91, 143, 0.12);
 }
 
-.login-card h1 {
+.register-card h1 {
     margin: 0;
     font-size: 1.6rem;
     color: var(--hospital-blue);
 }
 
 .subtitle {
-    margin: 0.5rem 0 1.5rem;
+    margin: 0.5rem 0 1.2rem;
     color: var(--text-muted);
     font-size: 0.95rem;
 }
 
-.login-form {
+.error-message {
+    margin: 0 0 1rem;
+    border: 1px solid #e8b3b6;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    color: var(--danger);
+    background-color: var(--danger-bg);
+    font-size: 0.9rem;
+}
+
+.register-form {
     display: grid;
     gap: 0.75rem;
 }
 
-.login-form label {
+.register-form label {
     font-size: 0.9rem;
     font-weight: 600;
 }
 
-.login-form input {
+.register-form input {
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 0.75rem;
     font-size: 0.95rem;
 }
 
-.login-form input:focus {
+.register-form input:focus {
     outline: 2px solid #88bce0;
     border-color: #88bce0;
 }
 
-.login-form button {
+.register-form button {
     margin-top: 0.8rem;
     border: none;
     border-radius: 10px;
@@ -81,11 +93,11 @@ body {
     cursor: pointer;
 }
 
-.login-form button:hover {
+.register-form button:hover {
     background-color: #09486f;
 }
 
-.register-button {
+.back-login {
     display: block;
     margin-top: 1rem;
     text-align: center;
@@ -99,7 +111,7 @@ body {
     text-decoration: none;
 }
 
-.register-button:hover {
+.back-login:hover {
     color: #ffffff;
     background-color: var(--hospital-blue);
 }

@@ -12,7 +12,7 @@ def encrypt_password(password):
 
     salt = bcrypt.gensalt(rounds=12)
     hashed = bcrypt.hashpw(password_bytes, salt)
-    return hashed
+    return hashed.decode('utf-8')
 
 
 
@@ -24,11 +24,28 @@ def check_password(password, hashed):
         password_bytes = password.encode('utf-8')
     else:
         password_bytes = password
-    if isinstance(hashed, str):
-        hashed_bytes = hashed.encode('utf-8')
+
+    if isinstance(hashed, bytes):
+        hashed_text = hashed.decode('utf-8', errors='ignore').strip()
     else:
-        hashed_bytes = hashed
-    if bcrypt.checkpw(password_bytes, hashed_bytes):
-        return True
+        hashed_text = str(hashed).strip()
+
+    #CAMBIAR EL FORMATO DE LA HASH SI ES NECESARIO
+    if hashed_text.startswith('\\x'):
+        hex_part = hashed_text[2:]
+        try:
+            hashed_bytes = bytes.fromhex(hex_part)
+        except ValueError:
+            return False
+    # Serialized bytes representation, e.g. "b'$2b$12$...'"
+    elif hashed_text.startswith("b'") and hashed_text.endswith("'"):
+        hashed_bytes = hashed_text[2:-1].encode('utf-8')
+    elif hashed_text.startswith('b"') and hashed_text.endswith('"'):
+        hashed_bytes = hashed_text[2:-1].encode('utf-8')
     else:
+        hashed_bytes = hashed_text.encode('utf-8')
+
+    try:
+        return bcrypt.checkpw(password_bytes, hashed_bytes)
+    except ValueError:
         return False

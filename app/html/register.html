@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hospital Register</title>
+	<link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+	<main class="page">
+		<section class="register-card" aria-labelledby="register-title">
+			<h1 id="register-title">Create Account</h1>
+			<p class="subtitle">Register a new hospital user profile.</p>
+
+			{% if error %}
+			<p class="error-message" role="alert">{{ error }}</p>
+			{% endif %}
+
+			<form class="register-form" action="/register" method="post">
+				<label for="username">Username</label>
+				<input id="username" name="username" type="text" placeholder="Enter your username" required>
+
+				<label for="id_intern">id_intern</label>
+				<input id="id_intern" name="id_intern" type="number" min="1" placeholder="Enter personal id" required>
+
+				<label for="password">Password</label>
+				<input id="password" name="password" type="password" placeholder="Create a password" required>
+
+				<label for="confirm_password">Confirm password</label>
+				<input id="confirm_password" name="confirm_password" type="password" placeholder="Repeat your password" required>
+
+				<button type="submit">Create Account</button>
+			</form>
+
+			<a class="back-login" href="/login">Back to login</a>
+		</section>
+	</main>
+</body>
+</html>

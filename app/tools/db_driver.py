@@ -50,3 +50,4 @@ def new_user(username, password, id_intern):
     cur.close()
     con.close()
 
+
