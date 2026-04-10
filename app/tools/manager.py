@@ -1,6 +1,5 @@
-import tools.crypt as c
 import tools.db_driver as db
-
+import tools.crypt as c
 
 def login(username, password):
     con, cur = db.connect()

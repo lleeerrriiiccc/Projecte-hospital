@@ -1,0 +1,110 @@
+:root {
+    --blue-900: #0b4f78;
+    --blue-700: #1271a8;
+    --surface: #ffffff;
+    --text-main: #1e2d3d;
+    --text-soft: #4f6175;
+    --border: #d1e2ee;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f9fd;
+    color: var(--text-main);
+}
+
+.container {
+    width: min(1100px, 92%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 72px;
+}
+
+.topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--blue-900);
+}
+
+.layout {
+    width: min(1100px, 92%);
+    margin: 1.2rem auto 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 1rem;
+}
+
+.workspace {
+    min-height: calc(100vh - 130px);
+}
+
+.side-menu {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem;
+    height: fit-content;
+}
+
+.side-menu h2 {
+    margin: 0 0 0.7rem;
+    font-size: 1rem;
+    color: var(--blue-900);
+}
+
+.side-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.side-menu a {
+    display: block;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.6rem 0.65rem;
+}
+
+.side-menu a:hover,
+.side-menu a:focus-visible {
+    background: #e9f3fb;
+    color: var(--blue-900);
+}
+
+.side-menu a[href="/login"] {
+    color: var(--text-soft);
+}
+
+@media (max-width: 640px) {
+    .container {
+        min-height: 66px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .workspace {
+        min-height: 0;
+    }
+
+    .side-menu {
+        order: -1;
+    }
+}
