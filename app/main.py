@@ -9,11 +9,13 @@ import datetime
 import datetime
 
 
+
 ############
 # APP CONFIG
 ############
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
 app = Flask(__name__, template_folder=template_dir)
+
 
 
 ############
@@ -23,6 +25,7 @@ app.secret_key = os.environ.get('FLASK_SECRET')
 app.config.update(
                 SESSION_COOKIE_HTTPONLY=True,
                 SESSION_COOKIE_SAMESITE='Lax')
+
 
 
 ############
@@ -43,6 +46,7 @@ def index():
     if request.method == 'GET':
         return redirect(url_for('login'))
     
+
 
 
 ############
@@ -81,12 +85,15 @@ def login():
         
 
 
+
 ############
 # HOME ROUTE
 ############
 @app.route('/home')
 def home():
     return render_template('home.html') 
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

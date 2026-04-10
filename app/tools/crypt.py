@@ -1,6 +1,9 @@
 import bcrypt
 
 
+############
+# ENCRIPT PASSWORD
+############
 def encrypt_password(password):
     if isinstance(password, str):
         password_bytes = password.encode('utf-8')
@@ -11,6 +14,11 @@ def encrypt_password(password):
     hashed = bcrypt.hashpw(password_bytes, salt)
     return hashed
 
+
+
+############
+# CHECK PASSWORD
+############
 def check_password(password, hashed):
     if isinstance(password, str):
         password_bytes = password.encode('utf-8')

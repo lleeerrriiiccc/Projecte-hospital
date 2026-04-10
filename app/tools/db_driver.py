@@ -5,6 +5,9 @@ import tools.crypt as c
 
 
 
+############
+# CONNECTION TO DB
+############
 def connect():
     load_dotenv()
     db_host = os.getenv("DB_HOST")
@@ -20,6 +23,11 @@ def connect():
     cursor = con.cursor()
     return con, cursor
 
+
+
+############
+# INIT DB
+############
 def init_db():
     con, cur = connect()
     with open("base_de_dades/implementacio.sql", "r") as f:
@@ -29,6 +37,11 @@ def init_db():
     cur.close()
     con.close()
 
+
+
+############
+# CREATE NEW USER
+############
 def new_user(username, password, id_intern):
     con, cur = connect()
     password = c.encrypt_password(password)

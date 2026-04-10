@@ -1,6 +1,11 @@
 import tools.db_driver as db
 import tools.crypt as c
 
+
+
+############
+# LOGIN FUNCTION
+############
 def login(username, password):
     con, cur = db.connect()
     cur.execute("SELECT password FROM usuaris WHERE username = %s", (username,))
