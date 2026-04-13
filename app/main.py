@@ -1,10 +1,10 @@
 import flask
 import os
 from flask import Flask
-from flask import request, redirect, url_for, send_from_directory, render_template, make_response
+from flask import request, redirect, url_for, send_from_directory, render_template, make_response, session
 import tools.manager as m
 from flask import Flask, jsonify, request
-import jwt
+import dotenv
 import datetime
 import datetime
 
@@ -15,16 +15,8 @@ import datetime
 ############
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
 app = Flask(__name__, template_folder=template_dir)
-
-
-
-############
-# JWT TOKEN
-############
-app.secret_key = os.environ.get('FLASK_SECRET')
-app.config.update(
-                SESSION_COOKIE_HTTPONLY=True,
-                SESSION_COOKIE_SAMESITE='Lax')
+dotenv.load_dotenv()
+app.secret_key = os.getenv("FLASK_SECRET")
 
 
 
@@ -62,6 +54,7 @@ def login():
 
     if m.login(username, password):
         print("Login successful for user:", username)
+        session['username'] = username
         return redirect(url_for('home'))
     else:
         print(m.login(username, password))
@@ -101,13 +94,25 @@ def register():
 
 
 ############
+# USER INFO ROUTE
+############
+@app.route('/me')
+def me():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify({'username': session['username']})
+
+
+############
 # HOME ROUTE
 ############
 @app.route('/home')
 def home():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return render_template('home.html') 
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=80)

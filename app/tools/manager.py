@@ -45,3 +45,15 @@ def register(username, password, id_intern):
     finally:
         cur.close()
         con.close()
+
+
+
+############
+# NEW PACIENT FUNCTION
+############
+def new_pacient(name, surename, surename2, birth_date, ident):
+    con, cur = db.connect()
+    query = "INSERT INTO pacients (name, surename, surename2, birth_date, ident) VALUES (%s, %s, %s, %s, %s)"
+    cur.execute(query, (name, surename, surename2, birth_date, ident))
+    con.commit()
+    con.close()
