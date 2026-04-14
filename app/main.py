@@ -1,10 +1,10 @@
-import os
-from flask import Flask
-from flask import request, redirect, url_for, send_from_directory, render_template, make_response, session
-import tools.manager as m
-from flask import Flask, jsonify
-import dotenv
 import datetime
+import os
+
+import dotenv
+from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
+
+import tools.manager as m
 
 
 
@@ -37,7 +37,6 @@ def css(filename):
 def index():
     if request.method == 'GET':
         return redirect(url_for('login'))
-    
 
 
 
@@ -112,25 +111,13 @@ def me():
 
 
 ############
-# USER INFO ROUTE
-############
-@app.route('/api/intern/add', methods=['POST'])
-def add_inter():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    data = m.free_intern_id()
-    return jsonify(data)
-
-
-
-############
 # HOME ROUTE
 ############
 @app.route('/home')
 def home():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('home.html') 
+    return render_template('home.html')
 
 
 
@@ -141,6 +128,7 @@ def home():
 def alta_pacient():
     if 'username' not in session:
         return redirect(url_for('login'))
+
     if request.method == 'GET':
         return render_template('alta_pacient.html', error=None, success=None)
 
@@ -176,8 +164,10 @@ def alta_pacient():
 def alta_personal():
     if 'username' not in session:
         return redirect(url_for('login'))
+
     if request.method == 'GET':
         return render_template('alta_personal.html', error=None, success=None)
+
     nom = request.form.get('nom', '').strip()
     cognom = request.form.get('cognom', '').strip()
     cognom2 = request.form.get('cognom2', '').strip()
@@ -189,36 +179,77 @@ def alta_personal():
     dni = request.form.get('dni', '').strip().upper()
     tfeina = request.form.get('tipus_feina', '').strip()
     data_alta_str = request.form.get('data_alta', '').strip()
+
     try:
         especialitat = request.form.get('especialitat', '').strip()
         cv = request.files.get('cv')
     except:
         pass
-    if not nom or not cognom or not cognom2 or not data_naixement_str or not telefon or not email or not email_intern or not dni or not tfeina or not data_alta_str:
+
+    if (
+        not nom
+        or not cognom
+        or not cognom2
+        or not data_naixement_str
+        or not telefon
+        or not email
+        or not email_intern
+        or not dni
+        or not tfeina
+        or not data_alta_str
+    ):
         return render_template('alta_personal.html', error='Completa tots els camps obligatoris.', success=None)
+
     try:
         data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
     except ValueError:
         return render_template('alta_personal.html', error='La data de naixement no és vàlida.', success=None)
+
     if data_naixement > datetime.date.today():
         return render_template('alta_personal.html', error='La data de naixement no pot ser futura.', success=None)
+
     try:
         if tfeina == 'metge':
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             filename = cv.filename if cv else None
-
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename) if filename else None
-            print(app.config['UPLOAD_FOLDER'])
             cv.save(save_path)
-            state, error = m.new_employee(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tfeina, data_alta_str, especialitat, save_path)
+            state, error = m.new_employee(
+                nom,
+                cognom,
+                cognom2,
+                data_naixement,
+                telefon,
+                telefon2,
+                email,
+                email_intern,
+                dni,
+                tfeina,
+                data_alta_str,
+                especialitat,
+                save_path,
+            )
         else:
-            state, error = m.new_employee(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tfeina, data_alta_str)
+            state, error = m.new_employee(
+                nom,
+                cognom,
+                cognom2,
+                data_naixement,
+                telefon,
+                telefon2,
+                email,
+                email_intern,
+                dni,
+                tfeina,
+                data_alta_str,
+            )
+
         if not state:
             return render_template('alta_personal.html', error=error, success=None)
+
         return render_template('alta_personal.html', error=None, success='Personal donat d\'alta correctament.')
     except Exception as e:
         return render_template('alta_personal.html', error=str(e), success=None)
-    
 
 
 
