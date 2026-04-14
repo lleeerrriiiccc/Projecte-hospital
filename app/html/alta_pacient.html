@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Alta de Paciente</title>
+	<link rel="stylesheet" href="/css/alta_pacient.css">
+</head>
+<body>
+	<main class="page">
+		<section class="patient-card" aria-labelledby="patient-title">
+			<h1 id="patient-title">Alta de Paciente</h1>
+			<p class="subtitle">Introdueix les dades del pacient</p>
+
+			{% if error %}
+			<p class="message error" role="alert">{{ error }}</p>
+			{% endif %}
+
+			{% if success %}
+			<p class="message success" role="status">{{ success }}</p>
+			{% endif %}
+
+			<form class="patient-form" action="/pacient/alta" method="post">
+				<label for="nom">Nom</label>
+				<input id="nom" name="nom" type="text" maxlength="50" required>
+
+				<label for="cognom">Primer cognom</label>
+				<input id="cognom" name="cognom" type="text" maxlength="50" required>
+
+				<label for="cognom2">Segon cognom</label>
+				<input id="cognom2" name="cognom2" type="text" maxlength="50" required>
+
+				<label for="data_naixement">Data naixement</label>
+				<input id="data_naixement" name="data_naixement" type="date" required>
+
+				<label for="identificador">Identificador</label>
+				<input id="identificador" name="identificador" type="text" maxlength="20" placeholder="DNI/NIE o pasaport" required>
+
+				<button type="submit">Donar alta</button>
+			</form>
+
+			<a class="back-link" href="/home">Tornar al menú</a>
+		</section>
+	</main>
+</body>
+</html>

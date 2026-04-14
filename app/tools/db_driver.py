@@ -38,16 +38,3 @@ def init_db():
     con.close()
 
 
-
-############
-# CREATE NEW USER
-############
-def new_user(username, password, id_intern):
-    con, cur = connect()
-    password = c.encrypt_password(password)
-    cur.execute("INSERT INTO usuaris (username, password, id_intern) VALUES (%s, %s, %s)", (username, password, id_intern))
-    con.commit()
-    cur.close()
-    con.close()
-
-

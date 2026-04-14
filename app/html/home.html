@@ -3,14 +3,14 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Hospital Internal Management</title>
+	<title>GESTIO</title>
 	<link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
 	<header class="topbar">
 		<div class="container">
-			<h1>Hospital Internal Management</h1>
-			<p class="username">Welcome, {{ session['username'] }}</p>
+			<h1>GESTIO HOSPITALARIA</h1>
+			<p class="username">Hola, {{ session['username'] }}</p>
 		</div>
 	</header>
 
@@ -18,13 +18,40 @@
 		<section class="workspace" aria-label="Internal workspace"></section>
 		<aside class="side-menu" aria-label="Main menu">
 			<h2>Menu</h2>
-			<ul>
-				<li><a href="#">Patients</a></li>
-				<li><a href="#">Doctors</a></li>
-				<li><a href="#">Appointments</a></li>
-				<li><a href="/login">Logout</a></li>
+			<ul class="menu-categories">
+				<li class="menu-category">
+					<label class="category-toggle">Pacients</label>
+					<ul class="category-options" hidden>
+						<li><a href="/pacient/alta">Nou pacient</a></li>
+					</ul>
+				</li>
+				<li class="menu-category">
+					<label class="category-toggle">Enfermeria</label>
+					<ul class="category-options" hidden>
+						<li><a href="/pacient/alta">Vure assignacions</a></li>
+					</ul>
+				</li>
+				<li class="menu-category">
+					<label class="category-toggle">Personal</label>
+					<ul class="category-options" hidden>
+						<li><a href="/personal/alta">Nou personal</a></li>
+					</ul>
+				</li>
+				<li class="menu-category">
+					<label class="category-toggle">Appointments options</label>
+					<ul class="category-options" hidden>
+						<li><a href="#">New appointment</a></li>
+						<li><a href="#">Calendar</a></li>
+					</ul>
+				</li>
+				<li class="menu-category">
+					<ul class="category-options" hidden>
+						<li><a href="/logout">Tencar sessió</a></li>
+					</ul>
+				</li>
 			</ul>
 		</aside>
 	</main>
+
 </body>
 </html>

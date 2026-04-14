@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Alta Personal</title>
+	<link rel="stylesheet" href="/css/alta_personal.css">
+</head>
+<body>
+	<main class="page">
+		<section class="personal-card" aria-labelledby="personal-title">
+			<h1 id="personal-title">Alta de Personal</h1>
+			<p class="subtitle">Introdueix totes les dades requerides de la taula personal.</p>
+
+			{% if error %}
+			<p class="message error" role="alert">{{ error }}</p>
+			{% endif %}
+
+			{% if success %}
+			<p class="message success" role="status">{{ success }}</p>
+			{% endif %}
+
+			<form class="personal-form" action="/personal/alta" method="post">
+				<label for="nom">Nom</label>
+				<input id="nom" name="nom" type="text" maxlength="50" required>
+
+				<label for="cognom">Primer cognom</label>
+				<input id="cognom" name="cognom" type="text" maxlength="50" required>
+
+				<label for="cognom2">Segon cognom</label>
+				<input id="cognom2" name="cognom2" type="text" maxlength="50" required>
+
+				<label for="data_naixement">Data de naixement</label>
+				<input id="data_naixement" name="data_naixement" type="date" required>
+
+				<label for="telefon">Telefon principal</label>
+				<input id="telefon" name="telefon" type="tel" maxlength="15" required>
+
+				<label for="telefon2">Telefon secundari</label>
+				<input id="telefon2" name="telefon2" type="tel" maxlength="15">
+
+				<label for="email">Email personal</label>
+				<input id="email" name="email" type="email" maxlength="100" required>
+
+				<label for="email_intern">Email intern</label>
+				<input id="email_intern" name="email_intern" type="email" maxlength="100" required>
+
+				<label for="dni">DNI</label>
+				<input id="dni" name="dni" type="text" maxlength="20" required>
+
+				<label for="tipus_feina">Tipus de feina</label>
+				
+                <select id="tipus_feina" name="tipus_feina" required>
+                    <option value="" disabled selected>Selecciona un tipus de feina</option>
+                    <option value="metge">Metge</option>
+                    <option value="infermer">Infermer</option>
+                    <option value="administratiu">Administratiu</option>
+                    <option value="tècnic">Tècnic</option>
+                    <option value="personal neteja">Personal neteja</option>
+                    <option value="personal seguretat">Personal seguretat</option>
+                    <option value="personal cuina">Personal cuina</option>
+                </select>
+				<label for="data_alta">Data d'alta</label>
+				<input id="data_alta" name="data_alta" type="date" required>
+
+
+				<button type="submit">Donar d'alta</button>
+			</form>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+	<script>
+		const dataAltaInput = document.getElementById('data_alta');
+		if (dataAltaInput && !dataAltaInput.value) {
+			const avui = new Date().toISOString().split('T')[0];
+			dataAltaInput.value = avui;
+		}
+
+        
+	</script>
+</body>
+</html>

@@ -11,6 +11,9 @@
 		<section class="login-card" aria-labelledby="login-title">
 			<h1 id="login-title">Hospital Portal</h1>
 			<p class="subtitle">Sign in to access patient and staff systems.</p>
+			{% if error %}
+			<p class="message error" role="alert">{{ error }}</p>
+			{% endif %}
 
 			<form class="login-form" action="#" method="post">
 				<label for="username">Username</label>

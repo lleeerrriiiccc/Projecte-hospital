@@ -148,5 +148,6 @@ CREATE TABLE usuaris (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     id_intern INT NOT NULL,
+    rol VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_intern) REFERENCES personal(id_intern)
 )
