@@ -20,7 +20,7 @@
 			<p class="message success" role="status">{{ success }}</p>
 			{% endif %}
 
-			<form class="personal-form" action="/personal/alta" method="post">
+			<form class="personal-form" action="/personal/alta" method="post" enctype="multipart/form-data">
 				<label for="nom">Nom</label>
 				<input id="nom" name="nom" type="text" maxlength="50" required>
 
@@ -49,20 +49,21 @@
 				<input id="dni" name="dni" type="text" maxlength="20" required>
 
 				<label for="tipus_feina">Tipus de feina</label>
-				
-                <select id="tipus_feina" name="tipus_feina" required>
-                    <option value="" disabled selected>Selecciona un tipus de feina</option>
-                    <option value="metge">Metge</option>
-                    <option value="infermer">Infermer</option>
-                    <option value="administratiu">Administratiu</option>
-                    <option value="tècnic">Tècnic</option>
-                    <option value="personal neteja">Personal neteja</option>
-                    <option value="personal seguretat">Personal seguretat</option>
-                    <option value="personal cuina">Personal cuina</option>
-                </select>
+				<select id="tipus_feina" name="tipus_feina" required>
+					<option value="" disabled selected>Selecciona un tipus de feina</option>
+					<option value="metge">Metge</option>
+					<option value="infermer">Infermer</option>
+					<option value="administratiu">Administratiu</option>
+					<option value="tècnic">Tècnic</option>
+					<option value="personal neteja">Personal neteja</option>
+					<option value="personal seguretat">Personal seguretat</option>
+					<option value="personal cuina">Personal cuina</option>
+				</select>
+
+				<div id="dinamic-container" class="dynamic-fields" hidden></div>
+
 				<label for="data_alta">Data d'alta</label>
 				<input id="data_alta" name="data_alta" type="date" required>
-
 
 				<button type="submit">Donar d'alta</button>
 			</form>
@@ -76,6 +77,52 @@
 			const avui = new Date().toISOString().split('T')[0];
 			dataAltaInput.value = avui;
 		}
+
+		const container = document.getElementById('dinamic-container');
+		const select = document.getElementById('tipus_feina');
+
+		const renderDynamicFields = () => {
+			container.innerHTML = '';
+			container.hidden = select.value !== 'metge';
+
+			if (select.value !== 'metge') {
+				return;
+			}
+
+			const wrapper = document.createElement('div');
+			wrapper.className = 'dynamic-group';
+
+			const especialitatLabel = document.createElement('label');
+			especialitatLabel.setAttribute('for', 'especialitat');
+			especialitatLabel.textContent = 'Especialitat';
+
+			const especialitatInput = document.createElement('input');
+			especialitatInput.setAttribute('id', 'especialitat');
+			especialitatInput.setAttribute('name', 'especialitat');
+			especialitatInput.setAttribute('type', 'text');
+			especialitatInput.setAttribute('maxlength', '50');
+			especialitatInput.setAttribute('required', 'required');
+
+			const cvLabel = document.createElement('label');
+			cvLabel.setAttribute('for', 'cv');
+			cvLabel.textContent = 'CV';
+
+			const cvInput = document.createElement('input');
+			cvInput.setAttribute('id', 'cv');
+			cvInput.setAttribute('name', 'cv');
+			cvInput.setAttribute('type', 'file');
+			cvInput.setAttribute('accept', '.pdf,.doc,.docx');
+			cvInput.setAttribute('required', 'required');
+
+			wrapper.appendChild(especialitatLabel);
+			wrapper.appendChild(especialitatInput);
+			wrapper.appendChild(cvLabel);
+			wrapper.appendChild(cvInput);
+			container.appendChild(wrapper);
+		};
+
+		select.addEventListener('change', renderDynamicFields);
+		renderDynamicFields();
 
         
 	</script>

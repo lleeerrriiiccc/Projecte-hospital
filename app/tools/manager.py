@@ -1,6 +1,6 @@
 import tools.db_driver as db
 import tools.crypt as c
-
+import requests
 
 
 ############
@@ -78,41 +78,57 @@ def new_pacient(name, surename, surename2, birth_date, ident):
 ############
 # NEW EMPLOYEE FUNCTION
 ############
-def new_employee(name, surename, surename2, birthdate, phone, phone2, email, email_intern, dni, tfeina, data_alta_str):
+def new_employee(name, surename, surename2, birthdate, phone, phone2,
+                 email, email_intern, dni, tfeina, data_alta_str,
+                 especialitat=None, cv=None):
+
     con, cur = db.connect()
+
+    if tfeina == 'metge' and (not especialitat or not cv):
+        return False, "Per donar d'alta un metge, has de proporcionar una especialitat i un CV."
+
+    if tfeina != 'metge' and (especialitat or cv):
+        return False, "Només els metges poden tenir una especialitat i un CV."
+
     try:
-        query = """
-            INSERT INTO personal (
-            nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tipus_feina, data_alta)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        cur.execute(query, (name, surename, surename2, birthdate, phone, phone2, email, email_intern, dni, tfeina, data_alta_str))
+        if tfeina == 'metge':
+            query = """
+                SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+
+            cur.execute(query, (
+                name, surename, surename2, birthdate,
+                phone, phone2, email, email_intern,
+                dni, tfeina, data_alta_str,
+                especialitat, cv
+            ))
+
+        else:
+            query = """
+                INSERT INTO personal (
+                    nom, cognom, cognom2, data_naixement,
+                    telefon, telefon2, email, email_intern,
+                    dni, tipus_feina, data_alta
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+
+            cur.execute(query, (
+                name, surename, surename2, birthdate,
+                phone, phone2, email, email_intern,
+                dni, tfeina, data_alta_str
+            ))
+
         con.commit()
         return True, None
-    except Exception:
+
+    except Exception as e:
         con.rollback()
-        return False, "No s'ha pogut donar d'alta el personal. Revisa si l'identificador ja existeix."
+        return False, f"Error: {str(e)}"
+
     finally:
         cur.close()
         con.close()
 
 
 
-############
-# FREE INTERN ID FUNCTION
-############
-def free_intern_id():
-    con, cur = db.connect()
-    try:
-        cur.execute("""
-            SELECT p.id_intern, CONCAT(p.nom, ' ', p.cognom, ' ', p.cognom2) AS nom_complet
-            FROM personal p
-            LEFT JOIN usuaris u
-            ON p.id_intern = u.id_intern
-            WHERE u.id_intern IS NULL;
-        """)
-        result = cur.fetchall()
-        return result
-    finally:
-        cur.close()
-        con.close()

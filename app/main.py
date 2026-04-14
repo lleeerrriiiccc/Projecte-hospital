@@ -1,12 +1,11 @@
-import flask
 import os
 from flask import Flask
 from flask import request, redirect, url_for, send_from_directory, render_template, make_response, session
 import tools.manager as m
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 import dotenv
 import datetime
-import datetime
+
 
 
 
@@ -17,6 +16,7 @@ template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
 app = Flask(__name__, template_folder=template_dir)
 dotenv.load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET")
+app.config['UPLOAD_FOLDER'] = "c:\\Users\\el160\\Desktop\\1r ASIX\\Projecte-hospital\\app\\uploads"
 
 
 
@@ -189,7 +189,11 @@ def alta_personal():
     dni = request.form.get('dni', '').strip().upper()
     tfeina = request.form.get('tipus_feina', '').strip()
     data_alta_str = request.form.get('data_alta', '').strip()
-    id_intern = request.form.get('id_intern', '').strip()
+    try:
+        especialitat = request.form.get('especialitat', '').strip()
+        cv = request.files.get('cv')
+    except:
+        pass
     if not nom or not cognom or not cognom2 or not data_naixement_str or not telefon or not email or not email_intern or not dni or not tfeina or not data_alta_str:
         return render_template('alta_personal.html', error='Completa tots els camps obligatoris.', success=None)
     try:
@@ -199,14 +203,22 @@ def alta_personal():
     if data_naixement > datetime.date.today():
         return render_template('alta_personal.html', error='La data de naixement no pot ser futura.', success=None)
     try:
-        state, error = m.new_employee(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tfeina, data_alta_str)
+        if tfeina == 'metge':
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            filename = cv.filename if cv else None
+
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename) if filename else None
+            print(app.config['UPLOAD_FOLDER'])
+            cv.save(save_path)
+            state, error = m.new_employee(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tfeina, data_alta_str, especialitat, save_path)
+        else:
+            state, error = m.new_employee(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tfeina, data_alta_str)
         if not state:
             return render_template('alta_personal.html', error=error, success=None)
         return render_template('alta_personal.html', error=None, success='Personal donat d\'alta correctament.')
     except Exception as e:
         return render_template('alta_personal.html', error=str(e), success=None)
     
-
 
 
 
