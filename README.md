@@ -51,7 +51,7 @@ La base de dades està pensada per a PostgreSQL i modela l'entorn hospitalari.
 
 ### Dades de prova
 
-El fitxer `proves/data_prova.sql` conté registres de prova per poder fer consultes i verificar les relacions entre taules.
+En un futur es generara la dummy data per omplir tota la base de dades amb informació necessaria.
 
 ## Esquema de seguretat
 
