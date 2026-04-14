@@ -7,6 +7,7 @@ Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreS
 - `app/main.py`: punt d'entrada de l'aplicació web.
 - `app/tools/db_driver.py`: connexió a PostgreSQL i funcions bàsiques de base de dades.
 - `app/tools/manager.py`: lògica de login, registre i gestió d'usuaris.
+- `app/tools/masking.py`: utilitats previstes per emmascarar dades sensibles.
 - `app/html/`: plantilles HTML.
 - `app/css/`: fitxers CSS.
 - `base_de_dades/implementacio.sql`: esquema principal de la base de dades.
@@ -79,3 +80,32 @@ L'esquema de seguretat s'ha plantejat de manera senzilla.
 - De moment no és obligatori fer servir vistes per a pacient.
 - L'opció més simple és que el backend faci consultes filtrades amb l'identificador del pacient autenticat.
 - Si més endavant cal més aïllament a nivell de base de dades, es poden afegir vistes de només lectura.
+
+## Certificat SSL
+
+Per garantir una connexió segura, més endavant s'implementarà l'ús d'un certificat SSL al servidor.
+
+### Com es faria
+
+- Es generaria o s'obtindria un certificat vàlid per al domini o entorn de proves.
+- El servidor web s'encarregaria de fer servir HTTPS i de redirigir el trànsit HTTP cap a HTTPS.
+- La renovació del certificat es faria de manera automàtica quan el certificat ho requereixi amb un cron dintre del servidor.
+- La configuració de seguretat es mantindria fora del codi de l'aplicació, a nivell de servidor.
+
+## Emmascarament de dades
+
+Per protegir les dades personals de grau alt, més endavant s'implementarà un sistema d'emmascarament al backend.
+
+### Com es faria
+
+- Es determinarien els camps de caràcter personal de grau alt, com ara `dni`, `telefon`, `telefon2`, `email`, `email_intern` i `data_naixement`.
+- Es definiria quins rols poden veure la informació completa i quins només la versió parcialment amagada.
+- L'emmascarament es faria a l'aplicació, abans de mostrar les dades a pantalla o retornar-les per API.
+- A la base de dades es mantindrien les dades originals, sense modificar-les.
+
+### Criteri proposat
+
+- L'usuari amb accés complet veuria les dades senceres.
+- La resta d'usuaris veurien els camps sensibles amb una màscara parcial.
+- Si més endavant es volgués reforçar la seguretat, es podrien afegir vistes o consultes específiques per a cada rol.
+
