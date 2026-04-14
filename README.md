@@ -55,7 +55,7 @@ En un futur es generara la dummy data per omplir tota la base de dades amb infor
 
 ## Esquema de seguretat
 
-L'esquema de seguretat s'ha plantejat de manera senzilla, pensant en un projecte d'ASIX1.
+L'esquema de seguretat s'ha plantejat de manera senzilla.
 
 ### Usuaris tècnics de PostgreSQL
 
