@@ -136,26 +136,45 @@ def new_employee(
 
             case 'infermer':
                 if not mresp:
-                    return False, "Per donar d'alta un infermer, has de proporcionar un metge responsable."
-
-                query = """
-                    SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """
-                params = (
-                    name,
-                    surename,
-                    surename2,
-                    birthdate,
-                    phone,
-                    phone2,
-                    email,
-                    email_intern,
-                    dni,
-                    tfeina,
-                    data_alta_str,
-                    mresp,
-                )
-
+                    query = """
+                        INSERT INTO personal (
+                            nom, cognom, cognom2, data_naixement,
+                            telefon, telefon2, email, email_intern,
+                            dni, tipus_feina, data_alta
+                        )
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    params = (
+                        name,
+                        surename,
+                        surename2,
+                        birthdate,
+                        phone,
+                        phone2,
+                        email,
+                        email_intern,
+                        dni,
+                        tfeina,
+                        data_alta_str
+                    )
+                else:
+                    query = """
+                        SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    params = (
+                        name,
+                        surename,
+                        surename2,
+                        birthdate,
+                        phone,
+                        phone2,
+                        email,
+                        email_intern,
+                        dni,
+                        tfeina,
+                        data_alta_str,
+                        mresp,
+                    )
 
             case _:
                 if especialitat or cv:

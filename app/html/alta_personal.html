@@ -126,6 +126,29 @@
 				const wrapper = document.createElement('div');
 				wrapper.className = 'dynamic-group';
 
+				// Checkbox per cap de planta
+				const checkboxWrapper = document.createElement('div');
+				checkboxWrapper.className = 'checkbox-wrapper';
+
+				const capDePlantaCheckbox = document.createElement('input');
+				capDePlantaCheckbox.setAttribute('id', 'cap_de_planta');
+				capDePlantaCheckbox.setAttribute('name', 'cap_de_planta');
+				capDePlantaCheckbox.setAttribute('type', 'checkbox');
+
+				const capDePlantaLabel = document.createElement('label');
+				capDePlantaLabel.setAttribute('for', 'cap_de_planta');
+				capDePlantaLabel.textContent = 'Cap de planta';
+
+				checkboxWrapper.appendChild(capDePlantaCheckbox);
+				checkboxWrapper.appendChild(capDePlantaLabel);
+				wrapper.appendChild(checkboxWrapper);
+				container.appendChild(wrapper);
+
+				// Contenidor pel supervisor (es mostrarà només si no és cap de planta)
+				const supervisorWrapper = document.createElement('div');
+				supervisorWrapper.className = 'dynamic-group';
+				supervisorWrapper.id = 'supervisor-wrapper';
+
 				const supervisorLabel = document.createElement('label');
 				supervisorLabel.setAttribute('for', 'id_metge_supervisor');
 				supervisorLabel.textContent = 'Metge responsable';
@@ -133,7 +156,6 @@
 				const supervisorSelect = document.createElement('select');
 				supervisorSelect.setAttribute('id', 'id_metge_supervisor');
 				supervisorSelect.setAttribute('name', 'id_metge_supervisor');
-				supervisorSelect.setAttribute('required', 'required');
 
 				const loadingOption = document.createElement('option');
 				loadingOption.value = '';
@@ -142,9 +164,23 @@
 				loadingOption.textContent = 'Carregant metges...';
 				supervisorSelect.appendChild(loadingOption);
 
-				wrapper.appendChild(supervisorLabel);
-				wrapper.appendChild(supervisorSelect);
-				container.appendChild(wrapper);
+				supervisorWrapper.appendChild(supervisorLabel);
+				supervisorWrapper.appendChild(supervisorSelect);
+				container.appendChild(supervisorWrapper);
+
+				// Funció per mostrar/amagar el supervisor segons l'estat del checkbox
+				const updateSupervisorVisibility = () => {
+					if (capDePlantaCheckbox.checked) {
+						supervisorWrapper.hidden = true;
+						supervisorSelect.removeAttribute('required');
+					} else {
+						supervisorWrapper.hidden = false;
+						supervisorSelect.setAttribute('required', 'required');
+					}
+				};
+
+				capDePlantaCheckbox.addEventListener('change', updateSupervisorVisibility);
+				updateSupervisorVisibility();
 
 				fetch('/api/metges')
 					.then((response) => response.json())

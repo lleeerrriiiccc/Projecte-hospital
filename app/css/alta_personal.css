@@ -139,6 +139,27 @@ body {
     background: #cfe5f4;
 }
 
+.personal-form input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    accent-color: var(--hospital-blue);
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-wrapper label {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
 .personal-form input:focus {
     outline: 2px solid #88bce0;
     border-color: #88bce0;

@@ -168,7 +168,7 @@ def alta_personal():
     dni = request.form.get('dni', '').strip().upper()
     tfeina = request.form.get('tipus_feina', '').strip()
     data_alta_str = request.form.get('data_alta', '').strip()
-
+    mresp = request.form.get('id_metge_supervisor', '').strip()
     try:
         especialitat = request.form.get('especialitat', '').strip()
         cv = request.files.get('cv')
@@ -218,6 +218,23 @@ def alta_personal():
                 especialitat,
                 save_path,
             )
+        elif tfeina == 'infermer':
+            mresp = mresp if mresp else None
+            state, error = m.new_employee(
+                    nom,
+                    cognom,
+                    cognom2,
+                    data_naixement,
+                    telefon,
+                    telefon2,
+                    email,
+                    email_intern,
+                    dni,
+                    tfeina,
+                    data_alta_str,
+                    mresp=mresp
+                )
+
         else:
             state, error = m.new_employee(
                 nom,
