@@ -234,15 +234,34 @@ def get_metges():
 
 
 
-def get_informes_supervisio():
+def get_informes(informe, params=None):
     con, cur = db.connect()
 
     try:
-        with open("app/sql/informe_supervisio.sql", "r") as f:
+        with open(f"app/sql/informe_{informe}.sql", "r") as f:
             sql = f.read()
-        cur.execute(sql)
-        informes = cur.fetchall()
-        return informes
+
+        if params is not None:
+            if not isinstance(params, (tuple, list)):
+                params = (params,)
+            cur.execute(sql, params)
+        else:
+            cur.execute(sql)
+
+        match informe:
+            case 'supervisio':
+                return cur.fetchall()
+
+            case 'visites':
+                rows = cur.fetchall()
+                return [
+                    {
+                        "pacient": r[0],
+                        "metge": r[1],
+                        "hora_visita": str(r[2])
+                    }
+                    for r in rows
+                ]
 
     except Exception as e:
         return f"Error: {str(e)}"
@@ -250,4 +269,3 @@ def get_informes_supervisio():
     finally:
         cur.close()
         con.close()
-

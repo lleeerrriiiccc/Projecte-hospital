@@ -1,7 +1,7 @@
-import psycopg2
+import psycopg2 
 from dotenv import load_dotenv
 import os
-import tools.crypt as c
+from psycopg2.extras import RealDictCursor
 
 
 

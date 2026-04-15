@@ -150,8 +150,4 @@ CREATE TABLE usuaris (
     id_intern INT NOT NULL,
     rol VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_intern) REFERENCES personal(id_intern)
-);
-
-CREATE INDEX personal_tipus_feina ON personal(tipus_feina);
-
-CREATE INDEX visita_data_visita ON visita(data_visita);
+)

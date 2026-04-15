@@ -269,6 +269,16 @@ def informes_supervisio():
     return render_template('reports/supervisio.html')
 
 
+############
+# REPORT VISITES ROUTE
+############
+@app.route('/informes/visites')
+def informes_visites():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/visites.html')
+
+
 
 ###########################       API ENDPOINTS       ###########################
 
@@ -302,7 +312,27 @@ def get_metges():
 def get_informes_supervisio():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify(m.get_informes_supervisio())
+    return jsonify(m.get_informes('supervisio'))
+
+
+
+############
+# VISITES REPORT INFO ROUTE
+############
+@app.route('/api/informes/visites')
+def get_informes_visites():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    date = request.args.get('date', '').strip()
+    if not date:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    return jsonify(m.get_informes('visites', (date,)))
 
 
 

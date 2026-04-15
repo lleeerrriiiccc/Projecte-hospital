@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Visites</title>
+    <link rel="stylesheet" href="/css/visites.css">
+</head>
+<body>
+    <main class="page">
+        <section class="report-card" aria-labelledby="visites-title">
+            <h1 id="visites-title">Informe de Visites</h1>
+            <p class="subtitle">Consulta les visites d'un dia concret seleccionant una data.</p>
+
+            <form id="filters-form" class="filters" novalidate>
+                <div class="field">
+                    <label for="report-date">Data de visita</label>
+                    <input id="report-date" name="report-date" type="date" required>
+                </div>
+                <button id="load-btn" type="submit">Carregar informe</button>
+            </form>
+
+            <p id="message" class="message" role="status">Selecciona una data per carregar les visites.</p>
+
+            <div id="results" hidden>
+                <div class="table-wrap">
+                    <table aria-label="Resultats informe visites">
+                        <thead>
+                            <tr>
+                                <th scope="col">Hora</th>
+                                <th scope="col">Pacient</th>
+                                <th scope="col">Metge</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows"></tbody>
+                    </table>
+                </div>
+                <p id="empty" class="empty" hidden>No hi ha visites per aquesta data.</p>
+            </div>
+
+            <a class="back-link" href="/home">Tornar al menu</a>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('filters-form');
+        const dateInput = document.getElementById('report-date');
+        const messageEl = document.getElementById('message');
+        const resultsEl = document.getElementById('results');
+        const rowsEl = document.getElementById('rows');
+        const emptyEl = document.getElementById('empty');
+
+        const setMessage = (text, isError = false) => {
+            messageEl.hidden = false;
+            messageEl.textContent = text;
+            messageEl.classList.toggle('error', isError);
+        };
+
+        const renderRows = (data) => {
+            rowsEl.innerHTML = '';
+
+            if (!Array.isArray(data) || data.length === 0) {
+                emptyEl.hidden = false;
+                resultsEl.hidden = false;
+                return;
+            }
+
+            emptyEl.hidden = true;
+            data.forEach((visit) => {
+                const tr = document.createElement('tr');
+
+                const tdHora = document.createElement('td');
+                tdHora.textContent = visit.hora_visita ?? '-';
+
+                const tdPacient = document.createElement('td');
+                tdPacient.textContent = visit.pacient ?? '-';
+
+                const tdMetge = document.createElement('td');
+                tdMetge.textContent = visit.metge ?? '-';
+
+                tr.appendChild(tdHora);
+                tr.appendChild(tdPacient);
+                tr.appendChild(tdMetge);
+                rowsEl.appendChild(tr);
+            });
+
+            resultsEl.hidden = false;
+        };
+
+        const loadVisites = async (dateValue) => {
+            setMessage('Carregant informe de visites...');
+            resultsEl.hidden = true;
+
+            try {
+                const response = await fetch('/api/informes/visites?date=' + encodeURIComponent(dateValue));
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'No s han pogut carregar les dades.');
+                }
+
+                setMessage('Informe carregat correctament.');
+                renderRows(data);
+            } catch (error) {
+                setMessage(error.message || 'Error carregant les visites.', true);
+                rowsEl.innerHTML = '';
+                emptyEl.hidden = true;
+                resultsEl.hidden = true;
+            }
+        };
+
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const dateValue = dateInput.value;
+            if (!dateValue) {
+                setMessage('Has de seleccionar una data.', true);
+                return;
+            }
+
+            loadVisites(dateValue);
+        });
+    </script>
+</body>
+</html>
