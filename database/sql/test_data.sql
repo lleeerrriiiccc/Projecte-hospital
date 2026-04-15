@@ -1,60 +1,94 @@
--- =========================
--- PERSONAL (base de todo el sistema)
--- =========================
-INSERT INTO personal (
-    nom, cognom, cognom2, data_naixement,
-    telefon, telefon2,
-    email, email_intern,
-    dni, tipus_feina, data_alta
-) VALUES
--- Médicos
-('Albert', 'Puig', 'Serra', '1975-03-12', '600111222', '600111223',
- 'albert.puig@gmail.com', 'apuig@hosp.local',
- '12345678A', 'metge', '2015-01-10'),
+-- PLANTA
+INSERT INTO planta (nom) VALUES
+('Urgències'),
+('Cirurgia'),
+('UCI');
 
-('Núria', 'Ribas', 'Casas', '1980-06-22', '600222333', '600222334',
- 'nuria.ribas@gmail.com', 'nribas@hosp.local',
- '23456789B', 'metge', '2016-05-20'),
+-- PERSONAL
+INSERT INTO personal 
+(nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tipus_feina, data_alta)
+VALUES
+('Marc', 'Serra', 'Pujol', '1985-04-12', '600111222', '600333444', 'marc.serra@gmail.com', 'm.serra@hospital.local', '11111111A', 'metge', '2020-01-10'),
+('Laura', 'Vila', 'Roca', '1990-09-22', '600222333', '600444555', 'laura.vila@gmail.com', 'l.vila@hospital.local', '22222222B', 'enfermer', '2021-03-15'),
+('Jordi', 'Ferrer', 'Solé', '1978-11-05', '600555666', '600777888', 'jordi.ferrer@gmail.com', 'j.ferrer@hospital.local', '33333333C', 'metge', '2018-07-01');
 
-('David', 'López', 'Martí', '1988-11-01', '600333444', '600333445',
- 'david.lopez@gmail.com', 'dlopez@hosp.local',
- '34567890C', 'metge', '2018-09-15'),
+-- METGE / ENFERMER
+INSERT INTO metge VALUES
+(1, 'Cardiologia', 'CV_Marc.pdf'),
+(3, 'Traumatologia', 'CV_Jordi.pdf');
 
-('Laia', 'Vila', 'Ferrer', '1990-02-14', '600444555', '600444556',
- 'laia.vila@gmail.com', 'lvila@hosp.local',
- '45678901D', 'metge', '2020-03-01');
+INSERT INTO enfermer VALUES
+(2);
 
+-- PACIENT
+INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador)
+VALUES
+('Anna', 'Martí', 'Clara', '2001-02-10', 'PAC001'),
+('Pere', 'Navarro', 'Gomez', '1975-06-18', 'PAC002');
 
--- =========================
--- PACIENTS
--- =========================
-INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador) VALUES
-('Joan', 'Martí', 'Pujol', '1985-04-12', 'ID123456A'),
-('Maria', 'Serra', 'Vidal', '1992-09-23', 'ID234567B'),
-('Pere', 'Soler', 'Garcia', '1978-01-05', 'ID345678C'),
-('Anna', 'Ferrer', 'Closa', '2000-07-18', 'ID456789D'),
-('Marc', 'Roca', 'Tarrés', '1995-11-30', 'ID567890E');
+-- HABITACIO
+INSERT INTO habitacio VALUES
+(1, 'U01'),
+(1, 'U02'),
+(2, 'C01');
 
+-- MEDICAMENT
+INSERT INTO medicament (descripcio) VALUES
+('Paracetamol 1g'),
+('Ibuprofèn 600mg'),
+('Amoxicil·lina 500mg');
 
--- =========================
--- METGES
--- (ahora referencian personal.id_intern)
--- =========================
-INSERT INTO metge (id_intern, especialitat, cv) VALUES
-(46, 'Cardiologia', 'Experiència en unitat coronària i intervencionisme'),
-(47, 'Pediatria', 'Atenció neonatal i pediàtrica general'),
-(48, 'Traumatologia', 'Cirurgia ortopèdica i lesions esportives'),
-(49, 'Dermatologia', 'Tractaments dermatològics avançats');
+-- QUIROFAN
+INSERT INTO quirofan (id_planta) VALUES
+(2),
+(3);
 
+-- MAQUINA
+INSERT INTO maquina (nom, descripcio) VALUES
+('Monitor cardíac', 'Control de constants vitals'),
+('Ventilador', 'Suport respiratori'),
+('Desfibril·lador', 'Emergències cardíaques');
 
--- =========================
--- VISITES
--- =========================
+-- VISITA
 INSERT INTO visita (id_pacient, id_metge, data_visita, hora_visita) VALUES
-(1, 39, '2026-04-10', '09:00'),
-(2, 45, '2026-04-10', '09:30'),
-(3, 49, '2026-04-11', '10:00'),
-(4, 39, '2026-04-11', '10:30'),
-(5, 46, '2026-04-12', '11:00'),
-(1, 46, '2026-04-12', '11:30'),
-(2, 49, '2026-04-13', '12:00');
+(1, 1, '2026-04-10', '10:30'),
+(2, 3, '2026-04-11', '12:00');
+
+-- RECEPTA
+INSERT INTO recepta VALUES
+(1, 1),
+(1, 2),
+(2, 3);
+
+-- OPERACIO
+INSERT INTO operacio (id_quirofan, id_pacient, data_operacio, hora_operacio, procediment) VALUES
+(1, 1, '2026-04-12', '09:00', 'Apendicectomia'),
+(2, 2, '2026-04-13', '11:00', 'Artroscòpia');
+
+-- ASSISTEIX
+INSERT INTO assisteix VALUES
+(1, 1),
+(1, 2),
+(2, 3);
+
+-- INVENTARI
+INSERT INTO inventari VALUES
+(1, 1),
+(1, 2),
+(2, 3);
+
+-- RESERVA HABITACIO
+INSERT INTO reserva_habitacio VALUES
+(1, 'U01', '2026-04-10', '2026-04-15'),
+(2, 'C01', '2026-04-11', '2026-04-20');
+
+-- SUPERVISIO
+INSERT INTO supervisio VALUES
+(2, 1),
+(2, 3);
+
+-- USUARIS
+INSERT INTO usuaris (username, password, id_intern, rol) VALUES
+('mserra', 'hashed_password_1', 1, 'metge'),
+('lvila', 'hashed_password_2', 2, 'enfermer'),
+('jferrer', 'hashed_password_3', 3, 'metge');

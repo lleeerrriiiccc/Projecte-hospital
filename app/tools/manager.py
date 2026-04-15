@@ -262,6 +262,16 @@ def get_informes(informe, params=None):
                     }
                     for r in rows
                 ]
+            case 'quirofans':
+                rows = cur.fetchall()
+                return [
+                    {
+                        "pacient": r[0],
+                        "metge": r[1],
+                        "data_quirofans": str(r[2])
+                    }
+                    for r in rows
+                ]
 
     except Exception as e:
         return f"Error: {str(e)}"
