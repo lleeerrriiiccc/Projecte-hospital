@@ -105,25 +105,20 @@ def new_employee(
     data_alta_str,
     especialitat=None,
     cv=None,
+    mresp=None
 ):
-
     con, cur = db.connect()
 
-    if tfeina == 'metge' and (not especialitat or not cv):
-        return False, "Per donar d'alta un metge, has de proporcionar una especialitat i un CV."
-
-    if tfeina != 'metge' and (especialitat or cv):
-        return False, "Només els metges poden tenir una especialitat i un CV."
-
     try:
-        if tfeina == 'metge':
-            query = """
-                SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
+        match tfeina:
+            case 'metge':
+                if not especialitat or not cv:
+                    return False, "Per donar d'alta un metge, has de proporcionar una especialitat i un CV."
 
-            cur.execute(
-                query,
-                (
+                query = """
+                    SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                params = (
                     name,
                     surename,
                     surename2,
@@ -137,22 +132,16 @@ def new_employee(
                     data_alta_str,
                     especialitat,
                     cv,
-                ),
-            )
-
-        else:
-            query = """
-                INSERT INTO personal (
-                    nom, cognom, cognom2, data_naixement,
-                    telefon, telefon2, email, email_intern,
-                    dni, tipus_feina, data_alta
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
 
-            cur.execute(
-                query,
-                (
+            case 'infermer':
+                if not mresp:
+                    return False, "Per donar d'alta un infermer, has de proporcionar un metge responsable."
+
+                query = """
+                    SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                params = (
                     name,
                     surename,
                     surename2,
@@ -164,8 +153,37 @@ def new_employee(
                     dni,
                     tfeina,
                     data_alta_str,
-                ),
-            )
+                    mresp,
+                )
+
+
+            case _:
+                if especialitat or cv:
+                    return False, "Només els metges poden tenir una especialitat i un CV."
+
+                query = """
+                    INSERT INTO personal (
+                        nom, cognom, cognom2, data_naixement,
+                        telefon, telefon2, email, email_intern,
+                        dni, tipus_feina, data_alta
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """
+                params = (
+                    name,
+                    surename,
+                    surename2,
+                    birthdate,
+                    phone,
+                    phone2,
+                    email,
+                    email_intern,
+                    dni,
+                    tfeina,
+                    data_alta_str,
+                )
+
+        cur.execute(query, params)
 
         con.commit()
         return True, None
@@ -179,4 +197,19 @@ def new_employee(
         con.close()
 
 
+def get_metges():
+    con, cur = db.connect()
+
+    try:
+        query = "SELECT id_intern, CONCAT(nom, ' ', cognom) AS nom_complet FROM personal WHERE tipus_feina = 'metge'"
+        cur.execute(query)
+        metges = cur.fetchall()
+        return metges
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+    finally:
+        cur.close()
+        con.close()
 

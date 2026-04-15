@@ -100,17 +100,6 @@ def register():
 
 
 ############
-# USER INFO ROUTE
-############
-@app.route('/me')
-def me():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify({'username': session['username']})
-
-
-
-############
 # HOME ROUTE
 ############
 @app.route('/home')
@@ -250,6 +239,31 @@ def alta_personal():
         return render_template('alta_personal.html', error=None, success='Personal donat d\'alta correctament.')
     except Exception as e:
         return render_template('alta_personal.html', error=str(e), success=None)
+
+
+
+###########################       API ENDPOINTS       ###########################
+
+
+############
+# USER INFO ROUTE
+############
+@app.route('/me')
+def me():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify({'username': session['username']})
+
+
+
+############
+# DOC INFO ROUTE
+############
+@app.route('/api/metges')
+def get_metges():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify(m.get_metges())
 
 
 

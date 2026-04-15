@@ -83,44 +83,118 @@
 
 		const renderDynamicFields = () => {
 			container.innerHTML = '';
-			container.hidden = select.value !== 'metge';
 
-			if (select.value !== 'metge') {
+			if (select.value === 'metge') {
+				container.hidden = false;
+
+				const wrapper = document.createElement('div');
+				wrapper.className = 'dynamic-group';
+
+				const especialitatLabel = document.createElement('label');
+				especialitatLabel.setAttribute('for', 'especialitat');
+				especialitatLabel.textContent = 'Especialitat';
+
+				const especialitatInput = document.createElement('input');
+				especialitatInput.setAttribute('id', 'especialitat');
+				especialitatInput.setAttribute('name', 'especialitat');
+				especialitatInput.setAttribute('type', 'text');
+				especialitatInput.setAttribute('maxlength', '50');
+				especialitatInput.setAttribute('required', 'required');
+
+				const cvLabel = document.createElement('label');
+				cvLabel.setAttribute('for', 'cv');
+				cvLabel.textContent = 'CV';
+
+				const cvInput = document.createElement('input');
+				cvInput.setAttribute('id', 'cv');
+				cvInput.setAttribute('name', 'cv');
+				cvInput.setAttribute('type', 'file');
+				cvInput.setAttribute('accept', '.pdf,.doc,.docx');
+				cvInput.setAttribute('required', 'required');
+
+				wrapper.appendChild(especialitatLabel);
+				wrapper.appendChild(especialitatInput);
+				wrapper.appendChild(cvLabel);
+				wrapper.appendChild(cvInput);
+				container.appendChild(wrapper);
 				return;
 			}
 
-			const wrapper = document.createElement('div');
-			wrapper.className = 'dynamic-group';
+			if (select.value === 'infermer') {
+				container.hidden = false;
 
-			const especialitatLabel = document.createElement('label');
-			especialitatLabel.setAttribute('for', 'especialitat');
-			especialitatLabel.textContent = 'Especialitat';
+				const wrapper = document.createElement('div');
+				wrapper.className = 'dynamic-group';
 
-			const especialitatInput = document.createElement('input');
-			especialitatInput.setAttribute('id', 'especialitat');
-			especialitatInput.setAttribute('name', 'especialitat');
-			especialitatInput.setAttribute('type', 'text');
-			especialitatInput.setAttribute('maxlength', '50');
-			especialitatInput.setAttribute('required', 'required');
+				const supervisorLabel = document.createElement('label');
+				supervisorLabel.setAttribute('for', 'id_metge_supervisor');
+				supervisorLabel.textContent = 'Metge responsable';
 
-			const cvLabel = document.createElement('label');
-			cvLabel.setAttribute('for', 'cv');
-			cvLabel.textContent = 'CV';
+				const supervisorSelect = document.createElement('select');
+				supervisorSelect.setAttribute('id', 'id_metge_supervisor');
+				supervisorSelect.setAttribute('name', 'id_metge_supervisor');
+				supervisorSelect.setAttribute('required', 'required');
 
-			const cvInput = document.createElement('input');
-			cvInput.setAttribute('id', 'cv');
-			cvInput.setAttribute('name', 'cv');
-			cvInput.setAttribute('type', 'file');
-			cvInput.setAttribute('accept', '.pdf,.doc,.docx');
-			cvInput.setAttribute('required', 'required');
+				const loadingOption = document.createElement('option');
+				loadingOption.value = '';
+				loadingOption.disabled = true;
+				loadingOption.selected = true;
+				loadingOption.textContent = 'Carregant metges...';
+				supervisorSelect.appendChild(loadingOption);
 
-			wrapper.appendChild(especialitatLabel);
-			wrapper.appendChild(especialitatInput);
-			wrapper.appendChild(cvLabel);
-			wrapper.appendChild(cvInput);
-			container.appendChild(wrapper);
-		};
+				wrapper.appendChild(supervisorLabel);
+				wrapper.appendChild(supervisorSelect);
+				container.appendChild(wrapper);
 
+				fetch('/api/metges')
+					.then((response) => response.json())
+					.then((data) => {
+						supervisorSelect.innerHTML = '';
+
+						const defaultOption = document.createElement('option');
+						defaultOption.value = '';
+						defaultOption.disabled = true;
+						defaultOption.selected = true;
+						defaultOption.textContent = 'Selecciona un metge';
+						supervisorSelect.appendChild(defaultOption);
+
+						data.forEach((medic) => {
+							const metgeId = medic.id_intern ?? medic.id ?? medic[0];
+							const nomComplet = medic.nom_complet ?? medic.nom ?? medic[1] ?? '';
+							const cognom = medic.cognom ?? '';
+							const especialitat = medic.especialitat ?? medic[2] ?? '';
+							const nomVisible = nomComplet.includes(' ')
+								? nomComplet
+								: `${nomComplet} ${cognom}`.trim();
+
+							if (!metgeId) {
+								return;
+							}
+
+							const option = document.createElement('option');
+							option.value = metgeId;
+							option.textContent = especialitat
+								? `${nomVisible} (${especialitat})`
+								: nomVisible;
+							supervisorSelect.appendChild(option);
+						});
+					})
+					.catch(() => {
+						supervisorSelect.innerHTML = '';
+
+						const errorOption = document.createElement('option');
+						errorOption.value = '';
+						errorOption.disabled = true;
+						errorOption.selected = true;
+						errorOption.textContent = 'No s han pogut carregar els metges';
+						supervisorSelect.appendChild(errorOption);
+					});
+
+				return;
+			}
+
+			container.hidden = true;
+        };
 		select.addEventListener('change', renderDynamicFields);
 		renderDynamicFields();
 
