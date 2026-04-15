@@ -259,6 +259,17 @@ def alta_personal():
 
 
 
+############
+# REPORT SUPERVISION ROUTE
+############
+@app.route('/informes/supervisio')
+def informes_supervisio():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/supervisio.html')
+
+
+
 ###########################       API ENDPOINTS       ###########################
 
 
@@ -281,6 +292,17 @@ def get_metges():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     return jsonify(m.get_metges())
+
+
+
+############
+# SUPERVISION REPORT INFO ROUTE
+############
+@app.route('/api/informes/supervisio')
+def get_informes_supervisio():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify(m.get_informes_supervisio())
 
 
 

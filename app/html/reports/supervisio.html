@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe de Supervisio</title>
+	<link rel="stylesheet" href="/css/supervisio.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="report-title">
+			<h1 id="report-title">Informe de Supervisio</h1>
+			<p class="subtitle">Relacio de metges i infermeres al seu carrec. Inclou caps de planta sense supervisor.</p>
+
+			<p id="status" class="status" role="status">Carregant dades de supervisio...</p>
+			<div id="accordion" class="accordion" hidden></div>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const statusEl = document.getElementById('status');
+		const accordionEl = document.getElementById('accordion');
+
+		const parseNurses = (rawNurses) => {
+			if (!rawNurses || typeof rawNurses !== 'string') {
+				return [];
+			}
+
+			return rawNurses
+				.split(',')
+				.map((name) => name.trim())
+				.filter((name) => name.length > 0);
+		};
+
+		const createGroup = (doctorName, nurses, isNoSupervisor) => {
+			const group = document.createElement('article');
+			group.className = 'group';
+
+			const title = isNoSupervisor
+				? 'Caps de planta (sense supervisor)'
+				: doctorName;
+
+			const toggle = document.createElement('button');
+			toggle.type = 'button';
+			toggle.className = 'group-toggle';
+			toggle.setAttribute('aria-expanded', 'false');
+
+			const heading = document.createElement('span');
+			heading.textContent = title;
+
+			const count = document.createElement('span');
+			count.className = 'group-count';
+			count.textContent = nurses.length === 1
+				? '1 infermera'
+				: nurses.length + ' infermeres';
+
+			toggle.appendChild(heading);
+			toggle.appendChild(count);
+
+			const content = document.createElement('div');
+			content.className = 'group-content';
+
+			if (nurses.length === 0) {
+				const empty = document.createElement('p');
+				empty.className = 'empty';
+				empty.textContent = 'No hi ha infermeres assignades.';
+				content.appendChild(empty);
+			} else {
+				const list = document.createElement('ul');
+				list.className = 'nurse-list';
+
+				nurses.forEach((nurseName) => {
+					const item = document.createElement('li');
+					item.textContent = nurseName;
+					list.appendChild(item);
+				});
+
+				content.appendChild(list);
+			}
+
+			toggle.addEventListener('click', () => {
+				const isOpen = content.classList.toggle('open');
+				toggle.setAttribute('aria-expanded', String(isOpen));
+			});
+
+			group.appendChild(toggle);
+			group.appendChild(content);
+			return group;
+		};
+
+		const renderSupervision = (rows) => {
+			accordionEl.innerHTML = '';
+
+			if (!Array.isArray(rows) || rows.length === 0) {
+				statusEl.textContent = 'No hi ha dades de supervisio disponibles.';
+				accordionEl.hidden = true;
+				return;
+			}
+
+			rows.forEach((row) => {
+				const doctorName = Array.isArray(row) ? row[0] : null;
+				const nursesRaw = Array.isArray(row) ? row[1] : null;
+				const nurses = parseNurses(nursesRaw);
+				const isNoSupervisor = doctorName === null || doctorName === undefined || doctorName === '';
+
+				accordionEl.appendChild(createGroup(doctorName, nurses, isNoSupervisor));
+			});
+
+			statusEl.hidden = true;
+			accordionEl.hidden = false;
+		};
+
+		const loadSupervision = async () => {
+			try {
+				const response = await fetch('/api/informes/supervisio');
+
+				if (!response.ok) {
+					throw new Error('No s han pogut obtenir les dades.');
+				}
+
+				const data = await response.json();
+				renderSupervision(data);
+			} catch (_error) {
+				statusEl.hidden = false;
+				statusEl.classList.add('error');
+				statusEl.textContent = 'Error carregant la supervisio. Torna-ho a provar.';
+				accordionEl.hidden = true;
+			}
+		};
+
+		loadSupervision();
+	</script>
+</body>
+</html>

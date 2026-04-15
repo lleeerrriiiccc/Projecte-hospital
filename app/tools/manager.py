@@ -232,3 +232,22 @@ def get_metges():
         cur.close()
         con.close()
 
+
+
+def get_informes_supervisio():
+    con, cur = db.connect()
+
+    try:
+        with open("app/sql/informe_supervisio.sql", "r") as f:
+            sql = f.read()
+        cur.execute(sql)
+        informes = cur.fetchall()
+        return informes
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+    finally:
+        cur.close()
+        con.close()
+
