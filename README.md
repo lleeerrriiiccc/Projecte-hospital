@@ -56,24 +56,30 @@ En un futur es generara la dummy data per omplir tota la base de dades amb infor
 
 ## Esquema de seguretat
 
-L'esquema de seguretat s'ha plantejat de manera senzilla.
+L'esquema de seguretat s'ha plantejat amb rols de login i rols de grup.
 
-### Usuaris tècnics de PostgreSQL
+### Rols de PostgreSQL
 
 - `hosp_admin`: usuari tècnic amb administració completa de la base de dades.
 - `hosp_app`: usuari tècnic que farà servir el backend de l'aplicació.
+- `administrador`, `personal`, `sanitari`, `gestio`, `serveis` i `pacient`: rols de grup.
+- `rol_administrador`, `rol_metge`, `rol_infermer`, `rol_administratiu`, `rol_tecnic`, `rol_personal_neteja`, `rol_personal_seguretat`, `rol_personal_cuina` i `rol_pacient`: rols de login amb contrasenya d'exemple `P@ssw0rd`.
 
 ### Criteri de permisos
 
 - `hosp_admin` té permisos totals sobre les taules i les seqüències.
 - `hosp_app` pot llegir, inserir i actualitzar les taules necessàries per al funcionament de l'aplicació.
+- `administrador` manté el control total.
+- `personal` dona accés base de lectura a dades comunes.
+- `sanitari`, `gestio` i `serveis` agrupen els perfils específics de la plantilla.
+- `pacient` queda preparat per a un accés restringit amb vistes o RLS.
 - Les operacions de DDL no es fan des de l'aplicació, sinó des del compte d'administració.
 
 ### Usuaris de l'aplicació
 
 - Els usuaris reals de la web es desen a la taula `usuaris`.
-- Els rols funcionals de l'aplicació són: administrador, personal i pacient.
-- El control d'aquests rols es fa des del backend, no com a rols de PostgreSQL.
+- Els rols funcionals de l'aplicació també existeixen com a rols de PostgreSQL.
+- El backend continua controlant la lògica de negoci i el filtratge funcional.
 
 ### Accés del pacient
 
