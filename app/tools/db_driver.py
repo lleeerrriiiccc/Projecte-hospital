@@ -9,12 +9,12 @@ import os
 ############
 def connect(type="default"):
     load_dotenv()
+    db_host = os.getenv("DB_HOST")
+    db_database = os.getenv("DB_DATABASE")
     match type:
         case "default":
-            db_host = os.getenv("DB_HOST")
-            db_database = os.getenv("DB_DATABASE")
-            db_user = os.getenv("DB_USER")
-            db_password = os.getenv("DB_PASSWORD")
+            db_user = os.getenv("DEFAULT_USER")
+            db_password = os.getenv("DEFAULT_PASSWORD")
             con = psycopg2.connect(
                 host=db_host,
                 database=db_database,
@@ -23,8 +23,17 @@ def connect(type="default"):
             )
             cursor = con.cursor()
             return con, cursor
-        case "test":
-            return test_connect()
+        case "metge":
+            db_user = os.getenv("METGE_USER")
+            db_password = os.getenv("METGE_PASSWORD")
+            con = psycopg2.connect(
+                host=db_host,
+                database=db_database,
+                user=db_user,
+                password=db_password
+            )
+            cursor = con.cursor()
+            return con, cursor
         case _:
             raise ValueError("Invalid connection type. Use 'default' or 'test'.")
 
