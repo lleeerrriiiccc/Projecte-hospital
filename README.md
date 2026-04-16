@@ -78,7 +78,7 @@ L'esquema de seguretat s'ha plantejat amb rols de login i rols de grup.
 ### Usuaris de l'aplicació
 
 - Els usuaris reals de la web es desen a la taula `usuaris`.
-- Els rols funcionals de l'aplicació també existeixen com a rols de PostgreSQL.
+- Els rols funcionals de l'aplicació també existeixen com a rols de PostgreSQL i tambe es guarden a la base de dades per poder identificar a cada usuari correctament.
 - El backend continua controlant la lògica de negoci i el filtratge funcional.
 
 ### Accés del pacient
