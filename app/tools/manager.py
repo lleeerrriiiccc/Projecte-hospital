@@ -8,23 +8,27 @@ import requests
 ############
 def login(username, password):
     con, cur = db.connect()
-    cur.execute("SELECT password FROM usuaris WHERE username = %s", (username,))
-    result = cur.fetchone()
-
-    if result is None:
+    cur.execute("SELECT id_intern, password FROM usuaris WHERE username = %s", (username,))
+    result= cur.fetchone()
+    id, passwd = result
+    if passwd is None:
         error = "El nom d'usuari no existeix. Revisa les dades e intenta-ho de nou."
-        return False, error
+        cur.close()
+        con.close()
+        return False, error, None
 
-    cur.close()
-    con.close()
-
-    stored_password = result[0]
+    stored_password = passwd
 
     if c.check_password(password, stored_password) == True:
-        return True, None
-
+        cur.execute("SELECT tipus_feina FROM personal WHERE id_intern = %s", (id,))
+        type = cur.fetchone()[0]
+        cur.close()
+        con.close()
+        return True, None, type
+    cur.close()
+    con.close()
     error = "Contrasenya incorrecte. Revisa les dades e intenta-ho de nou."
-    return False, error
+    return False, error, None
 
 
 ############

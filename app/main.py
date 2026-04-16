@@ -51,9 +51,10 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    ok, error = m.login(username, password)
+    ok, error, type = m.login(username, password)
     if ok:
         session['username'] = username
+        session['type'] = type
         return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
