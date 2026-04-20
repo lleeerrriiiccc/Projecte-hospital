@@ -253,7 +253,8 @@ def get_informes(informe, params=None, username=None):
 
     try:
         con, cur = db.connect(username=username)
-        with open(f"app/sql/informe_{informe}.sql") as f:
+        informe_file = "app/sql/informe_aparrells.sql" if informe == "aparells" else f"app/sql/informe_{informe}.sql"
+        with open(informe_file) as f:
             sql = f.read()
 
         if params:
@@ -321,6 +322,16 @@ def get_informes(informe, params=None, username=None):
                         "hora_event": str(r[2]) if r[2] is not None else None,
                         "descripcio": r[3],
                         "info_extra": r[4],
+                    }
+                    for r in rows
+                ]
+
+            case 'aparells':
+                return True, [
+                    {
+                        "id_quirofan": r[0],
+                        "planta": r[1],
+                        "maquinari": r[2],
                     }
                     for r in rows
                 ]

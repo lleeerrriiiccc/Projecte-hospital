@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe d'Aparells</title>
+	<link rel="stylesheet" href="/css/aparells.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="aparells-title">
+			<h1 id="aparells-title">Aparells per Quirofan</h1>
+			<p class="subtitle">Consulta d'una manera visual les maquines assignades a cada quirofan.</p>
+
+			<div id="summary" class="summary" hidden>
+				<article class="summary-card">
+					<span class="summary-label">Quirofans</span>
+					<strong id="rooms-count">0</strong>
+				</article>
+				<article class="summary-card">
+					<span class="summary-label">Maquines totals</span>
+					<strong id="machines-count">0</strong>
+				</article>
+			</div>
+
+			<p id="message" class="message" role="status">Carregant informe...</p>
+
+			<section id="grid" class="room-grid" hidden></section>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const messageEl = document.getElementById('message');
+		const summaryEl = document.getElementById('summary');
+		const gridEl = document.getElementById('grid');
+		const roomsCountEl = document.getElementById('rooms-count');
+		const machinesCountEl = document.getElementById('machines-count');
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const parseMachines = (text) => {
+			if (!text || typeof text !== 'string') {
+				return [];
+			}
+
+			return text
+				.split(',')
+				.map((item) => item.trim())
+				.filter((item) => item.length > 0);
+		};
+
+		const createMachineChip = (label) => {
+			const chip = document.createElement('span');
+			chip.className = 'machine-chip';
+			chip.textContent = label;
+			return chip;
+		};
+
+		const renderRooms = (rows) => {
+			gridEl.innerHTML = '';
+
+			if (!Array.isArray(rows) || rows.length === 0) {
+				gridEl.appendChild(Object.assign(document.createElement('p'), {
+					className: 'empty-state',
+					textContent: 'No hi ha dades de quirofans disponibles.',
+				}));
+				gridEl.hidden = false;
+				summaryEl.hidden = true;
+				return;
+			}
+
+			let machineTotal = 0;
+
+			rows.forEach((room) => {
+				const machines = parseMachines(room.maquinari);
+				machineTotal += machines.length;
+
+				const card = document.createElement('article');
+				card.className = 'room-card';
+
+				const header = document.createElement('header');
+				const title = document.createElement('h2');
+				title.textContent = 'Quirofan ' + room.id_quirofan;
+
+				const plant = document.createElement('p');
+				plant.className = 'plant-pill';
+				plant.textContent = 'Planta: ' + (room.planta ?? '-');
+
+				header.appendChild(title);
+				header.appendChild(plant);
+
+				const count = document.createElement('p');
+				count.className = 'machine-count';
+				count.textContent = machines.length === 1 ? '1 maquina assignada' : machines.length + ' maquines assignades';
+
+				const chips = document.createElement('div');
+				chips.className = 'chip-list';
+
+				if (machines.length === 0) {
+					const empty = document.createElement('span');
+					empty.className = 'machine-chip empty';
+					empty.textContent = 'Sense aparells';
+					chips.appendChild(empty);
+				} else {
+					machines.forEach((machine) => chips.appendChild(createMachineChip(machine)));
+				}
+
+				card.appendChild(header);
+				card.appendChild(count);
+				card.appendChild(chips);
+				gridEl.appendChild(card);
+			});
+
+			roomsCountEl.textContent = String(rows.length);
+			machinesCountEl.textContent = String(machineTotal);
+			summaryEl.hidden = false;
+			gridEl.hidden = false;
+		};
+
+		const loadReport = async () => {
+			try {
+				const response = await fetch('/api/informes/aparells');
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut carregar les dades.');
+				}
+
+				setMessage('Informe carregat correctament.');
+				renderRooms(Array.isArray(payload.data) ? payload.data : []);
+			} catch (error) {
+				setMessage(error.message || 'Error carregant l\'informe.', true);
+				gridEl.hidden = true;
+			}
+		};
+
+		loadReport();
+	</script>
+</body>
+</html>

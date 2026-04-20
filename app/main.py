@@ -315,6 +315,16 @@ def informes_metge():
 
 
 ############
+# REPORT APARELLS ROUTE
+############
+@app.route('/informes/aparells')
+def informes_aparells():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/aparells.html')
+
+
+############
 # REPORT PACIENT ROUTE
 ############
 @app.route('/informes/pacient')
@@ -453,6 +463,16 @@ def get_informes_metge():
         return jsonify({'error': 'Doctor parameter must be a valid integer'}), 400
 
     return api_response(m.get_informes('metge', (metge_id, date, metge_id, date), username=session['username']))
+
+
+############
+# APARELLS REPORT INFO ROUTE
+############
+@app.route('/api/informes/aparells')
+def get_informes_aparells():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_informes('aparells', username=session['username']))
 
 
 
