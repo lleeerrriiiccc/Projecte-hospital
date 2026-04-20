@@ -300,6 +300,19 @@ def get_informes(informe, params=None, username=None):
                     for r in rows
                 ]
 
+            case 'metge':
+                return True, [
+                    {
+                        "tipus": r[0],
+                        "data": str(r[1]),
+                        "hora": str(r[2]),
+                        "pacient": r[3],
+                        "metge": r[4],
+                        "detall": r[5],
+                    }
+                    for r in rows
+                ]
+
         return True, rows
 
     except Exception as e:

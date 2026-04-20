@@ -53,8 +53,8 @@ def login():
 
     ok, error, type = m.login(username, password)
     if ok:
+        username = username.lower()
         session['username'] = username
-        session['type'] = type
         return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -304,6 +304,16 @@ def informes_habitacions():
     return render_template('reports/habitacions.html')
 
 
+############
+# REPORT METGE ROUTE
+############
+@app.route('/informes/metge')
+def informes_metge():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/metge.html')
+
+
 ###########################       API ENDPOINTS       ###########################
 
 
@@ -403,6 +413,36 @@ def get_informes_habitacions():
         return jsonify({'error': 'Room parameter is required'}), 400
 
     return api_response(m.get_informes('habitacions', (habitacio,), username=session['username']))
+
+
+############
+# METGE REPORT INFO ROUTE
+############
+@app.route('/api/informes/metge')
+def get_informes_metge():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    metge = request.args.get('metge', '').strip()
+    date = request.args.get('date', '').strip()
+
+    if not metge:
+        return jsonify({'error': 'Doctor parameter is required'}), 400
+
+    if not date:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    try:
+        metge_id = int(metge)
+    except ValueError:
+        return jsonify({'error': 'Doctor parameter must be a valid integer'}), 400
+
+    return api_response(m.get_informes('metge', (metge_id, date, metge_id, date), username=session['username']))
 
 
 
