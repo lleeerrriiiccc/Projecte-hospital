@@ -93,7 +93,7 @@ Per garantir una connexió segura, més endavant s'implementarà l'ús d'un cert
 
 ### Com es faria
 
-- Es generaria o s'obtindria un certificat vàlid per al domini o entorn de proves.
+- Es generaria o s'obtindria un certificat vàlid per al domini o entorn de proves amb certbot.
 - El servidor web s'encarregaria de fer servir HTTPS i de redirigir el trànsit HTTP cap a HTTPS.
 - La renovació del certificat es faria de manera automàtica quan el certificat ho requereixi amb un cron dintre del servidor.
 - La configuració de seguretat es mantindria fora del codi de l'aplicació, a nivell de servidor.
