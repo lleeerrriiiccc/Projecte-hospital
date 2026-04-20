@@ -1,0 +1,318 @@
+:root {
+    --hospital-blue: #0c5b8f;
+    --accent: #0f7a5a;
+    --card-bg: #ffffff;
+    --text-main: #1e2d3d;
+    --text-muted: #5a6c7f;
+    --border: #d3e0eb;
+    --danger: #b22a2a;
+    --danger-bg: #fcebec;
+    --surface: #f6fbff;
+    --occupied-bg: #e7f6ef;
+    --free-bg: #f5f7fb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background: linear-gradient(160deg, #e9f2f9 0%, #f6fbff 100%);
+}
+
+.page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+}
+
+.report-card {
+    width: 100%;
+    max-width: 1160px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    box-shadow: 0 10px 24px rgba(12, 91, 143, 0.12);
+}
+
+.report-card h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--hospital-blue);
+}
+
+.subtitle {
+    margin: 0.5rem 0 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+    gap: 0.7rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.field {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.field select,
+.field input[type="month"] {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.field select:focus,
+.field input[type="month"]:focus {
+    outline: 2px solid #88bce0;
+    border-color: #88bce0;
+}
+
+#load-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--hospital-blue);
+    cursor: pointer;
+}
+
+#load-btn:hover {
+    background-color: #09486f;
+}
+
+.message {
+    margin: 0 0 1rem;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    border: 1px solid #c8dced;
+    background: var(--surface);
+    color: var(--text-muted);
+}
+
+.message.error {
+    border-color: #e8b3b6;
+    color: var(--danger);
+    background-color: var(--danger-bg);
+}
+
+.calendar-section {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem;
+    background: #fff;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #24445e;
+}
+
+.room-pill {
+    margin: 0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: #eaf4fb;
+    color: #2d5a79;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+
+.day-header {
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #36556f;
+    text-transform: uppercase;
+    background: #edf5fb;
+    border-radius: 8px;
+    padding: 0.45rem 0.25rem;
+}
+
+.day-cell {
+    min-height: 106px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.45rem;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0.35rem;
+    overflow: hidden;
+}
+
+.day-cell.empty {
+    background: transparent;
+    border-style: dashed;
+    min-height: 72px;
+}
+
+.day-cell.occupied {
+    background: var(--occupied-bg);
+    border-color: #b4e0cb;
+}
+
+.day-cell.free {
+    background: var(--free-bg);
+}
+
+.day-number {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #274058;
+}
+
+.day-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.patient-tag {
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: 0.18rem 0.5rem;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: #0f5a42;
+    background: #d8f0e4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.free-label {
+    font-size: 0.76rem;
+    font-style: italic;
+    color: #6b8094;
+}
+
+.legend {
+    margin-top: 0.85rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    font-size: 0.82rem;
+    color: #4c6377;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid var(--border);
+}
+
+.dot.occupied {
+    background: #9fd8bd;
+    border-color: #7cc8a7;
+}
+
+.dot.free {
+    background: #dbe3ee;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    text-align: center;
+    border: 1px solid var(--hospital-blue);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--hospital-blue);
+    background-color: #ffffff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #ffffff;
+    background-color: var(--hospital-blue);
+}
+
+@media (max-width: 980px) {
+    .filters {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #load-btn {
+        grid-column: span 2;
+    }
+
+    .day-cell {
+        min-height: 94px;
+    }
+}
+
+@media (max-width: 760px) {
+    .report-card {
+        padding: 1.2rem;
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+    #load-btn {
+        grid-column: auto;
+        width: 100%;
+    }
+
+    .calendar-grid {
+        gap: 0.35rem;
+    }
+
+    .day-cell {
+        min-height: 90px;
+        padding: 0.38rem;
+    }
+
+    .patient-tag {
+        font-size: 0.68rem;
+    }
+}

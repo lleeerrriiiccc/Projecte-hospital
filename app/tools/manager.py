@@ -277,7 +277,26 @@ def get_informes(informe, params=None, username=None):
 
             case 'quirofans':
                 return True, [
-                    {"pacient": r[0], "metge": r[1], "data_quirofans": str(r[2])}
+                    {
+                        "id_operacio": r[0],
+                        "data_operacio": str(r[1]),
+                        "hora_operacio": str(r[2]),
+                        "procediment": r[3],
+                        "pacient": r[4],
+                        "metge": r[5],
+                        "infermers_assistents": r[6],
+                    }
+                    for r in rows
+                ]
+
+            case 'habitacions':
+                return True, [
+                    {
+                        "num_habitacio": r[0],
+                        "data_inici": str(r[1]),
+                        "data_fi": str(r[2]),
+                        "pacient": r[3],
+                    }
                     for r in rows
                 ]
 
@@ -285,6 +304,32 @@ def get_informes(informe, params=None, username=None):
 
     except Exception as e:
         return handle_db_error(e, con)
+
+    finally:
+        _close_db(con, cur)
+
+
+
+############
+# GET HABITACIONS
+############
+def get_habitacions(username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT num_habitacio
+            FROM habitacio
+            ORDER BY num_habitacio
+        """)
+        rows = cur.fetchall()
+        return True, [{"num_habitacio": r[0]} for r in rows]
+
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
 
     finally:
         _close_db(con, cur)

@@ -1,25 +1,34 @@
 SELECT
-    q.id_quirofan,
-    o.id_operacio,
-    o.data_operacio,
-    o.hora_operacio,
-    o.procediment,
-
-    CONCAT(p.nom, ' ', p.cognom) AS pacient_nom,
-
-    CONCAT(per_m.nom, ' ', per_m.cognom) AS metge_complet,
-
-    CONCAT(per_i.nom, ' ', per_i.cognom) AS infermer_complet
-
-FROM operacio o
-JOIN quirofan q ON o.id_quirofan = q.id_quirofan
-JOIN pacient p ON o.id_pacient = p.id_pacient
-
-LEFT JOIN assisteix a ON a.id_operacio = o.id_operacio
-LEFT JOIN personal per_i ON per_i.id_intern = a.id_intern
-
-JOIN assisteix am ON am.id_operacio = o.id_operacio
-JOIN metge m ON m.id_intern = am.id_intern
-JOIN personal per_m ON per_m.id_intern = m.id_intern
-
-ORDER BY q.id_quirofan, o.hora_operacio;
+    op.id_operacio,
+    op.data_operacio,
+    op.hora_operacio,
+    op.procediment,
+    CONCAT(p.nom, ' ', p.cognom, ' ', p.cognom2) AS nom_complet_pacient,
+    CONCAT(pm.nom, ' ', pm.cognom, ' ', pm.cognom2) AS nom_complet_metge,
+    STRING_AGG(
+        CONCAT(pi.nom, ' ', pi.cognom, ' ', pi.cognom2),
+        ', ' ORDER BY pi.cognom, pi.nom
+    ) AS infermers_assistents
+FROM operacio op
+JOIN pacient p
+    ON op.id_pacient = p.id_pacient
+JOIN personal pm
+    ON op.metge_responsable = pm.id_intern
+LEFT JOIN assisteix a
+    ON a.id_operacio = op.id_operacio
+LEFT JOIN enfermer i
+    ON i.id_intern = a.id_intern
+LEFT JOIN personal pi
+    ON pi.id_intern = i.id_intern
+--WHERE op.data_operacio = %s
+GROUP BY
+    op.id_operacio,
+    op.data_operacio,
+    op.hora_operacio,
+    op.procediment,
+    p.nom, p.cognom, p.cognom2,
+    pm.nom, pm.cognom, pm.cognom2
+ORDER BY
+    op.data_operacio,
+    op.hora_operacio,
+    op.id_operacio;

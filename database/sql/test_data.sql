@@ -61,9 +61,9 @@ INSERT INTO recepta VALUES
 (2, 3);
 
 -- OPERACIO
-INSERT INTO operacio (id_quirofan, id_pacient, data_operacio, hora_operacio, procediment) VALUES
-(1, 1, '2026-04-12', '09:00', 'Apendicectomia'),
-(2, 2, '2026-04-13', '11:00', 'Artroscòpia');
+INSERT INTO operacio (id_quirofan, id_pacient, data_operacio, hora_operacio, procediment, metge_responsable) VALUES
+(1, 1, '2026-04-12', '09:00', 'Apendicectomia', 1),
+(2, 2, '2026-04-13', '11:00', 'Artroscòpia', 3);
 
 -- ASSISTEIX
 INSERT INTO assisteix VALUES

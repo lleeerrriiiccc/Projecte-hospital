@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe d'Ocupacio d'Habitacions</title>
+	<link rel="stylesheet" href="/css/habitacions.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="habitacions-title">
+			<h1 id="habitacions-title">Ocupacio d'Habitacions</h1>
+			<p class="subtitle">Selecciona una habitacio per veure en calendari quins dies esta ocupada i per quin pacient.</p>
+
+			<form id="filters-form" class="filters" novalidate>
+				<div class="field">
+					<label for="room-select">Habitacio</label>
+					<select id="room-select" name="room-select" required>
+						<option value="" disabled selected>Carregant habitacions...</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="month-select">Mes</label>
+					<input id="month-select" name="month-select" type="month" required>
+				</div>
+				<button id="load-btn" type="submit">Mostrar calendari</button>
+			</form>
+
+			<p id="message" class="message" role="status">Tria una habitacio i un mes per carregar l'ocupacio.</p>
+
+			<section id="calendar-section" class="calendar-section" hidden>
+				<header class="calendar-header">
+					<h2 id="calendar-title">Calendari d'ocupacio</h2>
+					<p id="calendar-room" class="room-pill"></p>
+				</header>
+
+				<div class="calendar-grid" id="calendar-grid" aria-live="polite"></div>
+
+				<div class="legend">
+					<span class="legend-item"><span class="dot occupied"></span>Dia ocupat</span>
+					<span class="legend-item"><span class="dot free"></span>Dia lliure</span>
+				</div>
+			</section>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const form = document.getElementById('filters-form');
+		const roomSelect = document.getElementById('room-select');
+		const monthSelect = document.getElementById('month-select');
+		const messageEl = document.getElementById('message');
+		const calendarSection = document.getElementById('calendar-section');
+		const calendarGrid = document.getElementById('calendar-grid');
+		const calendarTitle = document.getElementById('calendar-title');
+		const calendarRoom = document.getElementById('calendar-room');
+
+		const dayLabels = ['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'];
+		const monthFormatter = new Intl.DateTimeFormat('ca-ES', { month: 'long', year: 'numeric' });
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const toDate = (dateStr) => {
+			const [year, month, day] = dateStr.split('-').map(Number);
+			return new Date(year, month - 1, day);
+		};
+
+		const normalizeDate = (dateObj) => new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+
+		const parseReservation = (entry) => ({
+			pacient: entry.pacient,
+			inici: normalizeDate(toDate(entry.data_inici)),
+			fi: normalizeDate(toDate(entry.data_fi)),
+		});
+
+		const findOccupantsForDate = (dateObj, reservations) => {
+			const day = normalizeDate(dateObj);
+			return reservations
+				.filter((r) => day >= r.inici && day <= r.fi)
+				.map((r) => r.pacient);
+		};
+
+		const createDayHeader = () => {
+			dayLabels.forEach((label) => {
+				const el = document.createElement('div');
+				el.className = 'day-header';
+				el.textContent = label;
+				calendarGrid.appendChild(el);
+			});
+		};
+
+		const renderCalendar = (monthValue, reservations, roomValue) => {
+			const [year, month] = monthValue.split('-').map(Number);
+			const firstDay = new Date(year, month - 1, 1);
+			const lastDay = new Date(year, month, 0);
+			const offset = (firstDay.getDay() + 6) % 7;
+			const totalDays = lastDay.getDate();
+
+			calendarGrid.innerHTML = '';
+			createDayHeader();
+
+			for (let i = 0; i < offset; i += 1) {
+				const emptyCell = document.createElement('div');
+				emptyCell.className = 'day-cell empty';
+				calendarGrid.appendChild(emptyCell);
+			}
+
+			for (let day = 1; day <= totalDays; day += 1) {
+				const cellDate = new Date(year, month - 1, day);
+				const occupants = findOccupantsForDate(cellDate, reservations);
+
+				const cell = document.createElement('article');
+				cell.className = 'day-cell';
+
+				const number = document.createElement('p');
+				number.className = 'day-number';
+				number.textContent = String(day);
+
+				const details = document.createElement('div');
+				details.className = 'day-details';
+
+				if (occupants.length > 0) {
+					cell.classList.add('occupied');
+					occupants.forEach((name) => {
+						const tag = document.createElement('span');
+						tag.className = 'patient-tag';
+						tag.textContent = name;
+						details.appendChild(tag);
+					});
+				} else {
+					cell.classList.add('free');
+					const free = document.createElement('span');
+					free.className = 'free-label';
+					free.textContent = 'Lliure';
+					details.appendChild(free);
+				}
+
+				cell.appendChild(number);
+				cell.appendChild(details);
+				calendarGrid.appendChild(cell);
+			}
+
+			calendarTitle.textContent = 'Calendari d\'ocupacio - ' + monthFormatter.format(firstDay);
+			calendarRoom.textContent = 'Habitacio: ' + roomValue;
+			calendarSection.hidden = false;
+		};
+
+		const loadRooms = async () => {
+			try {
+				const response = await fetch('/api/habitacions');
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut carregar les habitacions.');
+				}
+
+				const rooms = Array.isArray(payload.data) ? payload.data : [];
+				roomSelect.innerHTML = '';
+
+				const placeholder = document.createElement('option');
+				placeholder.value = '';
+				placeholder.textContent = 'Selecciona una habitacio';
+				placeholder.disabled = true;
+				placeholder.selected = true;
+				roomSelect.appendChild(placeholder);
+
+				rooms.forEach((room) => {
+					const roomValue = room.num_habitacio ?? room[0];
+					if (!roomValue) {
+						return;
+					}
+					const option = document.createElement('option');
+					option.value = roomValue;
+					option.textContent = roomValue;
+					roomSelect.appendChild(option);
+				});
+
+				setMessage('Habitacions carregades. Tria una habitacio i un mes.');
+			} catch (error) {
+				roomSelect.innerHTML = '';
+				const failed = document.createElement('option');
+				failed.value = '';
+				failed.textContent = 'No s han pogut carregar habitacions';
+				failed.disabled = true;
+				failed.selected = true;
+				roomSelect.appendChild(failed);
+				setMessage(error.message || 'Error carregant habitacions.', true);
+			}
+		};
+
+		const loadCalendar = async (roomValue, monthValue) => {
+			setMessage('Carregant ocupacio de l\'habitacio...');
+			calendarSection.hidden = true;
+
+			try {
+				const response = await fetch('/api/informes/habitacions?habitacio=' + encodeURIComponent(roomValue));
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s ha pogut obtenir l\'informe.');
+				}
+
+				const rows = Array.isArray(payload.data) ? payload.data : [];
+				const reservations = rows.map(parseReservation);
+				renderCalendar(monthValue, reservations, roomValue);
+
+				setMessage('Informe carregat correctament.');
+			} catch (error) {
+				setMessage(error.message || 'Error carregant l\'ocupacio.', true);
+				calendarSection.hidden = true;
+			}
+		};
+
+		const now = new Date();
+		monthSelect.value = String(now.getFullYear()) + '-' + String(now.getMonth() + 1).padStart(2, '0');
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+			const roomValue = roomSelect.value;
+			const monthValue = monthSelect.value;
+
+			if (!roomValue) {
+				setMessage('Has de seleccionar una habitacio.', true);
+				return;
+			}
+
+			if (!monthValue) {
+				setMessage('Has de seleccionar un mes.', true);
+				return;
+			}
+
+			loadCalendar(roomValue, monthValue);
+		});
+
+		loadRooms();
+	</script>
+</body>
+</html>

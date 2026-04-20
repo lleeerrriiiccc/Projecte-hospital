@@ -284,6 +284,26 @@ def informes_visites():
 
 
 
+############
+# REPORT QUIROFANS ROUTE
+############
+@app.route('/informes/quirofans')
+def informes_quirofans():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/quirofans.html')
+
+
+############
+# REPORT HABITACIONS ROUTE
+############
+@app.route('/informes/habitacions')
+def informes_habitacions():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/habitacions.html')
+
+
 ###########################       API ENDPOINTS       ###########################
 
 
@@ -348,6 +368,52 @@ def get_informes_visites():
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
     return api_response(m.get_informes('visites', (date,), username=session['username']))
+
+
+
+############
+# QUIROFANS REPORT INFO ROUTE
+############
+@app.route('/api/informes/quirofans')
+def get_informes_quirofans():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    date = request.args.get('date', '').strip()
+    if not date:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    return api_response(m.get_informes('quirofans', (date,), username=session['username']))
+
+
+############
+# HABITACIONS REPORT INFO ROUTE
+############
+@app.route('/api/informes/habitacions')
+def get_informes_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    habitacio = request.args.get('habitacio', '').strip()
+    if not habitacio:
+        return jsonify({'error': 'Room parameter is required'}), 400
+
+    return api_response(m.get_informes('habitacions', (habitacio,), username=session['username']))
+
+
+
+############
+# HABITACIONS INFO ROUTE
+############
+@app.route('/api/habitacions')
+def get_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_habitacions(username=session['username']))
 
 
 
