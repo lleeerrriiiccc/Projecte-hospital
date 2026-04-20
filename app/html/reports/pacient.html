@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe de Pacient</title>
+	<link rel="stylesheet" href="/css/pacient.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="pacient-title">
+			<h1 id="pacient-title">Informe de Pacient</h1>
+			<p class="subtitle">Consulta receptes, visites, operacions i ingressos d'un pacient en un sol informe.</p>
+
+			<form id="filters-form" class="filters" novalidate>
+				<div class="field">
+					<label for="patient-select">Pacient</label>
+					<select id="patient-select" name="patient-select" required>
+						<option value="" disabled selected>Carregant pacients...</option>
+					</select>
+				</div>
+				<button id="load-btn" type="submit">Carregar informe</button>
+			</form>
+
+			<p id="message" class="message" role="status">Selecciona un pacient per veure el seu historial.</p>
+
+			<section id="summary" class="summary" hidden>
+				<article class="summary-card medicament">
+					<span class="summary-label">Receptes</span>
+					<strong id="medicaments-count">0</strong>
+				</article>
+				<article class="summary-card visita">
+					<span class="summary-label">Visites</span>
+					<strong id="visites-count">0</strong>
+				</article>
+				<article class="summary-card operacio">
+					<span class="summary-label">Operacions</span>
+					<strong id="operacions-count">0</strong>
+				</article>
+				<article class="summary-card reserva">
+					<span class="summary-label">Ingressos</span>
+					<strong id="reserves-count">0</strong>
+				</article>
+			</section>
+
+			<section id="report-container" class="report-container" hidden>
+				<section class="report-block medicaments-block">
+					<header class="block-header">
+						<h2>Receptes de medicaments</h2>
+						<span id="medicaments-pill" class="pill"></span>
+					</header>
+					<div id="medicaments-list" class="card-list"></div>
+				</section>
+
+				<section class="report-block visites-block">
+					<header class="block-header">
+						<h2>Visites</h2>
+						<span id="visites-pill" class="pill"></span>
+					</header>
+					<div id="visites-list" class="card-list"></div>
+				</section>
+
+				<section class="report-block operacions-block">
+					<header class="block-header">
+						<h2>Operacions</h2>
+						<span id="operacions-pill" class="pill"></span>
+					</header>
+					<div id="operacions-list" class="card-list"></div>
+				</section>
+
+				<section class="report-block reserves-block">
+					<header class="block-header">
+						<h2>Ingressos</h2>
+						<span id="reserves-pill" class="pill"></span>
+					</header>
+					<div id="reserves-list" class="card-list"></div>
+				</section>
+			</section>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const form = document.getElementById('filters-form');
+		const patientSelect = document.getElementById('patient-select');
+		const messageEl = document.getElementById('message');
+		const summaryEl = document.getElementById('summary');
+		const reportContainer = document.getElementById('report-container');
+		const medicamentsCountEl = document.getElementById('medicaments-count');
+		const visitesCountEl = document.getElementById('visites-count');
+		const operacionsCountEl = document.getElementById('operacions-count');
+		const reservesCountEl = document.getElementById('reserves-count');
+		const medicamentsList = document.getElementById('medicaments-list');
+		const visitesList = document.getElementById('visites-list');
+		const operacionsList = document.getElementById('operacions-list');
+		const reservesList = document.getElementById('reserves-list');
+		const medicamentsPill = document.getElementById('medicaments-pill');
+		const visitesPill = document.getElementById('visites-pill');
+		const operacionsPill = document.getElementById('operacions-pill');
+		const reservesPill = document.getElementById('reserves-pill');
+
+		const monthFormatter = new Intl.DateTimeFormat('ca-ES', { dateStyle: 'medium' });
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const createEmptyState = (text) => {
+			const empty = document.createElement('p');
+			empty.className = 'empty-state';
+			empty.textContent = text;
+			return empty;
+		};
+
+		const clearSections = () => {
+			medicamentsList.innerHTML = '';
+			visitesList.innerHTML = '';
+			operacionsList.innerHTML = '';
+			reservesList.innerHTML = '';
+		};
+
+		const splitByType = (rows) => {
+			return rows.reduce((accumulator, row) => {
+				if (!accumulator[row.tipus]) {
+					accumulator[row.tipus] = [];
+				}
+				accumulator[row.tipus].push(row);
+				return accumulator;
+			}, { visita: [], operacio: [], medicament: [], reserva_habitacio: [] });
+		};
+
+		const renderMedicaments = (rows) => {
+			medicamentsPill.textContent = rows.length + ' receptes';
+			if (rows.length === 0) {
+				medicamentsList.appendChild(createEmptyState('No hi ha receptes de medicaments.'));
+				return;
+			}
+
+			rows.forEach((row) => {
+				const card = document.createElement('article');
+				card.className = 'entry-card medicament';
+
+				const header = document.createElement('header');
+				const title = document.createElement('h3');
+				title.textContent = row.descripcio;
+				const badge = document.createElement('span');
+				badge.className = 'badge medicament';
+				badge.textContent = 'Recepta';
+				header.appendChild(title);
+				header.appendChild(badge);
+
+				const meta = document.createElement('p');
+				meta.textContent = 'Data de la visita: ' + monthFormatter.format(new Date(row.data_event + 'T00:00:00'));
+
+				const time = document.createElement('p');
+				time.textContent = row.hora_event ? 'Hora: ' + row.hora_event : 'Hora no disponible';
+
+				card.appendChild(header);
+				card.appendChild(meta);
+				card.appendChild(time);
+				medicamentsList.appendChild(card);
+			});
+		};
+
+		const renderVisites = (rows) => {
+			visitesPill.textContent = rows.length + ' visites';
+			if (rows.length === 0) {
+				visitesList.appendChild(createEmptyState('No hi ha visites registrades.'));
+				return;
+			}
+
+			rows.forEach((row) => {
+				const card = document.createElement('article');
+				card.className = 'entry-card visita';
+
+				const header = document.createElement('header');
+				const title = document.createElement('h3');
+				title.textContent = row.descripcio;
+				const badge = document.createElement('span');
+				badge.className = 'badge visita';
+				badge.textContent = 'Visita';
+				header.appendChild(title);
+				header.appendChild(badge);
+
+				const date = document.createElement('p');
+				date.textContent = 'Data: ' + monthFormatter.format(new Date(row.data_event + 'T00:00:00'));
+
+				const time = document.createElement('p');
+				time.textContent = 'Hora: ' + (row.hora_event || '-');
+
+				card.appendChild(header);
+				card.appendChild(date);
+				card.appendChild(time);
+				visitesList.appendChild(card);
+			});
+		};
+
+		const renderOperacions = (rows) => {
+			operacionsPill.textContent = rows.length + ' operacions';
+			if (rows.length === 0) {
+				operacionsList.appendChild(createEmptyState('No hi ha operacions registrades.'));
+				return;
+			}
+
+			rows.forEach((row) => {
+				const card = document.createElement('article');
+				card.className = 'entry-card operacio';
+
+				const header = document.createElement('header');
+				const title = document.createElement('h3');
+				title.textContent = row.descripcio;
+				const badge = document.createElement('span');
+				badge.className = 'badge operacio';
+				badge.textContent = 'Operacio';
+				header.appendChild(title);
+				header.appendChild(badge);
+
+				const date = document.createElement('p');
+				date.textContent = 'Data: ' + monthFormatter.format(new Date(row.data_event + 'T00:00:00'));
+
+				const time = document.createElement('p');
+				time.textContent = 'Hora: ' + (row.hora_event || '-');
+
+				card.appendChild(header);
+				card.appendChild(date);
+				card.appendChild(time);
+				operacionsList.appendChild(card);
+			});
+		};
+
+		const renderReserves = (rows) => {
+			reservesPill.textContent = rows.length + ' ingressos';
+			if (rows.length === 0) {
+				reservesList.appendChild(createEmptyState('No hi ha ingressos hospitalaris.'));
+				return;
+			}
+
+			rows.forEach((row) => {
+				const card = document.createElement('article');
+				card.className = 'entry-card reserva';
+
+				const header = document.createElement('header');
+				const title = document.createElement('h3');
+				title.textContent = 'Habitació ' + row.descripcio;
+				const badge = document.createElement('span');
+				badge.className = 'badge reserva';
+				badge.textContent = 'Ingrés';
+				header.appendChild(title);
+				header.appendChild(badge);
+
+				const start = document.createElement('p');
+				start.textContent = 'Entrada: ' + monthFormatter.format(new Date(row.data_event + 'T00:00:00'));
+
+				const end = document.createElement('p');
+				end.textContent = 'Alta: ' + (row.info_extra ? monthFormatter.format(new Date(row.info_extra + 'T00:00:00')) : '-');
+
+				card.appendChild(header);
+				card.appendChild(start);
+				card.appendChild(end);
+				reservesList.appendChild(card);
+			});
+		};
+
+		const loadPatients = async () => {
+			try {
+				const response = await fetch('/api/pacients');
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut carregar els pacients.');
+				}
+
+				const patients = Array.isArray(payload.data) ? payload.data : [];
+				patientSelect.innerHTML = '';
+
+				const placeholder = document.createElement('option');
+				placeholder.value = '';
+				placeholder.textContent = 'Selecciona un pacient';
+				placeholder.disabled = true;
+				placeholder.selected = true;
+				patientSelect.appendChild(placeholder);
+
+				patients.forEach((patient) => {
+					const option = document.createElement('option');
+					option.value = patient.id_pacient ?? '';
+					option.textContent = patient.nom_complet ?? '';
+					patientSelect.appendChild(option);
+				});
+
+				setMessage('Pacients carregats. Selecciona un pacient per veure l\'informe.');
+			} catch (error) {
+				patientSelect.innerHTML = '';
+				const failed = document.createElement('option');
+				failed.value = '';
+				failed.textContent = 'No s han pogut carregar els pacients';
+				failed.disabled = true;
+				failed.selected = true;
+				patientSelect.appendChild(failed);
+				setMessage(error.message || 'Error carregant pacients.', true);
+			}
+		};
+
+		const loadReport = async (patientId) => {
+			setMessage('Carregant informe del pacient...');
+			summaryEl.hidden = true;
+			reportContainer.hidden = true;
+			clearSections();
+
+			try {
+				const response = await fetch('/api/informes/pacient?pacient=' + encodeURIComponent(patientId));
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s ha pogut carregar l\'informe.');
+				}
+
+				const rows = Array.isArray(payload.data) ? payload.data : [];
+				const grouped = splitByType(rows);
+
+				medicamentsCountEl.textContent = String(grouped.medicament.length);
+				visitesCountEl.textContent = String(grouped.visita.length);
+				operacionsCountEl.textContent = String(grouped.operacio.length);
+				reservesCountEl.textContent = String(grouped.reserva_habitacio.length);
+
+				summaryEl.hidden = false;
+				reportContainer.hidden = false;
+
+				renderMedicaments(grouped.medicament);
+				renderVisites(grouped.visita);
+				renderOperacions(grouped.operacio);
+				renderReserves(grouped.reserva_habitacio);
+
+				setMessage('Informe carregat correctament.');
+			} catch (error) {
+				setMessage(error.message || 'Error carregant l\'informe.', true);
+			}
+		};
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+			const patientId = patientSelect.value;
+			if (!patientId) {
+				setMessage('Has de seleccionar un pacient.', true);
+				return;
+			}
+
+			loadReport(patientId);
+		});
+
+		loadPatients();
+	</script>
+</body>
+</html>

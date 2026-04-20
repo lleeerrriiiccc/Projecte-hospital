@@ -79,6 +79,7 @@ CREATE TABLE visita (
     id_metge INT NOT NULL,
     data_visita DATE NOT NULL,
     hora_visita TIME NOT NULL,
+    diagnostic TEXT NOT NULL,
     FOREIGN KEY (id_pacient) REFERENCES pacient(id_pacient),
     FOREIGN KEY (id_metge) REFERENCES metge(id_intern)
 );

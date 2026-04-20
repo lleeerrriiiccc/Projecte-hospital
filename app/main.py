@@ -314,6 +314,16 @@ def informes_metge():
     return render_template('reports/metge.html')
 
 
+############
+# REPORT PACIENT ROUTE
+############
+@app.route('/informes/pacient')
+def informes_pacient():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/pacient.html')
+
+
 ###########################       API ENDPOINTS       ###########################
 
 
@@ -454,6 +464,36 @@ def get_habitacions():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     return api_response(m.get_habitacions(username=session['username']))
+
+
+############
+# PACIENT INFO ROUTE
+############
+@app.route('/api/pacients')
+def get_pacients():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_pacients(username=session['username']))
+
+
+############
+# PACIENT REPORT INFO ROUTE
+############
+@app.route('/api/informes/pacient')
+def get_informes_pacient():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    pacient = request.args.get('pacient', '').strip()
+    if not pacient:
+        return jsonify({'error': 'Patient parameter is required'}), 400
+
+    try:
+        pacient_id = int(pacient)
+    except ValueError:
+        return jsonify({'error': 'Patient parameter must be a valid integer'}), 400
+
+    return api_response(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=session['username']))
 
 
 

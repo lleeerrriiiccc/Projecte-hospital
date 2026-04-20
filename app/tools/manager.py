@@ -313,6 +313,18 @@ def get_informes(informe, params=None, username=None):
                     for r in rows
                 ]
 
+            case 'pacient':
+                return True, [
+                    {
+                        "tipus": r[0],
+                        "data_event": str(r[1]),
+                        "hora_event": str(r[2]) if r[2] is not None else None,
+                        "descripcio": r[3],
+                        "info_extra": r[4],
+                    }
+                    for r in rows
+                ]
+
         return True, rows
 
     except Exception as e:
@@ -339,6 +351,34 @@ def get_habitacions(username=None):
         """)
         rows = cur.fetchall()
         return True, [{"num_habitacio": r[0]} for r in rows]
+
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
+
+    finally:
+        _close_db(con, cur)
+
+
+############
+# GET PACIENTS
+############
+def get_pacients(username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT id_pacient, CONCAT(nom, ' ', cognom, ' ', cognom2)
+            FROM pacient
+            ORDER BY cognom, cognom2, nom
+        """)
+        rows = cur.fetchall()
+        return True, [
+            {"id_pacient": r[0], "nom_complet": r[1]}
+            for r in rows
+        ]
 
     except Exception as e:
         ok, msg = handle_db_error(e, con)
