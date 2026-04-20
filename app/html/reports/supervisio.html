@@ -115,17 +115,17 @@
 		const loadSupervision = async () => {
 			try {
 				const response = await fetch('/api/informes/supervisio');
+				const payload = await response.json();
 
-				if (!response.ok) {
-					throw new Error('No s han pogut obtenir les dades.');
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut obtenir les dades.');
 				}
 
-				const data = await response.json();
-				renderSupervision(data);
+				renderSupervision(Array.isArray(payload.data) ? payload.data : []);
 			} catch (_error) {
 				statusEl.hidden = false;
 				statusEl.classList.add('error');
-				statusEl.textContent = 'Error carregant la supervisio. Torna-ho a provar.';
+				statusEl.textContent = _error.message || 'Error carregant la supervisio. Torna-ho a provar.';
 				accordionEl.hidden = true;
 			}
 		};

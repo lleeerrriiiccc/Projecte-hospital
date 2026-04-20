@@ -1,141 +1,177 @@
 import tools.crypt as c
 import tools.db_driver as db
-import requests
+import psycopg2
+from psycopg2 import errors
+
+
+#############################
+# HELPER DE ERRORES
+#############################
+def _close_db(con, cur):
+    if cur is not None:
+        cur.close()
+    if con is not None:
+        con.close()
+
+
+def _db_error_message(e):
+    if isinstance(e, psycopg2.Error):
+        message = None
+        if getattr(e, "diag", None) is not None:
+            message = getattr(e.diag, "message_primary", None)
+        if not message:
+            message = e.pgerror
+        return (message or str(e)).strip()
+    return str(e).strip()
+
+
+def handle_db_error(e, con):
+    if con is not None:
+        con.rollback()
+
+    if isinstance(e, ValueError):
+        return False, str(e)
+
+    if isinstance(e, errors.InsufficientPrivilege):
+        return False, f"No tens permís per realitzar aquesta acció."
+
+    if isinstance(e, errors.UniqueViolation):
+        return False, "Ja existeix un registre amb aquestes dades."
+
+    if isinstance(e, errors.ForeignKeyViolation):
+        return False, "Error de relació amb altres dades."
+
+    if isinstance(e, psycopg2.Error):
+        return False, f"Error de base de dades: {_db_error_message(e)}"
+
+    return False, f"Error intern: {str(e)}"
 
 
 ############
 # LOGIN FUNCTION
 ############
 def login(username, password):
-    con, cur = db.connect()
-    cur.execute("SELECT id_intern, password FROM usuaris WHERE username = %s", (username,))
-    result= cur.fetchone()
-    id, passwd = result
-    if passwd is None:
-        error = "El nom d'usuari no existeix. Revisa les dades e intenta-ho de nou."
-        cur.close()
-        con.close()
-        return False, error, None
+    con = None
+    cur = None
 
-    stored_password = passwd
+    try:
+        con, cur = db.connect()
+        username = username.lower()
+        cur.execute(
+            "SELECT id_intern, password FROM usuaris WHERE username = %s",
+            (username,)
+        )
+        result = cur.fetchone()
 
-    if c.check_password(password, stored_password) == True:
-        cur.execute("SELECT tipus_feina FROM personal WHERE id_intern = %s", (id,))
-        type = cur.fetchone()[0]
-        cur.close()
-        con.close()
-        return True, None, type
-    cur.close()
-    con.close()
-    error = "Contrasenya incorrecte. Revisa les dades e intenta-ho de nou."
-    return False, error, None
+        if not result:
+            return False, "El nom d'usuari no existeix.", None
+
+        id_intern, stored_password = result
+
+        if not stored_password:
+            return False, "El nom d'usuari no existeix.", None
+
+        if c.check_password(password, stored_password):
+            cur.execute(
+                "SELECT tipus_feina FROM personal WHERE id_intern = %s",
+                (id_intern,)
+            )
+            tipus = cur.fetchone()[0]
+            return True, None, tipus
+
+        return False, "Contrasenya incorrecta.", None
+
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg, None
+
+    finally:
+        _close_db(con, cur)
 
 
 ############
 # REGISTER FUNCTION
 ############
 def register(username, password, id_intern):
-    con, cur = db.connect()
+    con = None
+    cur = None
 
     try:
+        username = username.lower()
+        con, cur = db.connect()
         cur.execute("SELECT 1 FROM personal WHERE id_intern = %s", (id_intern,))
         if cur.fetchone() is None:
             return False, "El id intern no existeix"
 
         cur.execute("SELECT 1 FROM usuaris WHERE username = %s", (username,))
-        if cur.fetchone() is not None:
-            return False, "El nom d'usuari ja existeix. Tria un altre."
+        if cur.fetchone():
+            return False, "El nom d'usuari ja existeix."
 
         hashed_password = c.encrypt_password(password)
+
         cur.execute(
             "INSERT INTO usuaris (username, password, id_intern) VALUES (%s, %s, %s)",
             (username, hashed_password, id_intern),
         )
-        con.commit()
 
+        con.commit()
         return True, None
 
-    except Exception:
-        con.rollback()
-        return False, "No s'ha pogut registrar l'usuari. Revisa les dades i torna-ho a intentar."
+    except Exception as e:
+        return handle_db_error(e, con)
 
     finally:
-        cur.close()
-        con.close()
-
+        _close_db(con, cur)
 
 
 ############
 # NEW PACIENT FUNCTION
 ############
-def new_pacient(name, surename, surename2, birth_date, ident):
-    con, cur = db.connect()
+def new_pacient(name, surename, surename2, birth_date, ident, username):
+    con = None
+    cur = None
 
     try:
-        query = """
+        con, cur = db.connect(username=username)
+        cur.execute("""
             INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador)
             VALUES (%s, %s, %s, %s, %s)
-        """
+        """, (name, surename, surename2, birth_date, ident))
 
-        cur.execute(query, (name, surename, surename2, birth_date, ident))
         con.commit()
-
         return True, None
 
-    except Exception:
-        con.rollback()
-        return False, "No s'ha pogut donar d'alta el pacient. Revisa si l'identificador ja existeix."
+    except Exception as e:
+        return handle_db_error(e, con)
 
     finally:
-        cur.close()
-        con.close()
-
+        _close_db(con, cur)
 
 
 ############
 # NEW EMPLOYEE FUNCTION
 ############
 def new_employee(
-    name,
-    surename,
-    surename2,
-    birthdate,
-    phone,
-    phone2,
-    email,
-    email_intern,
-    dni,
-    tfeina,
-    data_alta_str,
-    especialitat=None,
-    cv=None,
-    mresp=None
+    name, surename, surename2, birthdate, phone, phone2,
+    email, email_intern, dni, tfeina, data_alta_str,
+    especialitat=None, cv=None, mresp=None, username=None
 ):
-    con, cur = db.connect()
+    con = None
+    cur = None
 
     try:
+        con, cur = db.connect(username=username)
         match tfeina:
             case 'metge':
                 if not especialitat or not cv:
-                    return False, "Per donar d'alta un metge, has de proporcionar una especialitat i un CV."
+                    return False, "Falten especialitat o CV."
 
-                query = """
-                    SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """
+                query = "SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 params = (
-                    name,
-                    surename,
-                    surename2,
-                    birthdate,
-                    phone,
-                    phone2,
-                    email,
-                    email_intern,
-                    dni,
-                    tfeina,
-                    data_alta_str,
-                    especialitat,
-                    cv,
+                    name, surename, surename2, birthdate,
+                    phone, phone2, email, email_intern,
+                    dni, tfeina, data_alta_str,
+                    especialitat, cv
                 )
 
             case 'infermer':
@@ -145,141 +181,110 @@ def new_employee(
                             nom, cognom, cognom2, data_naixement,
                             telefon, telefon2, email, email_intern,
                             dni, tipus_feina, data_alta
-                        )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
                     params = (
-                        name,
-                        surename,
-                        surename2,
-                        birthdate,
-                        phone,
-                        phone2,
-                        email,
-                        email_intern,
-                        dni,
-                        tfeina,
-                        data_alta_str
+                        name, surename, surename2, birthdate,
+                        phone, phone2, email, email_intern,
+                        dni, tfeina, data_alta_str
                     )
                 else:
-                    query = """
-                        SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """
+                    query = "SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     params = (
-                        name,
-                        surename,
-                        surename2,
-                        birthdate,
-                        phone,
-                        phone2,
-                        email,
-                        email_intern,
-                        dni,
-                        tfeina,
-                        data_alta_str,
-                        mresp,
+                        name, surename, surename2, birthdate,
+                        phone, phone2, email, email_intern,
+                        dni, tfeina, data_alta_str, mresp
                     )
 
             case _:
-                if especialitat or cv:
-                    return False, "Només els metges poden tenir una especialitat i un CV."
-
                 query = """
                     INSERT INTO personal (
                         nom, cognom, cognom2, data_naixement,
                         telefon, telefon2, email, email_intern,
                         dni, tipus_feina, data_alta
-                    )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
                 params = (
-                    name,
-                    surename,
-                    surename2,
-                    birthdate,
-                    phone,
-                    phone2,
-                    email,
-                    email_intern,
-                    dni,
-                    tfeina,
-                    data_alta_str,
+                    name, surename, surename2, birthdate,
+                    phone, phone2, email, email_intern,
+                    dni, tfeina, data_alta_str
                 )
 
         cur.execute(query, params)
-
         con.commit()
         return True, None
 
     except Exception as e:
-        con.rollback()
-        return False, f"Error: {str(e)}"
+        return handle_db_error(e, con)
 
     finally:
-        cur.close()
-        con.close()
+        _close_db(con, cur)
 
 
-def get_metges():
-    con, cur = db.connect()
+############
+# GET METGES
+############
+def get_metges(username=None):
+    con = None
+    cur = None
 
     try:
-        query = "SELECT id_intern, CONCAT(nom, ' ', cognom) AS nom_complet FROM personal WHERE tipus_feina = 'metge'"
-        cur.execute(query)
-        metges = cur.fetchall()
-        return metges
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT id_intern, CONCAT(nom, ' ', cognom)
+            FROM personal WHERE tipus_feina = 'metge'
+        """)
+        return True, cur.fetchall()
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
 
     finally:
-        cur.close()
-        con.close()
+        _close_db(con, cur)
 
 
-
-def get_informes(informe, params=None):
-    con, cur = db.connect()
+############
+# GET INFORMES
+############
+def get_informes(informe, params=None, username=None):
+    con = None
+    cur = None
 
     try:
-        with open(f"app/sql/informe_{informe}.sql", "r") as f:
+        con, cur = db.connect(username=username)
+        with open(f"app/sql/informe_{informe}.sql") as f:
             sql = f.read()
 
-        if params is not None:
+        if params:
             if not isinstance(params, (tuple, list)):
                 params = (params,)
             cur.execute(sql, params)
         else:
             cur.execute(sql)
 
+        rows = cur.fetchall()
+
         match informe:
             case 'supervisio':
-                return cur.fetchall()
+                return True, rows
 
             case 'visites':
-                rows = cur.fetchall()
-                return [
-                    {
-                        "pacient": r[0],
-                        "metge": r[1],
-                        "hora_visita": str(r[2])
-                    }
+                return True, [
+                    {"pacient": r[0], "metge": r[1], "hora_visita": str(r[2])}
                     for r in rows
                 ]
+
             case 'quirofans':
-                rows = cur.fetchall()
-                return [
-                    {
-                        "pacient": r[0],
-                        "metge": r[1],
-                        "data_quirofans": str(r[2])
-                    }
+                return True, [
+                    {"pacient": r[0], "metge": r[1], "data_quirofans": str(r[2])}
                     for r in rows
                 ]
+
+        return True, rows
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return handle_db_error(e, con)
 
     finally:
-        cur.close()
-        con.close()
+        _close_db(con, cur)

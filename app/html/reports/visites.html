@@ -93,14 +93,14 @@
 
             try {
                 const response = await fetch('/api/informes/visites?date=' + encodeURIComponent(dateValue));
-                const data = await response.json();
+                const payload = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.error || 'No s han pogut carregar les dades.');
+                if (!response.ok || payload.ok === false) {
+                    throw new Error(payload.error || 'No s han pogut carregar les dades.');
                 }
 
                 setMessage('Informe carregat correctament.');
-                renderRows(data);
+                renderRows(Array.isArray(payload.data) ? payload.data : []);
             } catch (error) {
                 setMessage(error.message || 'Error carregant les visites.', true);
                 rowsEl.innerHTML = '';

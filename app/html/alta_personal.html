@@ -54,7 +54,7 @@
 					<option value="metge">Metge</option>
 					<option value="infermer">Infermer</option>
 					<option value="administratiu">Administratiu</option>
-					<option value="tècnic">Tècnic</option>
+					<option value="tecnic">Tècnic</option>
 					<option value="personal neteja">Personal neteja</option>
 					<option value="personal seguretat">Personal seguretat</option>
 					<option value="personal cuina">Personal cuina</option>
@@ -183,8 +183,14 @@
 				updateSupervisorVisibility();
 
 				fetch('/api/metges')
-					.then((response) => response.json())
-					.then((data) => {
+					.then(async (response) => {
+						const payload = await response.json();
+
+						if (!response.ok || payload.ok === false) {
+							throw new Error(payload.error || 'No s han pogut carregar els metges');
+						}
+
+						const data = Array.isArray(payload.data) ? payload.data : [];
 						supervisorSelect.innerHTML = '';
 
 						const defaultOption = document.createElement('option');
@@ -215,14 +221,14 @@
 							supervisorSelect.appendChild(option);
 						});
 					})
-					.catch(() => {
+					.catch((error) => {
 						supervisorSelect.innerHTML = '';
 
 						const errorOption = document.createElement('option');
 						errorOption.value = '';
 						errorOption.disabled = true;
 						errorOption.selected = true;
-						errorOption.textContent = 'No s han pogut carregar els metges';
+						errorOption.textContent = error.message || 'No s han pogut carregar els metges';
 						supervisorSelect.appendChild(errorOption);
 					});
 

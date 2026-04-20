@@ -139,7 +139,7 @@ def alta_pacient():
     if data_naixement > datetime.date.today():
         return render_template('alta_pacient.html', error='la data de naixement no pot ser futura.', success=None)
 
-    ok, error = m.new_pacient(nom, cognom, cognom2, data_naixement, identificador)
+    ok, error = m.new_pacient(nom, cognom, cognom2, data_naixement, identificador, username=session['username'])
     if not ok:
         return render_template('alta_pacient.html', error=error, success=None)
 
@@ -218,6 +218,7 @@ def alta_personal():
                 data_alta_str,
                 especialitat,
                 save_path,
+                username=session['username']
             )
         elif tfeina == 'infermer':
             mresp = mresp if mresp else None
@@ -233,7 +234,8 @@ def alta_personal():
                     dni,
                     tfeina,
                     data_alta_str,
-                    mresp=mresp
+                    mresp=mresp,
+                    username=session['username']
                 )
 
         else:
@@ -249,6 +251,7 @@ def alta_personal():
                 dni,
                 tfeina,
                 data_alta_str,
+                username=session['username']
             )
 
         if not state:
@@ -284,6 +287,17 @@ def informes_visites():
 ###########################       API ENDPOINTS       ###########################
 
 
+def api_response(result, data_key='data'):
+    ok, payload = result
+
+    if ok:
+        return jsonify({'ok': True, data_key: payload})
+
+    error_text = str(payload)
+    status_code = 403 if 'permis' in error_text.lower() or 'permission' in error_text.lower() else 400
+    return jsonify({'ok': False, 'error': error_text}), status_code
+
+
 ############
 # USER INFO ROUTE
 ############
@@ -302,7 +316,7 @@ def me():
 def get_metges():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify(m.get_metges())
+    return api_response(m.get_metges(username=session['username']))
 
 
 
@@ -313,7 +327,7 @@ def get_metges():
 def get_informes_supervisio():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify(m.get_informes('supervisio'))
+    return api_response(m.get_informes('supervisio', username=session['username']))
 
 
 
@@ -333,7 +347,7 @@ def get_informes_visites():
     except ValueError:
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
-    return jsonify(m.get_informes('visites', (date,)))
+    return api_response(m.get_informes('visites', (date,), username=session['username']))
 
 
 

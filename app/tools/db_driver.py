@@ -1,4 +1,5 @@
-import psycopg2 
+import psycopg2
+from psycopg2 import sql
 from dotenv import load_dotenv
 import os
 
@@ -7,35 +8,35 @@ import os
 ############
 # CONNECTION TO DB
 ############
-def connect(type="default"):
+def connect(username="default"):
     load_dotenv()
     db_host = os.getenv("DB_HOST")
     db_database = os.getenv("DB_DATABASE")
-    match type:
-        case "default":
-            db_user = os.getenv("DEFAULT_USER")
-            db_password = os.getenv("DEFAULT_PASSWORD")
-            con = psycopg2.connect(
-                host=db_host,
-                database=db_database,
-                user=db_user,
-                password=db_password
-            )
-            cursor = con.cursor()
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    con = None
+    try:
+        con = psycopg2.connect(
+            host=db_host,
+            database=db_database,
+            user=db_user,
+            password=db_password
+        )
+        cursor = con.cursor()
+
+        if username == "default":
             return con, cursor
-        case "metge":
-            db_user = os.getenv("METGE_USER")
-            db_password = os.getenv("METGE_PASSWORD")
-            con = psycopg2.connect(
-                host=db_host,
-                database=db_database,
-                user=db_user,
-                password=db_password
-            )
-            cursor = con.cursor()
-            return con, cursor
-        case _:
-            raise ValueError("Invalid connection type. Use 'default' or 'test'.")
+
+        cursor.execute("SELECT 1 FROM pg_roles WHERE rolname=%s", (username,))
+        if cursor.fetchone() is None:
+            raise ValueError(f"User '{username}' does not exist in the database.")
+
+        cursor.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(username)))
+        return con, cursor
+    except Exception:
+        if con is not None:
+            con.close()
+        raise
 
 
 
@@ -43,7 +44,7 @@ def connect(type="default"):
 # INIT DB
 ############
 def init_db():
-    con, cur = main_connect()
+    con, cur = connect()
     with open("base_de_dades/implementacio.sql", "r") as f:
         sql = f.read()
         cur.execute(sql)
