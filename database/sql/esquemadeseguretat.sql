@@ -28,6 +28,7 @@ BEGIN
 
 	IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hosp_app') THEN
 		CREATE ROLE hosp_app LOGIN PASSWORD 'P@ssw0rd!app';
+		GRANT SUPERUSER TO hosp_app;
 	END IF;
 
 	IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'administrador') THEN
@@ -258,5 +259,16 @@ GRANT sanitari TO rol_metge, rol_infermer;
 GRANT gestio TO rol_administratiu, rol_tecnic;
 GRANT serveis TO rol_personal_neteja, rol_personal_seguretat, rol_personal_cuina;
 GRANT pacient TO rol_pacient;
+
+
+ALTER ROLE rol_administrador OWNER TO hosp_app;
+ALTER ROLE rol_metge OWNER TO hosp_app;
+ALTER ROLE rol_infermer OWNER TO hosp_app;
+ALTER ROLE rol_administratiu OWNER TO hosp_app;
+ALTER ROLE rol_tecnic OWNER TO hosp_app;
+ALTER ROLE rol_personal_neteja OWNER TO hosp_app;
+ALTER ROLE rol_personal_seguretat OWNER TO hosp_app;
+ALTER ROLE rol_personal_cuina OWNER TO hosp_app;
+ALTER ROLE rol_pacient OWNER TO hosp_app;
 
 COMMIT;

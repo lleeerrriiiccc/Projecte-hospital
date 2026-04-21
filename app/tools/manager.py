@@ -2,7 +2,13 @@ import tools.crypt as c
 import tools.db_driver as db
 import psycopg2
 from psycopg2 import errors
+from pathlib import Path
 
+#############################
+# MIGRACION RUTAS WINDOWS - LINUX
+#############################
+
+BASE_DIR = Path(__file__).resolve().parent
 
 #############################
 # HELPER DE ERRORES
@@ -253,7 +259,7 @@ def get_informes(informe, params=None, username=None):
 
     try:
         con, cur = db.connect(username=username)
-        informe_file = "app/sql/informe_aparrells.sql" if informe == "aparells" else f"app/sql/informe_{informe}.sql"
+        informe_file = BASE_DIR / ".." / "sql" / f"informe_{informe}.sql"
         with open(informe_file) as f:
             sql = f.read()
 
