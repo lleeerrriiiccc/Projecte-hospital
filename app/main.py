@@ -4,6 +4,7 @@ import os
 import dotenv
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 
+import tools.masking as masking
 import tools.manager as m
 
 
@@ -51,10 +52,11 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    ok, error, type = m.login(username, password)
+    ok, error, tipus = m.login(username, password)
     if ok:
         username = username.lower()
         session['username'] = username
+        session['role'] = tipus
         return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -66,6 +68,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('role', None)
     return redirect(url_for('login'))
 
 
@@ -341,6 +344,7 @@ def api_response(result, data_key='data'):
     ok, payload = result
 
     if ok:
+        payload = _mask_payload(payload)
         return jsonify({'ok': True, data_key: payload})
 
     error_text = str(payload)
@@ -355,7 +359,28 @@ def api_response(result, data_key='data'):
 def me():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify({'username': session['username']})
+    return jsonify({'username': session['username'], 'role': session.get('role')})
+
+
+def _mask_payload(payload):
+    role = session.get('role')
+
+    if masking.can_view_full_data(role):
+        return payload
+
+    if isinstance(payload, dict):
+        masked_payload = {}
+        for key, value in payload.items():
+            if isinstance(value, dict) or isinstance(value, list):
+                masked_payload[key] = _mask_payload(value)
+            else:
+                masked_payload[key] = masking.mask_value(key, value)
+        return masked_payload
+
+    if isinstance(payload, list):
+        return [_mask_payload(item) for item in payload]
+
+    return payload
 
 
 
