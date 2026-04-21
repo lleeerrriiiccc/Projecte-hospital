@@ -92,3 +92,4 @@ INSERT INTO usuaris (username, password, id_intern, rol) VALUES
 ('mserra', 'hashed_password_1', 1, 'metge'),
 ('lvila', 'hashed_password_2', 2, 'enfermer'),
 ('jferrer', 'hashed_password_3', 3, 'metge');
+
