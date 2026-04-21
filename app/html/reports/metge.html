@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe d'Horari de Metge</title>
+	<link rel="stylesheet" href="/css/metge.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="metge-title">
+			<h1 id="metge-title">Horari de Metge</h1>
+			<p class="subtitle">Consulta si un metge esta ocupat o lliure en un dia concret segons visites i operacions.</p>
+
+			<form id="filters-form" class="filters" novalidate>
+				<div class="field">
+					<label for="doctor-select">Metge</label>
+					<select id="doctor-select" name="doctor-select" required>
+						<option value="" disabled selected>Carregant metges...</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="report-date">Dia</label>
+					<input id="report-date" name="report-date" type="date" required>
+				</div>
+				<button id="load-btn" type="submit">Carregar horari</button>
+			</form>
+
+			<p id="message" class="message" role="status">Selecciona un metge i un dia per veure l'horari.</p>
+
+			<section id="summary" class="summary" hidden>
+				<article class="summary-card occupied">
+					<span class="summary-label">Franges ocupades</span>
+					<strong id="occupied-count">0</strong>
+				</article>
+				<article class="summary-card free">
+					<span class="summary-label">Franges lliures</span>
+					<strong id="free-count">0</strong>
+				</article>
+				<article class="summary-card total">
+					<span class="summary-label">Actes del dia</span>
+					<strong id="event-count">0</strong>
+				</article>
+			</section>
+
+			<section id="timeline-section" class="timeline-section" hidden>
+				<header class="timeline-header">
+					<h2 id="timeline-title">Calendari diari</h2>
+					<p id="timeline-meta" class="meta-pill"></p>
+				</header>
+				<div id="timeline-grid" class="timeline-grid" aria-live="polite"></div>
+			</section>
+
+			<section id="events-section" class="events-section" hidden>
+				<h2>Actes programats</h2>
+				<div id="events-list" class="events-list"></div>
+			</section>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const form = document.getElementById('filters-form');
+		const doctorSelect = document.getElementById('doctor-select');
+		const dateInput = document.getElementById('report-date');
+		const messageEl = document.getElementById('message');
+		const summaryEl = document.getElementById('summary');
+		const occupiedCountEl = document.getElementById('occupied-count');
+		const freeCountEl = document.getElementById('free-count');
+		const eventCountEl = document.getElementById('event-count');
+		const timelineSection = document.getElementById('timeline-section');
+		const timelineTitle = document.getElementById('timeline-title');
+		const timelineMeta = document.getElementById('timeline-meta');
+		const timelineGrid = document.getElementById('timeline-grid');
+		const eventsSection = document.getElementById('events-section');
+		const eventsList = document.getElementById('events-list');
+
+		const timeSlots = Array.from({ length: 25 }, (_, index) => String(index).padStart(2, '0') + ':00');
+		const dayFormatter = new Intl.DateTimeFormat('ca-ES', { dateStyle: 'full' });
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const normalizeTime = (timeValue) => {
+			if (!timeValue) {
+				return '';
+			}
+
+			const parts = String(timeValue).split(':');
+			return parts.length >= 2 ? parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0') : String(timeValue);
+		};
+
+		const groupByHour = (events) => {
+			return events.reduce((accumulator, event) => {
+				const hourKey = normalizeTime(event.hora).slice(0, 2) + ':00';
+				if (!accumulator[hourKey]) {
+					accumulator[hourKey] = [];
+				}
+				accumulator[hourKey].push(event);
+				return accumulator;
+			}, {});
+		};
+
+		const renderTimeline = (events, dateValue, doctorText) => {
+			const grouped = groupByHour(events);
+			const occupiedSlots = Object.keys(grouped).length;
+			const freeSlots = timeSlots.length - occupiedSlots;
+
+			occupiedCountEl.textContent = String(occupiedSlots);
+			freeCountEl.textContent = String(freeSlots);
+			eventCountEl.textContent = String(events.length);
+
+			summaryEl.hidden = false;
+			timelineSection.hidden = false;
+			eventsSection.hidden = false;
+
+			timelineTitle.textContent = 'Horari del dia';
+			timelineMeta.textContent = doctorText + ' · ' + dayFormatter.format(new Date(dateValue + 'T00:00:00'));
+
+			timelineGrid.innerHTML = '';
+			timeSlots.forEach((slot) => {
+				const slotEvents = grouped[slot] || [];
+				const slotCard = document.createElement('article');
+				slotCard.className = 'slot-card ' + (slotEvents.length > 0 ? 'occupied' : 'free');
+
+				const timeEl = document.createElement('span');
+				timeEl.className = 'slot-time';
+				timeEl.textContent = slot;
+
+				const statusEl = document.createElement('span');
+				statusEl.className = 'slot-status';
+				statusEl.textContent = slotEvents.length > 0 ? 'Ocupat' : 'Lliure';
+
+				const contentEl = document.createElement('div');
+				contentEl.className = 'slot-content';
+
+				if (slotEvents.length > 0) {
+					slotEvents.forEach((event) => {
+						const tag = document.createElement('div');
+						tag.className = 'event-tag ' + event.tipus;
+						const strong = document.createElement('strong');
+						strong.textContent = event.tipus === 'operacio' ? 'Operacio' : 'Visita';
+
+						const patient = document.createElement('span');
+						patient.textContent = event.pacient;
+
+						const detail = document.createElement('small');
+						detail.textContent = event.detall;
+
+						tag.appendChild(strong);
+						tag.appendChild(patient);
+						tag.appendChild(detail);
+						contentEl.appendChild(tag);
+					});
+				} else {
+					const empty = document.createElement('span');
+					empty.className = 'free-label';
+					empty.textContent = 'Sense actes';
+					contentEl.appendChild(empty);
+				}
+
+				slotCard.appendChild(timeEl);
+				slotCard.appendChild(statusEl);
+				slotCard.appendChild(contentEl);
+				timelineGrid.appendChild(slotCard);
+			});
+
+			eventsList.innerHTML = '';
+			if (events.length === 0) {
+				const empty = document.createElement('p');
+				empty.className = 'empty-state';
+				empty.textContent = 'No hi ha visites ni operacions per aquest dia.';
+				eventsList.appendChild(empty);
+				return;
+			}
+
+			events.forEach((event) => {
+				const item = document.createElement('article');
+				item.className = 'event-card ' + event.tipus;
+
+				const header = document.createElement('header');
+				const title = document.createElement('h3');
+				title.textContent = (event.tipus === 'operacio' ? 'Operacio' : 'Visita') + ' · ' + event.hora;
+				const pill = document.createElement('span');
+				pill.className = 'type-pill';
+				pill.textContent = event.tipus === 'operacio' ? 'Operacio' : 'Visita';
+				header.appendChild(title);
+				header.appendChild(pill);
+
+				const patient = document.createElement('p');
+				const patientLabel = document.createElement('strong');
+				patientLabel.textContent = 'Pacient:';
+				patient.appendChild(patientLabel);
+				patient.appendChild(document.createTextNode(' ' + event.pacient));
+
+				const detail = document.createElement('p');
+				const detailLabel = document.createElement('strong');
+				detailLabel.textContent = 'Detall:';
+				detail.appendChild(detailLabel);
+				detail.appendChild(document.createTextNode(' ' + event.detall));
+
+				item.appendChild(header);
+				item.appendChild(patient);
+				item.appendChild(detail);
+				eventsList.appendChild(item);
+			});
+		};
+
+		const loadDoctors = async () => {
+			try {
+				const response = await fetch('/api/metges');
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut carregar els metges.');
+				}
+
+				const doctors = Array.isArray(payload.data) ? payload.data : [];
+				doctorSelect.innerHTML = '';
+
+				const placeholder = document.createElement('option');
+				placeholder.value = '';
+				placeholder.textContent = 'Selecciona un metge';
+				placeholder.disabled = true;
+				placeholder.selected = true;
+				doctorSelect.appendChild(placeholder);
+
+				doctors.forEach((doctor) => {
+					const doctorId = doctor.num_habitacio ?? doctor.id_intern ?? doctor.id ?? doctor[0];
+					const doctorName = doctor.nom_complet ?? doctor.nom ?? doctor[1] ?? '';
+
+					if (!doctorId) {
+						return;
+					}
+
+					const option = document.createElement('option');
+					option.value = doctorId;
+					option.textContent = doctorName;
+					doctorSelect.appendChild(option);
+				});
+
+				setMessage('Metges carregats. Tria un metge i un dia.');
+			} catch (error) {
+				doctorSelect.innerHTML = '';
+				const failed = document.createElement('option');
+				failed.value = '';
+				failed.textContent = 'No s han pogut carregar els metges';
+				failed.disabled = true;
+				failed.selected = true;
+				doctorSelect.appendChild(failed);
+				setMessage(error.message || 'Error carregant metges.', true);
+			}
+		};
+
+		const loadSchedule = async (doctorId, dateValue) => {
+			setMessage('Carregant horari...');
+			summaryEl.hidden = true;
+			timelineSection.hidden = true;
+			eventsSection.hidden = true;
+
+			try {
+				const response = await fetch('/api/informes/metge?metge=' + encodeURIComponent(doctorId) + '&date=' + encodeURIComponent(dateValue));
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s ha pogut carregar l\'horari.');
+				}
+
+				const events = Array.isArray(payload.data) ? payload.data : [];
+				const doctorText = doctorSelect.options[doctorSelect.selectedIndex]?.textContent || 'Metge';
+				renderTimeline(events, dateValue, doctorText);
+				setMessage('Horari carregat correctament.');
+			} catch (error) {
+				setMessage(error.message || 'Error carregant l\'horari.', true);
+			}
+		};
+
+		const today = new Date().toISOString().split('T')[0];
+		dateInput.value = today;
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+			const doctorId = doctorSelect.value;
+			const dateValue = dateInput.value;
+
+			if (!doctorId) {
+				setMessage('Has de seleccionar un metge.', true);
+				return;
+			}
+
+			if (!dateValue) {
+				setMessage('Has de seleccionar un dia.', true);
+				return;
+			}
+
+			loadSchedule(doctorId, dateValue);
+		});
+
+		loadDoctors();
+	</script>
+</body>
+</html>

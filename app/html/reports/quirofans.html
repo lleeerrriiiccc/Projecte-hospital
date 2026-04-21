@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe de Quirofans</title>
+	<link rel="stylesheet" href="/css/quirofans.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="quirofans-title">
+			<h1 id="quirofans-title">Informe de Quirofans</h1>
+			<p class="subtitle">Consulta la disponibilitat d'operacions i el personal assistent filtrant per data.</p>
+
+			<form id="filters-form" class="filters" novalidate>
+				<div class="field">
+					<label for="report-date">Data d'operacio</label>
+					<input id="report-date" name="report-date" type="date" required>
+				</div>
+				<button id="load-btn" type="submit">Carregar informe</button>
+			</form>
+
+			<p id="message" class="message" role="status">Selecciona una data per carregar la disponibilitat de quirofans.</p>
+
+			<div id="results" hidden>
+				<div class="table-wrap">
+					<table aria-label="Resultats informe quirofans">
+						<thead>
+							<tr>
+								<th scope="col">ID operacio</th>
+								<th scope="col">Data</th>
+								<th scope="col">Hora</th>
+								<th scope="col">Procediment</th>
+								<th scope="col">Pacient</th>
+								<th scope="col">Metge responsable</th>
+								<th scope="col">Infermers assistents</th>
+							</tr>
+						</thead>
+						<tbody id="rows"></tbody>
+					</table>
+				</div>
+				<p id="empty" class="empty" hidden>No hi ha operacions per aquesta data.</p>
+			</div>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const form = document.getElementById('filters-form');
+		const dateInput = document.getElementById('report-date');
+		const messageEl = document.getElementById('message');
+		const resultsEl = document.getElementById('results');
+		const rowsEl = document.getElementById('rows');
+		const emptyEl = document.getElementById('empty');
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const renderRows = (data) => {
+			rowsEl.innerHTML = '';
+
+			if (!Array.isArray(data) || data.length === 0) {
+				emptyEl.hidden = false;
+				resultsEl.hidden = false;
+				return;
+			}
+
+			emptyEl.hidden = true;
+			data.forEach((entry) => {
+				const tr = document.createElement('tr');
+
+				const tdId = document.createElement('td');
+				tdId.textContent = entry.id_operacio ?? '-';
+
+				const tdData = document.createElement('td');
+				tdData.textContent = entry.data_operacio ?? '-';
+
+				const tdHora = document.createElement('td');
+				tdHora.textContent = entry.hora_operacio ?? '-';
+
+				const tdProcediment = document.createElement('td');
+				tdProcediment.textContent = entry.procediment ?? '-';
+
+				const tdPacient = document.createElement('td');
+				tdPacient.textContent = entry.pacient ?? '-';
+
+				const tdMetge = document.createElement('td');
+				tdMetge.textContent = entry.metge ?? '-';
+
+				const tdInfermers = document.createElement('td');
+				tdInfermers.textContent = entry.infermers_assistents ?? 'Sense infermers assignats';
+
+				tr.appendChild(tdId);
+				tr.appendChild(tdData);
+				tr.appendChild(tdHora);
+				tr.appendChild(tdProcediment);
+				tr.appendChild(tdPacient);
+				tr.appendChild(tdMetge);
+				tr.appendChild(tdInfermers);
+				rowsEl.appendChild(tr);
+			});
+
+			resultsEl.hidden = false;
+		};
+
+		const loadQuirofans = async (dateValue) => {
+			setMessage('Carregant informe de quirofans...');
+			resultsEl.hidden = true;
+
+			try {
+				const response = await fetch('/api/informes/quirofans?date=' + encodeURIComponent(dateValue));
+				const payload = await response.json();
+
+				if (!response.ok || payload.ok === false) {
+					throw new Error(payload.error || 'No s han pogut carregar les dades.');
+				}
+
+				setMessage('Informe carregat correctament.');
+				renderRows(Array.isArray(payload.data) ? payload.data : []);
+			} catch (error) {
+				setMessage(error.message || 'Error carregant els quirofans.', true);
+				rowsEl.innerHTML = '';
+				emptyEl.hidden = true;
+				resultsEl.hidden = true;
+			}
+		};
+
+		const today = new Date().toISOString().split('T')[0];
+		dateInput.value = today;
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+			const dateValue = dateInput.value;
+			if (!dateValue) {
+				setMessage('Has de seleccionar una data.', true);
+				return;
+			}
+
+			loadQuirofans(dateValue);
+		});
+	</script>
+</body>
+</html>

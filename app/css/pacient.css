@@ -1,0 +1,324 @@
+:root {
+    --hospital-blue: #0c5b8f;
+    --card-bg: #ffffff;
+    --text-main: #1e2d3d;
+    --text-muted: #5a6c7f;
+    --border: #d3e0eb;
+    --danger: #b22a2a;
+    --danger-bg: #fcebec;
+    --surface: #f6fbff;
+    --visita: #316fca;
+    --operacio: #c45b2e;
+    --medicament: #0f7a5a;
+    --reserva: #7b5bd6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background: linear-gradient(160deg, #e9f2f9 0%, #f6fbff 100%);
+}
+
+.page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+}
+
+.report-card {
+    width: 100%;
+    max-width: 1260px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    box-shadow: 0 10px 24px rgba(12, 91, 143, 0.12);
+}
+
+.report-card h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: var(--hospital-blue);
+}
+
+.subtitle {
+    margin: 0.5rem 0 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 0.7rem;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.field {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.field select {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.field select:focus {
+    outline: 2px solid #88bce0;
+    border-color: #88bce0;
+}
+
+#load-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: var(--hospital-blue);
+    cursor: pointer;
+}
+
+#load-btn:hover {
+    background-color: #09486f;
+}
+
+.message {
+    margin: 0 0 1rem;
+    border-radius: 10px;
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    border: 1px solid #c8dced;
+    background: var(--surface);
+    color: var(--text-muted);
+}
+
+.message.error {
+    border-color: #e8b3b6;
+    color: var(--danger);
+    background-color: var(--danger-bg);
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.summary-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    display: grid;
+    gap: 0.25rem;
+    background: #ffffff;
+}
+
+.summary-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.summary-card strong {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.summary-card.medicament strong {
+    color: var(--medicament);
+}
+
+.summary-card.visita strong {
+    color: var(--visita);
+}
+
+.summary-card.operacio strong {
+    color: var(--operacio);
+}
+
+.summary-card.reserva strong {
+    color: var(--reserva);
+}
+
+.report-container {
+    display: grid;
+    gap: 1rem;
+}
+
+.report-block {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 1rem;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.block-header h2 {
+    margin: 0;
+    font-size: 1.08rem;
+    color: #24445e;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #eaf4fb;
+    color: #2d5a79;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+}
+
+.card-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.entry-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem;
+    background: #ffffff;
+}
+
+.entry-card header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+}
+
+.entry-card h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.entry-card p {
+    margin: 0.25rem 0;
+    color: var(--text-main);
+}
+
+.entry-card.visita {
+    border-left: 5px solid var(--visita);
+}
+
+.entry-card.operacio {
+    border-left: 5px solid var(--operacio);
+}
+
+.entry-card.medicament {
+    border-left: 5px solid var(--medicament);
+}
+
+.entry-card.reserva {
+    border-left: 5px solid var(--reserva);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.24rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.badge.visita {
+    background: var(--visita);
+}
+
+.badge.operacio {
+    background: var(--operacio);
+}
+
+.badge.medicament {
+    background: var(--medicament);
+}
+
+.badge.reserva {
+    background: var(--reserva);
+}
+
+.empty-state {
+    margin: 0;
+    padding: 0.2rem 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    text-align: center;
+    border: 1px solid var(--hospital-blue);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--hospital-blue);
+    background-color: #ffffff;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: #ffffff;
+    background-color: var(--hospital-blue);
+}
+
+@media (max-width: 980px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+    #load-btn {
+        width: 100%;
+    }
+
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .report-card {
+        padding: 1.2rem;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .block-header,
+    .entry-card header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

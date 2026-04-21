@@ -79,6 +79,7 @@ CREATE TABLE visita (
     id_metge INT NOT NULL,
     data_visita DATE NOT NULL,
     hora_visita TIME NOT NULL,
+    diagnostic TEXT NOT NULL,
     FOREIGN KEY (id_pacient) REFERENCES pacient(id_pacient),
     FOREIGN KEY (id_metge) REFERENCES metge(id_intern)
 );
@@ -100,8 +101,10 @@ CREATE TABLE operacio (
     data_operacio DATE NOT NULL,
     hora_operacio TIME NOT NULL,
     procediment TEXT NOT NULL,
+    metge_responsable INT NOT NULL,
     FOREIGN KEY (id_quirofan) REFERENCES quirofan(id_quirofan),
-    FOREIGN KEY (id_pacient) REFERENCES pacient(id_pacient)
+    FOREIGN KEY (id_pacient) REFERENCES pacient(id_pacient),
+    FOREIGN KEY (metge_responsable) REFERENCES metge(id_intern)
 );
 
 --ASSISTEIX

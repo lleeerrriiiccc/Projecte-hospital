@@ -253,7 +253,8 @@ def get_informes(informe, params=None, username=None):
 
     try:
         con, cur = db.connect(username=username)
-        with open(f"app/sql/informe_{informe}.sql") as f:
+        informe_file = "app/sql/informe_aparrells.sql" if informe == "aparells" else f"app/sql/informe_{informe}.sql"
+        with open(informe_file) as f:
             sql = f.read()
 
         if params:
@@ -277,7 +278,61 @@ def get_informes(informe, params=None, username=None):
 
             case 'quirofans':
                 return True, [
-                    {"pacient": r[0], "metge": r[1], "data_quirofans": str(r[2])}
+                    {
+                        "id_operacio": r[0],
+                        "data_operacio": str(r[1]),
+                        "hora_operacio": str(r[2]),
+                        "procediment": r[3],
+                        "pacient": r[4],
+                        "metge": r[5],
+                        "infermers_assistents": r[6],
+                    }
+                    for r in rows
+                ]
+
+            case 'habitacions':
+                return True, [
+                    {
+                        "num_habitacio": r[0],
+                        "data_inici": str(r[1]),
+                        "data_fi": str(r[2]),
+                        "pacient": r[3],
+                    }
+                    for r in rows
+                ]
+
+            case 'metge':
+                return True, [
+                    {
+                        "tipus": r[0],
+                        "data": str(r[1]),
+                        "hora": str(r[2]),
+                        "pacient": r[3],
+                        "metge": r[4],
+                        "detall": r[5],
+                    }
+                    for r in rows
+                ]
+
+            case 'pacient':
+                return True, [
+                    {
+                        "tipus": r[0],
+                        "data_event": str(r[1]),
+                        "hora_event": str(r[2]) if r[2] is not None else None,
+                        "descripcio": r[3],
+                        "info_extra": r[4],
+                    }
+                    for r in rows
+                ]
+
+            case 'aparells':
+                return True, [
+                    {
+                        "id_quirofan": r[0],
+                        "planta": r[1],
+                        "maquinari": r[2],
+                    }
                     for r in rows
                 ]
 
@@ -285,6 +340,60 @@ def get_informes(informe, params=None, username=None):
 
     except Exception as e:
         return handle_db_error(e, con)
+
+    finally:
+        _close_db(con, cur)
+
+
+
+############
+# GET HABITACIONS
+############
+def get_habitacions(username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT num_habitacio
+            FROM habitacio
+            ORDER BY num_habitacio
+        """)
+        rows = cur.fetchall()
+        return True, [{"num_habitacio": r[0]} for r in rows]
+
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
+
+    finally:
+        _close_db(con, cur)
+
+
+############
+# GET PACIENTS
+############
+def get_pacients(username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT id_pacient, CONCAT(nom, ' ', cognom, ' ', cognom2)
+            FROM pacient
+            ORDER BY cognom, cognom2, nom
+        """)
+        rows = cur.fetchall()
+        return True, [
+            {"id_pacient": r[0], "nom_complet": r[1]}
+            for r in rows
+        ]
+
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
 
     finally:
         _close_db(con, cur)

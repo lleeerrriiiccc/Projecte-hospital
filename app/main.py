@@ -53,8 +53,8 @@ def login():
 
     ok, error, type = m.login(username, password)
     if ok:
+        username = username.lower()
         session['username'] = username
-        session['type'] = type
         return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -284,6 +284,56 @@ def informes_visites():
 
 
 
+############
+# REPORT QUIROFANS ROUTE
+############
+@app.route('/informes/quirofans')
+def informes_quirofans():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/quirofans.html')
+
+
+############
+# REPORT HABITACIONS ROUTE
+############
+@app.route('/informes/habitacions')
+def informes_habitacions():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/habitacions.html')
+
+
+############
+# REPORT METGE ROUTE
+############
+@app.route('/informes/metge')
+def informes_metge():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/metge.html')
+
+
+############
+# REPORT APARELLS ROUTE
+############
+@app.route('/informes/aparells')
+def informes_aparells():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/aparells.html')
+
+
+############
+# REPORT PACIENT ROUTE
+############
+@app.route('/informes/pacient')
+def informes_pacient():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/pacient.html')
+
+
 ###########################       API ENDPOINTS       ###########################
 
 
@@ -348,6 +398,122 @@ def get_informes_visites():
         return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
 
     return api_response(m.get_informes('visites', (date,), username=session['username']))
+
+
+
+############
+# QUIROFANS REPORT INFO ROUTE
+############
+@app.route('/api/informes/quirofans')
+def get_informes_quirofans():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    date = request.args.get('date', '').strip()
+    if not date:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    return api_response(m.get_informes('quirofans', (date,), username=session['username']))
+
+
+############
+# HABITACIONS REPORT INFO ROUTE
+############
+@app.route('/api/informes/habitacions')
+def get_informes_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    habitacio = request.args.get('habitacio', '').strip()
+    if not habitacio:
+        return jsonify({'error': 'Room parameter is required'}), 400
+
+    return api_response(m.get_informes('habitacions', (habitacio,), username=session['username']))
+
+
+############
+# METGE REPORT INFO ROUTE
+############
+@app.route('/api/informes/metge')
+def get_informes_metge():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    metge = request.args.get('metge', '').strip()
+    date = request.args.get('date', '').strip()
+
+    if not metge:
+        return jsonify({'error': 'Doctor parameter is required'}), 400
+
+    if not date:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+    try:
+        metge_id = int(metge)
+    except ValueError:
+        return jsonify({'error': 'Doctor parameter must be a valid integer'}), 400
+
+    return api_response(m.get_informes('metge', (metge_id, date, metge_id, date), username=session['username']))
+
+
+############
+# APARELLS REPORT INFO ROUTE
+############
+@app.route('/api/informes/aparells')
+def get_informes_aparells():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_informes('aparells', username=session['username']))
+
+
+
+############
+# HABITACIONS INFO ROUTE
+############
+@app.route('/api/habitacions')
+def get_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_habitacions(username=session['username']))
+
+
+############
+# PACIENT INFO ROUTE
+############
+@app.route('/api/pacients')
+def get_pacients():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return api_response(m.get_pacients(username=session['username']))
+
+
+############
+# PACIENT REPORT INFO ROUTE
+############
+@app.route('/api/informes/pacient')
+def get_informes_pacient():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    pacient = request.args.get('pacient', '').strip()
+    if not pacient:
+        return jsonify({'error': 'Patient parameter is required'}), 400
+
+    try:
+        pacient_id = int(pacient)
+    except ValueError:
+        return jsonify({'error': 'Patient parameter must be a valid integer'}), 400
+
+    return api_response(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=session['username']))
 
 
 
