@@ -1,5 +1,6 @@
 import datetime
 import os
+import shutil
 
 import dotenv
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
@@ -17,7 +18,24 @@ template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
 app = Flask(__name__, template_folder=template_dir)
 dotenv.load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET")
-app.config['UPLOAD_FOLDER'] = "c:\\Users\\el160\\Desktop\\1r ASIX\\Projecte-hospital\\app\\uploads"
+app.config['UPLOAD_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'uploads'))
+
+
+def _is_json_request():
+    return request.is_json or request.path.startswith('/api/')
+
+
+def _unauthorized_response():
+    if _is_json_request():
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+    return redirect(url_for('login'))
+
+
+def _bool_env(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
 
 
 
@@ -61,6 +79,25 @@ def login():
     return render_template('login.html', error=error)
 
 
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json(silent=True) or {}
+    username = (data.get('username') or '').strip()
+    password = data.get('password') or ''
+
+    if not username or not password:
+        return jsonify({'ok': False, 'error': 'Username and password are required.'}), 400
+
+    ok, error, tipus = m.login(username, password)
+    if not ok:
+        return jsonify({'ok': False, 'error': error}), 401
+
+    username = username.lower()
+    session['username'] = username
+    session['role'] = tipus
+    return jsonify({'ok': True, 'username': username, 'role': tipus})
+
+
 
 ############
 # LOGOUT ROUTE
@@ -70,6 +107,13 @@ def logout():
     session.pop('username', None)
     session.pop('role', None)
     return redirect(url_for('login'))
+
+
+@app.route('/api/logout', methods=['POST'])
+def api_logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    return jsonify({'ok': True})
 
 
 
@@ -102,6 +146,30 @@ def register():
     return render_template('register.html', error=error)
 
 
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    data = request.get_json(silent=True) or {}
+    username = (data.get('username') or '').strip()
+    password = data.get('password') or ''
+    confirm_password = data.get('confirm_password') or ''
+    id_intern_raw = str(data.get('id_intern') or '').strip()
+
+    if not username or not password or not confirm_password or not id_intern_raw:
+        return jsonify({'ok': False, 'error': 'Completa todos los campos.'}), 400
+
+    if password != confirm_password:
+        return jsonify({'ok': False, 'error': 'Las contraseñas no coinciden.'}), 400
+
+    if not id_intern_raw.isdigit():
+        return jsonify({'ok': False, 'error': 'El id_intern debe ser un numero entero.'}), 400
+
+    ok, error = m.register(username, password, int(id_intern_raw))
+    if ok:
+        return jsonify({'ok': True})
+
+    return jsonify({'ok': False, 'error': error}), 400
+
+
 
 ############
 # HOME ROUTE
@@ -120,7 +188,7 @@ def home():
 @app.route('/pacient/alta', methods=['GET', 'POST'])
 def alta_pacient():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
 
     if request.method == 'GET':
         return render_template('alta_pacient.html', error=None, success=None)
@@ -149,6 +217,36 @@ def alta_pacient():
     return render_template('alta_pacient.html', error=None, success='Pacient donat d\'alta correctament.')
 
 
+@app.route('/api/pacients', methods=['POST'])
+def create_pacient():
+    if 'username' not in session:
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+
+    data = request.get_json(silent=True) or {}
+    nom = (data.get('nom') or '').strip()
+    cognom = (data.get('cognom') or '').strip()
+    cognom2 = (data.get('cognom2') or '').strip()
+    data_naixement_str = (data.get('data_naixement') or '').strip()
+    identificador = (data.get('identificador') or '').strip().upper()
+
+    if not nom or not cognom or not cognom2 or not data_naixement_str or not identificador:
+        return jsonify({'ok': False, 'error': 'Completa tots els camps.'}), 400
+
+    try:
+        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
+
+    if data_naixement > datetime.date.today():
+        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
+
+    ok, error = m.new_pacient(nom, cognom, cognom2, data_naixement, identificador, username=session['username'])
+    if not ok:
+        return jsonify({'ok': False, 'error': error}), 400
+
+    return jsonify({'ok': True, 'message': 'Pacient donat d\'alta correctament.'})
+
+
 
 ############
 # PERSONAL ROUTE
@@ -156,7 +254,7 @@ def alta_pacient():
 @app.route('/personal/alta', methods=['GET', 'POST'])
 def alta_personal():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
 
     if request.method == 'GET':
         return render_template('alta_personal.html', error=None, success=None)
@@ -265,6 +363,126 @@ def alta_personal():
         return render_template('alta_personal.html', error=str(e), success=None)
 
 
+@app.route('/api/personal', methods=['POST'])
+def create_personal():
+    if 'username' not in session:
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+
+    data = request.get_json(silent=True) or {}
+    nom = (data.get('nom') or '').strip()
+    cognom = (data.get('cognom') or '').strip()
+    cognom2 = (data.get('cognom2') or '').strip()
+    data_naixement_str = (data.get('data_naixement') or '').strip()
+    telefon = (data.get('telefon') or '').strip()
+    telefon2 = (data.get('telefon2') or '').strip()
+    email = (data.get('email') or '').strip()
+    email_intern = (data.get('email_intern') or '').strip()
+    dni = (data.get('dni') or '').strip().upper()
+    tfeina = (data.get('tipus_feina') or '').strip()
+    data_alta_str = (data.get('data_alta') or '').strip()
+    especialitat = (data.get('especialitat') or '').strip()
+    cv_path = (data.get('cv_path') or '').strip()
+    mresp = (data.get('id_metge_supervisor') or '').strip()
+    cap_de_planta = bool(data.get('cap_de_planta'))
+
+    if (
+        not nom
+        or not cognom
+        or not cognom2
+        or not data_naixement_str
+        or not telefon
+        or not email
+        or not email_intern
+        or not dni
+        or not tfeina
+        or not data_alta_str
+    ):
+        return jsonify({'ok': False, 'error': 'Completa tots els camps obligatoris.'}), 400
+
+    try:
+        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
+
+    if data_naixement > datetime.date.today():
+        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
+
+    try:
+        if tfeina == 'metge':
+            if not especialitat:
+                return jsonify({'ok': False, 'error': 'Falta especialitat.'}), 400
+
+            if not cv_path:
+                return jsonify({'ok': False, 'error': 'Falta la ruta del CV.'}), 400
+
+            if not os.path.isfile(cv_path):
+                return jsonify({'ok': False, 'error': 'El fitxer CV no existeix.'}), 400
+
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+            filename = f"{timestamp}_{os.path.basename(cv_path)}"
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            shutil.copy2(cv_path, save_path)
+
+            state, error = m.new_employee(
+                nom,
+                cognom,
+                cognom2,
+                data_naixement,
+                telefon,
+                telefon2,
+                email,
+                email_intern,
+                dni,
+                tfeina,
+                data_alta_str,
+                especialitat,
+                save_path,
+                username=session['username'],
+            )
+        elif tfeina == 'infermer':
+            supervisor = None if cap_de_planta else (mresp or None)
+            if supervisor is None and not cap_de_planta:
+                return jsonify({'ok': False, 'error': 'Selecciona un metge supervisor o marca cap de planta.'}), 400
+            state, error = m.new_employee(
+                nom,
+                cognom,
+                cognom2,
+                data_naixement,
+                telefon,
+                telefon2,
+                email,
+                email_intern,
+                dni,
+                tfeina,
+                data_alta_str,
+                mresp=supervisor,
+                username=session['username'],
+            )
+        else:
+            state, error = m.new_employee(
+                nom,
+                cognom,
+                cognom2,
+                data_naixement,
+                telefon,
+                telefon2,
+                email,
+                email_intern,
+                dni,
+                tfeina,
+                data_alta_str,
+                username=session['username'],
+            )
+
+        if not state:
+            return jsonify({'ok': False, 'error': error}), 400
+
+        return jsonify({'ok': True, 'message': 'Personal donat d\'alta correctament.'})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
+
+
 
 ############
 # REPORT SUPERVISION ROUTE
@@ -272,7 +490,7 @@ def alta_personal():
 @app.route('/informes/supervisio')
 def informes_supervisio():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/supervisio.html')
 
 
@@ -282,7 +500,7 @@ def informes_supervisio():
 @app.route('/informes/visites')
 def informes_visites():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/visites.html')
 
 
@@ -293,7 +511,7 @@ def informes_visites():
 @app.route('/informes/quirofans')
 def informes_quirofans():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/quirofans.html')
 
 
@@ -303,7 +521,7 @@ def informes_quirofans():
 @app.route('/informes/habitacions')
 def informes_habitacions():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/habitacions.html')
 
 
@@ -313,7 +531,7 @@ def informes_habitacions():
 @app.route('/informes/metge')
 def informes_metge():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/metge.html')
 
 
@@ -323,7 +541,7 @@ def informes_metge():
 @app.route('/informes/aparells')
 def informes_aparells():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/aparells.html')
 
 
@@ -333,7 +551,7 @@ def informes_aparells():
 @app.route('/informes/pacient')
 def informes_pacient():
     if 'username' not in session:
-        return redirect(url_for('login'))
+        return _unauthorized_response()
     return render_template('reports/pacient.html')
 
 
@@ -543,4 +761,13 @@ def get_informes_pacient():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=443, ssl_context=(os.getenv('CERT'), os.getenv('KEY')))
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_PORT', '443'))
+    debug = _bool_env('FLASK_DEBUG', default=True)
+    use_ssl = _bool_env('FLASK_USE_SSL', default=True)
+
+    cert = os.getenv('CERT')
+    key = os.getenv('KEY')
+    ssl_context = (cert, key) if use_ssl and cert and key else None
+
+    app.run(debug=debug, host=host, port=port, ssl_context=ssl_context)

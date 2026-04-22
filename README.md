@@ -115,3 +115,65 @@ Per protegir les dades personals de grau alt, més endavant s'implementarà un s
 - La resta d'usuaris veurien els camps sensibles amb una màscara parcial.
 - Si més endavant es volgués reforçar la seguretat, es podrien afegir vistes o consultes específiques per a cada rol.
 
+## Migracio inicial a Tkinter
+
+S'ha iniciat la migracio de la interfície web cap a una aplicacio d'escriptori amb Tkinter mantenint el backend Flask.
+
+Estat actual: migracio funcional completada (web i desktop poden conviure).
+
+### Estat actual
+
+- Es manté el frontend web existent.
+- S'ha afegit un client desktop en `app/desktop/`.
+- Ja hi ha aquestes pantalles en Tkinter:
+	- Login
+	- Home
+	- Alta de pacient
+	- Alta de personal
+	- Informe de visites
+	- Informe de quirofans
+	- Informe d'aparells
+	- Informe de supervisio
+	- Informe d'habitacions
+	- Informe de metge
+	- Informe de pacient
+
+### Nous endpoints JSON per a desktop
+
+- `POST /api/login`
+- `POST /api/logout`
+- `POST /api/register`
+- `POST /api/pacients`
+- `POST /api/personal`
+
+Els endpoints API de consultes ja existents (`/api/informes/*`, `/api/metges`, `/api/habitacions`, `/api/pacients`) es mantenen.
+
+### Variables d'entorn utiles
+
+- `FLASK_USE_SSL`: `true` o `false` per activar/desactivar SSL al backend.
+- `FLASK_HOST`: host de Flask (per defecte `0.0.0.0`).
+- `FLASK_PORT`: port de Flask (per defecte `443`).
+- `DESKTOP_API_BASE_URL`: URL base que usa Tkinter (per defecte `http://127.0.0.1:443`).
+- `DESKTOP_API_VERIFY_TLS`: `true` o `false` per verificar certificat TLS al client desktop.
+
+### Execucio en local (web + desktop)
+
+1. Arrenca el backend:
+
+```bash
+cd app
+FLASK_USE_SSL=false FLASK_PORT=443 python3 main.py
+```
+
+2. En una altra terminal, arrenca la GUI Tkinter:
+
+```bash
+cd app
+DESKTOP_API_BASE_URL=http://127.0.0.1:443 python3 desktop_main.py
+```
+
+### Millores opcionals pendents
+
+- Ajustos visuals pixel-perfect respecte HTML/CSS original.
+- Carrega en segon pla de crides API per evitar bloqueig temporal de la UI en consultes pesades.
+
