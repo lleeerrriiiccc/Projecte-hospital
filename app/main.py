@@ -1,36 +1,53 @@
-import datetime
-import os
+import datetime  # Llibreria per gestionar les dates
+import os  # Llibreria per gestionar les rutes i fitxers
 
-import dotenv
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
+import dotenv  # Llibreria per gestionar les variables d'entorn
+from flask import (
+    Flask,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    session,
+    url_for,
+)  # Llibreria per gestionar el servidor web i les rutes
 
-import tools.masking as masking
-import tools.manager as m
+import tools.masking as masking  # Llibreria per gestionar el masking de dades sensibles
+import tools.manager as m  # Llibreria per gestionar la lògica i les consultes a la base de dades
 
 
 
-
+#Configuracio principal de l'aplicacio Flask
 ############
 # APP CONFIG
 ############
-template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
-app = Flask(__name__, template_folder=template_dir)
-dotenv.load_dotenv()
-app.secret_key = os.getenv("FLASK_SECRET")
-app.config['UPLOAD_FOLDER'] = "c:\\Users\\el160\\Desktop\\1r ASIX\\Projecte-hospital\\app\\uploads"
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))  # Ruta absoluta al directori de plantilles HTML
+app = Flask(__name__, template_folder=template_dir)  # Creacio de l'objecte Flask amb la ruta de les plantilles HTML
+dotenv.load_dotenv()  # Carrega les variables d'entorn des del fitxer .env
+app.secret_key = os.getenv("FLASK_SECRET")  # Clau secreta per gestionar les sessions, obtinguda de les variables d'entorn
+app.config['UPLOAD_FOLDER'] = "c:\\Users\\el160\\Desktop\\1r ASIX\\Projecte-hospital\\app\\uploads"  # Ruta on es guardaran els fitxers pujats (com els CVs dels metges)
 
 
+###########################       STATIC ENDPOINTS       ###########################
 
+
+# ruta desde on es serveixen els arxius estatics css
 ############
 # STATIC FILES
 ############
-@app.route('/css/<path:filename>')
+@app.route('/css/<path:filename>')  # definicio de la ruta per servir els arxius css
 def css(filename):
-    css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
-    return send_from_directory(css_dir, filename)
+    css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))  # definicio de la ruta absoluta al directori css
+    return send_from_directory(css_dir, filename)  # serveix el fitxer css sol·licitat des del directori css
 
 
 
+
+###########################       APP ENDPOINTS       ###########################
+
+
+# ruta principal de l'aplicació, redirigeix a la pàgina de login
 ############
 # MAIN ROUTE
 ############
@@ -40,28 +57,28 @@ def index():
         return redirect(url_for('login'))
 
 
-
+# ruta de login
 ############
 # LOGIN ROUTE
 ############
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html')  # si el metode es get es mostra la pagina de login
 
-    username = request.form.get('username')
-    password = request.form.get('password')
+    username = request.form.get('username')  # recull el nom d'usuari del formulari de login
+    password = request.form.get('password')  # recull la contrasenya del formulari de login
 
-    ok, error, tipus = m.login(username, password)
-    if ok:
-        username = username.lower()
-        session['username'] = username
+    ok, error, tipus = m.login(username, password)  # executa la funcio de login desde el manager i desempaqueta els resultats en tres variables: ok (boolean que indica si el login ha sigut correcte), error (missatge d'error en cas de que el login hagi fallat) i tipus (tipus d'usuari, com metge, infermer, admin, etc.)
+    if ok:  # si el login ha sigut correcte
+        username = username.lower()  # converteix el nom d'usuari a minuscules per estandaritzar-lo
+        session['username'] = username  # guarda el nom d'usuari a la sessio per mantenir l'estat de login
         session['role'] = tipus
-        return redirect(url_for('home'))
-    return render_template('login.html', error=error)
+        return redirect(url_for('home'))  # retorna el usuari a la pagina principal de l'aplicacio (home)
+    return render_template('login.html', error=error)  # si el login ha fallat, es torna a mostrar la pagina de login pero amb un missatge d'error que explica el motiu del fallit del login (com per exemple "usuari o contrasenya incorrectes")
 
 
-
+#ruta de logout, que elimina les dades de la sessio i redirigeix a la pagina de login
 ############
 # LOGOUT ROUTE
 ############
@@ -72,15 +89,26 @@ def logout():
     return redirect(url_for('login'))
 
 
-
+#ruta de registre de nous usuaris, que permet crear nous comptes d'usuari per accedir a l'aplicacio
 ############
 # REGISTER ROUTE
 ############
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # Si el metode es GET, es mostra la pagina de registre per crear un nou compte d'usuari
     if request.method == 'GET':
         return render_template('register.html', error=None)
 
+    # Si el metode es POST, es recullen les dades del formulari de registre
+    #  i s'intenta crear un nou compte d'usuari amb aquestes dades. 
+    # Es realitzen diverses comprovacions per assegurar que les dades son correctes 
+    # (com que tots els camps estiguin complets, que les contrasenyes coincideixin, 
+    # que el id_intern sigui un numero enter, etc.) i si tot es correcte, 
+    # es crida a la funcio de registre del manager per crear el nou compte d'usuari. 
+    # Si el registre es correcte, es redirigeix a la pagina de login per que l'usuari
+    # pugui iniciar sessio amb el nou compte creat. Si hi ha algun error en les dades o 
+    # en el procés de registre, es torna a mostrar la pagina de registre pero amb un missatge d'error
+    #  que explica el motiu del fallit del registre.
     username = request.form.get('username', '').strip()
     password = request.form.get('password', '')
     confirm_password = request.form.get('confirm_password', '')
@@ -102,7 +130,9 @@ def register():
     return render_template('register.html', error=error)
 
 
-
+#  ruta de la pagina principal (home) que es mostra després de iniciar sessio correctament,
+#  i que permet accedir a les diferents funcionalitats de l'aplicacio com donar d'alta nous
+#  pacients o personal, veure els informes, etc.
 ############
 # HOME ROUTE
 ############
@@ -113,7 +143,12 @@ def home():
     return render_template('home.html')
 
 
-
+# ruta per donar d'alta nous pacients a la base de dades, que recull les dades del formulari d'alta de pacient,
+#  realitza diverses comprovacions per assegurar que les dades son correctes (com que tots els camps estiguin complets,
+#  que la data de naixement sigui valida i no sea futura, etc.) i si tot es correcte, crida a la funcio de alta de pacient
+#  del manager per crear el nou pacient a la base de dades. Si l'alta es correcte, es mostra un missatge d'exit a la pagina 
+# d'alta de pacient. Si hi ha algun error en les dades o en el procés d'alta, es torna a mostrar la pagina d'alta de pacient
+#  pero amb un missatge d'error que explica el motiu del fallit de l'alta.
 ############
 # NEW PACIENT ROUTE
 ############
@@ -149,6 +184,9 @@ def alta_pacient():
     return render_template('alta_pacient.html', error=None, success='Pacient donat d\'alta correctament.')
 
 
+# ruta per donar d'alta nous membres del personal a la base de dades, que recull les dades del formulari d'alta de personal,
+#  realitza diverses comprovacions per assegurar que les dades son correctes 
+# (com que tots els camps obligatoris estiguin complets, que la data de naixement sigui valida i no sigui futura, etc.)
 
 ############
 # PERSONAL ROUTE
@@ -173,11 +211,10 @@ def alta_personal():
     tfeina = request.form.get('tipus_feina', '').strip()
     data_alta_str = request.form.get('data_alta', '').strip()
     mresp = request.form.get('id_metge_supervisor', '').strip()
-    try:
-        especialitat = request.form.get('especialitat', '').strip()
-        cv = request.files.get('cv')
-    except:
-        pass
+    # Dades opcionals: especialitat (metge) i CV.
+    # Si no venen al formulari, es gestionen com a buides dins del manager.
+    especialitat = request.form.get('especialitat', '').strip()
+    cv = request.files.get('cv')
 
     if (
         not nom
@@ -265,7 +302,8 @@ def alta_personal():
         return render_template('alta_personal.html', error=str(e), success=None)
 
 
-
+# ruta per veure els informes de supervisio, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes de supervisio
 ############
 # REPORT SUPERVISION ROUTE
 ############
@@ -275,7 +313,8 @@ def informes_supervisio():
         return redirect(url_for('login'))
     return render_template('reports/supervisio.html')
 
-
+# ruta per veure els informes de visites, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes de visites
 ############
 # REPORT VISITES ROUTE
 ############
@@ -286,7 +325,8 @@ def informes_visites():
     return render_template('reports/visites.html')
 
 
-
+# ruta per veure els informes de quirofans, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes de quirofans
 ############
 # REPORT QUIROFANS ROUTE
 ############
@@ -296,7 +336,8 @@ def informes_quirofans():
         return redirect(url_for('login'))
     return render_template('reports/quirofans.html')
 
-
+# ruta per veure els informes d'habitacions, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes d'habitacions
 ############
 # REPORT HABITACIONS ROUTE
 ############
@@ -306,7 +347,8 @@ def informes_habitacions():
         return redirect(url_for('login'))
     return render_template('reports/habitacions.html')
 
-
+# ruta per veure els informes de metge, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes de metge
 ############
 # REPORT METGE ROUTE
 ############
@@ -316,7 +358,8 @@ def informes_metge():
         return redirect(url_for('login'))
     return render_template('reports/metge.html')
 
-
+# ruta per veure els informes d'aparells, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  mostra la pagina d'informes d'aparells
 ############
 # REPORT APARELLS ROUTE
 ############
@@ -326,7 +369,8 @@ def informes_aparells():
         return redirect(url_for('login'))
     return render_template('reports/aparells.html')
 
-
+# ruta per veure els informes de pacient, que simplement comprova que l'usuari estigui loguejat i si es así,
+#  mostra la pagina d'informes de pacient
 ############
 # REPORT PACIENT ROUTE
 ############
@@ -339,7 +383,14 @@ def informes_pacient():
 
 ###########################       API ENDPOINTS       ###########################
 
-
+# funcio per gestionar el control d'errors i el format de les respostes de les API, 
+# que rep com a parametre el resultat d'una consulta a la base de dades 
+# (en format de tupla amb un boolean que indica si la consulta ha sigut correcta o no,
+#  i el payload o missatge d'error corresponent) i retorna una resposta JSON amb un format estandaritzat
+#  que indica si la consulta ha sigut correcta o no, i inclou el payload de dades en cas de que la consulta
+#  hagi sigut correcta, o un missatge d'error en cas de que la consulta hagi fallat.
+#  Aquesta funcio també gestiona el masking de dades sensibles segons el rol de l'usuari loguejat,
+#  cridant a la funcio _mask_payload per aplicar el masking necessari al payload de dades abans de retornar-lo a l'usuari.
 def api_response(result, data_key='data'):
     ok, payload = result
 
@@ -351,7 +402,8 @@ def api_response(result, data_key='data'):
     status_code = 403 if 'permis' in error_text.lower() or 'permission' in error_text.lower() else 400
     return jsonify({'ok': False, 'error': error_text}), status_code
 
-
+# ruta per veure la informació de l'usuari loguejat, que comprova que l'usuari estigui loguejat i si es així,
+#  retorna una resposta JSON amb el nom d'usuari i el rol de l'usuari loguejat. Aquesta ruta pot ser utilitzada per la part frontend de l'aplicacio per mostrar el nom d'usuari i el rol a la interfície, o per gestionar el control d'accés a diferents funcionalitats segons el rol de l'usuari.
 ############
 # USER INFO ROUTE
 ############
@@ -362,6 +414,9 @@ def me():
     return jsonify({'username': session['username'], 'role': session.get('role')})
 
 
+# funcio auxiliar que aplica masking de dades sensibles de manera recursiva
+# segons el rol de l'usuari loguejat. Si el rol te permisos complets,
+# retorna el payload original; si no, mascara camps sensibles en dicts i llistes.
 def _mask_payload(payload):
     role = session.get('role')
 
@@ -383,7 +438,10 @@ def _mask_payload(payload):
     return payload
 
 
-
+# ruta per veure la informació dels metges, que simplement comprova que l'usuari estigui loguejat i si es així,
+#  retorna una resposta JSON amb la informació dels metges obtinguda a través de la funcio get_metges del manager. 
+# Aquesta ruta pot ser utilitzada per la part frontend de l'aplicacio per mostrar la llista de metges a la interfície, 
+# o per gestionar altres funcionalitats relacionades amb els metges.
 ############
 # DOC INFO ROUTE
 ############
@@ -395,6 +453,8 @@ def get_metges():
 
 
 
+# ruta per veure els informes de supervisio via API,
+# que comprova autenticacio i retorna les dades en format JSON estandaritzat.
 ############
 # SUPERVISION REPORT INFO ROUTE
 ############
@@ -406,6 +466,8 @@ def get_informes_supervisio():
 
 
 
+# ruta per veure els informes de visites via API,
+# validant el parametre de data abans d'executar la consulta.
 ############
 # VISITES REPORT INFO ROUTE
 ############
@@ -426,6 +488,8 @@ def get_informes_visites():
 
 
 
+# ruta per veure els informes de quirofans via API,
+# validant el parametre de data en format YYYY-MM-DD.
 ############
 # QUIROFANS REPORT INFO ROUTE
 ############
@@ -445,6 +509,9 @@ def get_informes_quirofans():
     return api_response(m.get_informes('quirofans', (date,), username=session['username']))
 
 
+
+# ruta per veure els informes d'habitacions via API,
+# demanant el parametre d'habitacio per filtrar resultats.
 ############
 # HABITACIONS REPORT INFO ROUTE
 ############
@@ -460,6 +527,9 @@ def get_informes_habitacions():
     return api_response(m.get_informes('habitacions', (habitacio,), username=session['username']))
 
 
+
+# ruta per veure els informes de metge via API,
+# validant tant el metge (enter) com la data de consulta.
 ############
 # METGE REPORT INFO ROUTE
 ############
@@ -490,6 +560,9 @@ def get_informes_metge():
     return api_response(m.get_informes('metge', (metge_id, date, metge_id, date), username=session['username']))
 
 
+
+# ruta per veure els informes d'aparells via API,
+# retornant les dades segons els permisos del rol autenticat.
 ############
 # APARELLS REPORT INFO ROUTE
 ############
@@ -501,6 +574,8 @@ def get_informes_aparells():
 
 
 
+# ruta per obtenir la llista d'habitacions via API,
+# amb resposta JSON i control d'acces per sessio activa.
 ############
 # HABITACIONS INFO ROUTE
 ############
@@ -511,6 +586,9 @@ def get_habitacions():
     return api_response(m.get_habitacions(username=session['username']))
 
 
+
+# ruta per obtenir la llista de pacients via API,
+# aplicant masking automatic segons el rol de l'usuari.
 ############
 # PACIENT INFO ROUTE
 ############
@@ -521,6 +599,9 @@ def get_pacients():
     return api_response(m.get_pacients(username=session['username']))
 
 
+
+# ruta per veure els informes d'un pacient via API,
+# validant l'identificador numeric abans de consultar dades.
 ############
 # PACIENT REPORT INFO ROUTE
 ############

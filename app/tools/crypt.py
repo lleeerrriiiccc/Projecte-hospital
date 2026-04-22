@@ -30,14 +30,12 @@ def check_password(password, hashed):
     else:
         hashed_text = str(hashed).strip()
 
-    #CAMBIAR EL FORMATO DE LA HASH SI ES NECESARIO
     if hashed_text.startswith('\\x'):
         hex_part = hashed_text[2:]
         try:
             hashed_bytes = bytes.fromhex(hex_part)
         except ValueError:
             return False
-    # Serialized bytes representation, e.g. "b'$2b$12$...'"
     elif hashed_text.startswith("b'") and hashed_text.endswith("'"):
         hashed_bytes = hashed_text[2:-1].encode('utf-8')
     elif hashed_text.startswith('b"') and hashed_text.endswith('"'):

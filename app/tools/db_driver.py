@@ -20,7 +20,8 @@ def connect(username="default"):
             host=db_host,
             database=db_database,
             user=db_user,
-            password=db_password
+            password=db_password,
+            sslmode="require"
         )
         cursor = con.cursor()
 
