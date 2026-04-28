@@ -4,15 +4,19 @@ Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreS
 
 ## Estructura del projecte
 
-- `app/main.py`: punt d'entrada de l'aplicació web.
-- `app/tools/db_driver.py`: connexió a PostgreSQL i funcions bàsiques de base de dades.
-- `app/tools/manager.py`: lògica de login, registre i gestió d'usuaris.
-- `app/tools/masking.py`: utilitats previstes per emmascarar dades sensibles.
-- `app/html/`: plantilles HTML.
-- `app/css/`: fitxers CSS.
-- `base_de_dades/implementacio.sql`: esquema principal de la base de dades.
-- `base_de_dades/esquemadeseguretat.sql`: esquema de seguretat i permisos.
-- `proves/data_prova.sql`: dades de prova per fer consultes i comprovacions.
+- `server/main.py`: punt d'entrada de l'aplicació web.
+- `server/tools/db_driver.py`: connexió a PostgreSQL i funcions bàsiques de base de dades.
+- `server/tools/manager.py`: lògica de login, registre i gestió d'usuaris.
+- `server/tools/masking.py`: utilitats previstes per emmascarar dades sensibles.
+- `server/html/`: plantilles HTML.
+- `server/css/`: fitxers CSS.
+- `server/uploads/`: fitxers pujats pel backend.
+- `server/sql/`: consultes SQL dels informes.
+- `client/desktop_main.py`: punt d'entrada del client d'escriptori.
+- `client/desktop/`: interfície Tkinter i vistes.
+- `database/sql/implementacio.sql`: esquema principal de la base de dades.
+- `database/sql/esquemadeseguretat.sql`: esquema de seguretat i permisos.
+- `database/sql/test_data.sql`: dades de prova per fer consultes i comprovacions.
 
 ## Base de dades
 
@@ -124,7 +128,7 @@ Estat actual: migracio funcional completada (web i desktop poden conviure).
 ### Estat actual
 
 - Es manté el frontend web existent.
-- S'ha afegit un client desktop en `app/desktop/`.
+- S'ha afegit un client desktop en `client/desktop/`.
 - Ja hi ha aquestes pantalles en Tkinter:
 	- Login
 	- Home
@@ -161,14 +165,14 @@ Els endpoints API de consultes ja existents (`/api/informes/*`, `/api/metges`, `
 1. Arrenca el backend:
 
 ```bash
-cd app
+cd server
 FLASK_USE_SSL=false FLASK_PORT=443 python3 main.py
 ```
 
 2. En una altra terminal, arrenca la GUI Tkinter:
 
 ```bash
-cd app
+cd client
 DESKTOP_API_BASE_URL=http://127.0.0.1:443 python3 desktop_main.py
 ```
 

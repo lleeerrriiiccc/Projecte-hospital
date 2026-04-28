@@ -14,16 +14,17 @@ class LoginView(BaseView):
     def __init__(self, master, app_state, navigate, *args, **kwargs):
         super().__init__(master, app_state, navigate, *args, **kwargs)
 
+        # Login screen is centered around a single card for better focus.
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        card = ttk.Frame(self, style="Card.TFrame", padding=24)
+        card = ttk.Frame(self, style="Card.TFrame", padding=30)
         card.grid(row=0, column=0, padx=16, pady=24)
 
-        title = ttk.Label(card, text="Hospital Portal", style="Title.TLabel")
+        title = ttk.Label(card, text="Hospital Control Center", style="Title.TLabel")
         title.grid(row=0, column=0, sticky="w")
 
-        subtitle = ttk.Label(card, text="Inicia sesion para acceder al sistema.", style="Muted.TLabel")
+        subtitle = ttk.Label(card, text="Autentica't per accedir a l'entorn hospitalari.", style="Muted.TLabel")
         subtitle.grid(row=1, column=0, sticky="w", pady=(6, 16))
 
         self.message_var = tk.StringVar(value="")
@@ -31,6 +32,7 @@ class LoginView(BaseView):
         self.message_label.grid(row=2, column=0, sticky="we", pady=(0, 10))
         self.message_label.grid_remove()
 
+        # Form and actions.
         form = ttk.Frame(card)
         form.grid(row=3, column=0, sticky="we")
 
@@ -42,10 +44,10 @@ class LoginView(BaseView):
         self.password = ttk.Entry(form, width=32, show="*")
         self.password.grid(row=3, column=0, sticky="we", pady=(4, 14))
 
-        self.login_btn = ttk.Button(form, text="Sign In", command=self._handle_login, style="Primary.TButton")
+        self.login_btn = ttk.Button(form, text="Entrar", command=self._handle_login, style="Primary.TButton")
         self.login_btn.grid(row=4, column=0, sticky="we")
 
-        register_btn = ttk.Button(form, text="Create Account", command=self._open_register_dialog)
+        register_btn = ttk.Button(form, text="Crear compte", command=self._open_register_dialog, style="Secondary.TButton")
         register_btn.grid(row=5, column=0, sticky="we", pady=(8, 0))
 
         self.username.focus_set()
@@ -79,8 +81,9 @@ class LoginView(BaseView):
             self._set_error(f"Error de conexion: {exc}")
 
     def _open_register_dialog(self):
+        # Lightweight modal to create users without leaving the login screen.
         dialog = tk.Toplevel(self)
-        dialog.title("Register")
+        dialog.title("Registrar usuari")
         dialog.configure(bg=PALETTE["bg"])
         dialog.transient(self.winfo_toplevel())
         dialog.grab_set()
@@ -88,7 +91,7 @@ class LoginView(BaseView):
         frame = ttk.Frame(dialog, style="Card.TFrame", padding=18)
         frame.grid(row=0, column=0, padx=14, pady=14)
 
-        ttk.Label(frame, text="Crear cuenta", style="Title.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
+        ttk.Label(frame, text="Crear compte", style="Title.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
 
         fields = [
             ("Usuario", ttk.Entry(frame, width=28)),

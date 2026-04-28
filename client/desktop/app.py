@@ -25,6 +25,7 @@ class DesktopApp(tk.Tk):
         self.title("Projecte Hospital - Desktop")
         self.configure(bg=PALETTE["bg"])
         self.minsize(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
+        self.geometry("1320x840")
 
         self._setup_styles()
 
@@ -47,28 +48,59 @@ class DesktopApp(tk.Tk):
     def _setup_styles(self):
         style = ttk.Style(self)
         style.theme_use("clam")
+        self.option_add("*Font", "Bahnschrift 10")
 
+        # Base surfaces and layout containers.
         style.configure("App.TFrame", background=PALETTE["bg"])
-        style.configure("Topbar.TFrame", background=PALETTE["surface"])
+        style.configure("Topbar.TFrame", background=PALETTE["primary"], relief="flat")
         style.configure("Card.TFrame", background=PALETTE["surface"], relief="flat")
 
-        style.configure("TLabel", background=PALETTE["surface"], foreground=PALETTE["text"], font=("Segoe UI", 10))
-        style.configure("Title.TLabel", background=PALETTE["surface"], foreground=PALETTE["primary"], font=("Segoe UI", 16, "bold"))
-        style.configure("TopbarTitle.TLabel", background=PALETTE["surface"], foreground=PALETTE["primary"], font=("Segoe UI", 14, "bold"))
-        style.configure("Muted.TLabel", background=PALETTE["surface"], foreground=PALETTE["muted"], font=("Segoe UI", 10))
-        style.configure("Error.TLabel", background=PALETTE["error_bg"], foreground=PALETTE["error_text"], padding=(8, 6), font=("Segoe UI", 10, "bold"))
+        # Typography hierarchy.
+        style.configure("TLabel", background=PALETTE["surface"], foreground=PALETTE["text"], font=("Bahnschrift", 10))
+        style.configure("Title.TLabel", background=PALETTE["surface"], foreground=PALETTE["primary"], font=("Bahnschrift", 19, "bold"))
+        style.configure("TopbarTitle.TLabel", background=PALETTE["primary"], foreground=PALETTE["topbar_text"], font=("Bahnschrift", 16, "bold"))
+        style.configure("TopbarMuted.TLabel", background=PALETTE["primary"], foreground=PALETTE["topbar_text"], font=("Bahnschrift", 10))
+        style.configure("Muted.TLabel", background=PALETTE["surface"], foreground=PALETTE["muted"], font=("Bahnschrift", 10))
+        style.configure("Section.TLabel", background=PALETTE["surface"], foreground=PALETTE["primary_dark"], font=("Bahnschrift", 11, "bold"))
+        style.configure("Error.TLabel", background=PALETTE["error_bg"], foreground=PALETTE["error_text"], padding=(10, 8), font=("Bahnschrift", 10, "bold"))
 
-        style.configure("TEntry", fieldbackground="white", bordercolor=PALETTE["border"], foreground=PALETTE["text"], insertcolor=PALETTE["text"])
+        # Inputs and selection widgets.
+        style.configure(
+            "TEntry",
+            fieldbackground="white",
+            bordercolor=PALETTE["border"],
+            foreground=PALETTE["text"],
+            insertcolor=PALETTE["text"],
+            padding=(8, 6),
+        )
+        style.map("TEntry", bordercolor=[("focus", PALETTE["focus"])])
+        style.configure("TCombobox", padding=(6, 5), fieldbackground="white", foreground=PALETTE["text"])
 
-        style.configure("TButton", font=("Segoe UI", 10, "bold"), padding=(10, 8))
+        # Primary and secondary actions.
+        style.configure("TButton", font=("Bahnschrift", 10, "bold"), padding=(12, 9), borderwidth=0)
         style.configure("Primary.TButton", foreground="white", background=PALETTE["primary"], borderwidth=0)
         style.map(
             "Primary.TButton",
             background=[("active", PALETTE["primary_dark"]), ("pressed", PALETTE["primary_dark"])],
         )
+        style.configure("Secondary.TButton", foreground=PALETTE["text"], background=PALETTE["secondary_bg"], borderwidth=0)
+        style.map(
+            "Secondary.TButton",
+            background=[("active", PALETTE["secondary_active"]), ("pressed", PALETTE["secondary_active"])],
+        )
 
-        style.configure("Treeview", rowheight=30, font=("Segoe UI", 10), fieldbackground="white", background="white", foreground=PALETTE["text"])
-        style.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"), background=PALETTE["surface"], foreground=PALETTE["text"])
+        # Data table readability and focus states.
+        style.configure(
+            "Treeview",
+            rowheight=32,
+            font=("Bahnschrift", 10),
+            fieldbackground="white",
+            background="white",
+            foreground=PALETTE["text"],
+            bordercolor=PALETTE["border"],
+        )
+        style.map("Treeview", background=[("selected", "#dcecf4")], foreground=[("selected", PALETTE["text"])])
+        style.configure("Treeview.Heading", font=("Bahnschrift", 10, "bold"), background=PALETTE["primary"], foreground="white")
 
     def _register_views(self):
         view_classes = [

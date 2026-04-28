@@ -1,7 +1,12 @@
-import psycopg2
-from psycopg2 import sql
-from dotenv import load_dotenv
 import os
+from pathlib import Path
+
+import psycopg2
+from dotenv import load_dotenv
+from psycopg2 import sql
+
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 
@@ -46,7 +51,7 @@ def connect(username="default"):
 ############
 def init_db():
     con, cur = connect()
-    with open("base_de_dades/implementacio.sql", "r") as f:
+    with open(BASE_DIR / ".." / ".." / "database" / "sql" / "implementacio.sql", "r") as f:
         sql = f.read()
         cur.execute(sql)
     con.commit()

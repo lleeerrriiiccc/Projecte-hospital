@@ -1,0 +1,17 @@
+PALETTE = {
+    "bg": "#edf3f7",
+    "surface": "#ffffff",
+    "primary": "#0b5d7a",
+    "primary_dark": "#08485f",
+    "text": "#13212f",
+    "muted": "#5b6a78",
+    "border": "#c7d5df",
+    "topbar_text": "#f1f7fb",
+    "secondary_bg": "#dde8ef",
+    "secondary_active": "#cddde8",
+    "focus": "#ee9b00",
+    "error_bg": "#ffe7ea",
+    "error_text": "#8f1d2c",
+    "success_bg": "#e8f6ee",
+    "success_text": "#18603c",
+}
