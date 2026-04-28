@@ -19,6 +19,7 @@ def connect(username="default"):
     db_database = os.getenv("DB_DATABASE")
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
+    db_sslmode = os.getenv("DB_SSLMODE", "prefer")
     con = None
     try:
         con = psycopg2.connect(
@@ -26,7 +27,7 @@ def connect(username="default"):
             database=db_database,
             user=db_user,
             password=db_password,
-            sslmode="require"
+            sslmode=db_sslmode,
         )
         cursor = con.cursor()
 

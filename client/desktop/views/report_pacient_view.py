@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import tkinter as tk
 from tkinter import ttk
 
@@ -62,21 +60,8 @@ class ReportPacientView(BaseView):
     def _load_patients(self):
         payload = self.app_state["api"].get_pacients()
         rows = payload.get("data") or []
-        mapping = {}
-        for row in rows:
-            if isinstance(row, dict):
-                pid = row.get("id_pacient")
-                name = row.get("nom_complet")
-            elif isinstance(row, (list, tuple)) and len(row) >= 2:
-                pid, name = row[0], row[1]
-            else:
-                pid, name = None, None
-
-            if pid is not None and name:
-                mapping[str(pid)] = str(name)
-
-        self._patients_map = mapping
-        values = [f"{pid} - {name}" for pid, name in mapping.items()]
+        self._patients_map = self.build_options_map(rows, ["id_pacient", "id"], ["nom_complet", "nom"])
+        values = self.build_combo_values(self._patients_map)
         self.patient_combo.configure(values=values)
         if values and not self.patient_combo.get():
             self.patient_combo.set(values[0])
@@ -87,10 +72,9 @@ class ReportPacientView(BaseView):
             self.message_var.set("Selecciona un pacient.")
             return
 
-        patient_id = patient_value.split(" - ", 1)[0]
+        patient_id = self.split_combo_value(patient_value)
 
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        self.clear_tree(self.tree)
 
         try:
             payload = self.app_state["api"].get_report("pacient", params={"pacient": patient_id})

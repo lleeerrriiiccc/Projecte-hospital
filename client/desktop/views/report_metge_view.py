@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import datetime
 import tkinter as tk
 from tkinter import ttk
@@ -37,7 +35,7 @@ class ReportMetgeView(BaseView):
         ttk.Label(controls, text="Fecha (YYYY-MM-DD)").grid(row=0, column=2, sticky="w")
         self.date_entry = ttk.Entry(controls, width=16)
         self.date_entry.grid(row=0, column=3, sticky="w", padx=(8, 8))
-        self.date_entry.insert(0, datetime.date.today().isoformat())
+        self.date_entry.insert(0, self.today_iso())
 
         ttk.Button(controls, text="Cargar", style="Primary.TButton", command=self._load_data).grid(row=0, column=4, sticky="w")
         ttk.Button(controls, text="Volver", command=lambda: self.navigate("home")).grid(row=0, column=5, sticky="w", padx=(8, 0))
@@ -145,18 +143,8 @@ class ReportMetgeView(BaseView):
     def _load_metges(self):
         payload = self.app_state["api"].get_metges()
         rows = payload.get("data") or []
-        metges = {}
-        for row in rows:
-            if isinstance(row, (list, tuple)) and len(row) >= 2:
-                metges[str(row[0])] = str(row[1])
-            elif isinstance(row, dict):
-                metge_id = row.get("id_intern") or row.get("id")
-                metge_name = row.get("nom_complet") or row.get("nom")
-                if metge_id and metge_name:
-                    metges[str(metge_id)] = str(metge_name)
-
-        self._metges_map = metges
-        values = [f"{mid} - {name}" for mid, name in metges.items()]
+        self._metges_map = self.build_options_map(rows, ["id_intern", "id"], ["nom_complet", "nom"])
+        values = self.build_combo_values(self._metges_map)
         self.doctor_combo.configure(values=values)
         if values and not self.doctor_combo.get():
             self.doctor_combo.set(values[0])
@@ -170,17 +158,15 @@ class ReportMetgeView(BaseView):
             return
 
         try:
-            datetime.datetime.strptime(date_value, "%Y-%m-%d")
-        except ValueError:
-            self.message_var.set("Formato de fecha invalido. Usa YYYY-MM-DD.")
+            self.parse_iso_date(date_value, "Formato de fecha invalido. Usa YYYY-MM-DD.")
+        except ValueError as exc:
+            self.message_var.set(str(exc))
             return
 
-        doctor_id = doctor_value.split(" - ", 1)[0]
+        doctor_id = self.split_combo_value(doctor_value)
 
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-        for item in self.timeline_tree.get_children():
-            self.timeline_tree.delete(item)
+        self.clear_tree(self.tree)
+        self.clear_tree(self.timeline_tree)
 
         self.occupied_var.set("Franges ocupades: 0")
         self.free_var.set("Franges lliures: 25")

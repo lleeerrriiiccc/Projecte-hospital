@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import datetime
 import tkinter as tk
 from tkinter import ttk
@@ -10,6 +8,7 @@ from .base import BaseView
 
 class AltaPacientView(BaseView):
     route = "alta_pacient"
+    DEFAULT_BIRTH_DATE = "1990-01-01"
 
     def __init__(self, master, app_state, navigate, *args, **kwargs):
         super().__init__(master, app_state, navigate, *args, **kwargs)
@@ -44,7 +43,7 @@ class AltaPacientView(BaseView):
             entry.grid(row=idx, column=1, sticky="we", pady=3)
             self.fields[key] = entry
 
-        self.fields["data_naixement"].insert(0, "1990-01-01")
+        self.fields["data_naixement"].insert(0, self.DEFAULT_BIRTH_DATE)
 
         buttons = ttk.Frame(card)
         buttons.grid(row=9, column=0, columnspan=2, sticky="we", pady=(10, 0))
@@ -62,25 +61,20 @@ class AltaPacientView(BaseView):
             if not value:
                 raise ValueError("Completa todos los campos.")
 
-        try:
-            parsed_date = datetime.datetime.strptime(payload["data_naixement"], "%Y-%m-%d").date()
-        except ValueError as exc:
-            raise ValueError("La fecha debe tener formato YYYY-MM-DD.") from exc
+        parsed_date = self.parse_iso_date(payload["data_naixement"], "La fecha debe tener formato YYYY-MM-DD.")
 
         if parsed_date > datetime.date.today():
             raise ValueError("La fecha de nacimiento no puede ser futura.")
 
     def _submit(self):
-        payload = {key: entry.get().strip() for key, entry in self.fields.items()}
+        payload = self.get_entry_values(self.fields)
         payload["identificador"] = payload["identificador"].upper()
 
         try:
             self._validate(payload)
             self.app_state["api"].create_patient(**payload)
             self._show_status("Paciente dado de alta correctamente.")
-            for entry in self.fields.values():
-                entry.delete(0, tk.END)
-            self.fields["data_naixement"].insert(0, "1990-01-01")
+            self.reset_entries(self.fields, {"data_naixement": self.DEFAULT_BIRTH_DATE})
         except (ApiError, ValueError) as exc:
             self._show_status(str(exc))
         except Exception as exc:

@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-from typing import Any, Dict, Optional
-
 import requests
 
 from .config import API_BASE_URL, API_VERIFY_TLS
@@ -12,17 +8,17 @@ class ApiError(Exception):
 
 
 class ApiClient:
-    def __init__(self, base_url: str = API_BASE_URL, verify_tls: bool = API_VERIFY_TLS):
+    def __init__(self, base_url=API_BASE_URL, verify_tls=API_VERIFY_TLS):
         self.base_url = base_url.rstrip("/")
         self.verify_tls = verify_tls
         self.session = requests.Session()
 
-    def _url(self, path: str) -> str:
+    def _url(self, path):
         if not path.startswith("/"):
             path = f"/{path}"
         return f"{self.base_url}{path}"
 
-    def _request(self, method: str, path: str, **kwargs) -> Dict[str, Any]:
+    def _request(self, method, path, **kwargs):
         timeout = kwargs.pop("timeout", 20)
         response = self.session.request(
             method=method,
@@ -33,7 +29,7 @@ class ApiClient:
         )
 
         content_type = response.headers.get("Content-Type", "")
-        payload: Dict[str, Any] = {}
+        payload = {}
         if "application/json" in content_type:
             payload = response.json()
 
@@ -46,10 +42,10 @@ class ApiClient:
 
         return payload
 
-    def login(self, username: str, password: str) -> Dict[str, Any]:
+    def login(self, username, password):
         return self._request("POST", "/api/login", json={"username": username, "password": password})
 
-    def register(self, username: str, password: str, confirm_password: str, id_intern: int) -> Dict[str, Any]:
+    def register(self, username, password, confirm_password, id_intern):
         return self._request(
             "POST",
             "/api/register",
@@ -61,20 +57,20 @@ class ApiClient:
             },
         )
 
-    def logout(self) -> None:
+    def logout(self):
         self._request("POST", "/api/logout")
 
-    def me(self) -> Dict[str, Any]:
+    def me(self):
         return self._request("GET", "/me")
 
     def create_patient(
         self,
-        nom: str,
-        cognom: str,
-        cognom2: str,
-        data_naixement: str,
-        identificador: str,
-    ) -> Dict[str, Any]:
+        nom,
+        cognom,
+        cognom2,
+        data_naixement,
+        identificador,
+    ):
         return self._request(
             "POST",
             "/api/pacients",
@@ -87,20 +83,20 @@ class ApiClient:
             },
         )
 
-    def create_personal(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def create_personal(self, payload):
         return self._request("POST", "/api/personal", json=payload)
 
-    def get_visites(self, date_value: str) -> Dict[str, Any]:
+    def get_visites(self, date_value):
         return self._request("GET", "/api/informes/visites", params={"date": date_value})
 
-    def get_metges(self) -> Dict[str, Any]:
+    def get_metges(self):
         return self._request("GET", "/api/metges")
 
-    def get_pacients(self) -> Dict[str, Any]:
+    def get_pacients(self):
         return self._request("GET", "/api/pacients")
 
-    def get_habitacions(self) -> Dict[str, Any]:
+    def get_habitacions(self):
         return self._request("GET", "/api/habitacions")
 
-    def get_report(self, report_name: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_report(self, report_name, params=None):
         return self._request("GET", f"/api/informes/{report_name}", params=params or {})

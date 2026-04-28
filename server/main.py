@@ -38,6 +38,292 @@ def _bool_env(name, default=False):
     return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
 
 
+PATIENT_TEMPLATE = 'alta_pacient.html'
+EMPLOYEE_TEMPLATE = 'alta_personal.html'
+REGISTER_TEMPLATE = 'register.html'
+
+PATIENT_REQUIRED_FIELDS = ('nom', 'cognom', 'cognom2', 'data_naixement', 'identificador')
+EMPLOYEE_REQUIRED_FIELDS = (
+    'nom',
+    'cognom',
+    'cognom2',
+    'data_naixement',
+    'telefon',
+    'email',
+    'email_intern',
+    'dni',
+    'tipus_feina',
+    'data_alta',
+)
+
+
+def _get_text(source, key, uppercase=False):
+    value = source.get(key) if source is not None else ''
+    text = str(value or '').strip()
+    return text.upper() if uppercase else text
+
+
+def _get_bool(source, key):
+    value = source.get(key) if source is not None else False
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def _render_form(template_name, error=None, success=None):
+    return render_template(template_name, error=error, success=success)
+
+
+def _json_ok(message=None, **extra):
+    payload = {'ok': True}
+    if message is not None:
+        payload['message'] = message
+    payload.update(extra)
+    return jsonify(payload)
+
+
+def _json_error(message, status=400):
+    return jsonify({'ok': False, 'error': message}), status
+
+
+def _plain_json_error(message, status=400):
+    return jsonify({'error': message}), status
+
+
+def _action_response(ok, error, success_message, template_name=None, failure_status=400):
+    if ok:
+        if template_name is not None:
+            return _render_form(template_name, error=None, success=success_message)
+        return _json_ok(message=success_message)
+
+    if template_name is not None:
+        return _render_form(template_name, error=error, success=None)
+    return _json_error(error, failure_status)
+
+
+def _set_logged_user(username, role):
+    session['username'] = username.lower()
+    session['role'] = role
+
+
+def _clear_logged_user():
+    session.pop('username', None)
+    session.pop('role', None)
+
+
+def _current_username():
+    return session.get('username')
+
+
+def _require_login():
+    if 'username' not in session:
+        return _unauthorized_response()
+    return None
+
+
+def _require_plain_api_login():
+    if 'username' not in session:
+        return _plain_json_error('Unauthorized', 401)
+    return None
+
+
+def _validate_required(data, required_fields, message):
+    for field_name in required_fields:
+        if not data.get(field_name):
+            raise ValueError(message)
+
+
+def _parse_date_text(value, invalid_message, future_message=None):
+    try:
+        parsed_date = datetime.datetime.strptime(str(value).strip(), '%Y-%m-%d').date()
+    except ValueError as exc:
+        raise ValueError(invalid_message) from exc
+
+    if future_message and parsed_date > datetime.date.today():
+        raise ValueError(future_message)
+
+    return parsed_date
+
+
+def _read_login_data(source):
+    return {
+        'username': _get_text(source, 'username'),
+        'password': source.get('password') or '',
+    }
+
+
+def _validate_login_data(data):
+    _validate_required(data, ('username', 'password'), 'Completa todos los campos.')
+
+
+def _read_register_data(source):
+    return {
+        'username': _get_text(source, 'username'),
+        'password': source.get('password') or '',
+        'confirm_password': source.get('confirm_password') or '',
+        'id_intern': _get_text(source, 'id_intern'),
+    }
+
+
+def _validate_register_data(data):
+    _validate_required(data, ('username', 'password', 'confirm_password', 'id_intern'), 'Completa todos los campos.')
+
+    if data['password'] != data['confirm_password']:
+        raise ValueError('Las contraseñas no coinciden.')
+
+    if not data['id_intern'].isdigit():
+        raise ValueError('El id_intern debe ser un numero entero.')
+
+
+def _read_patient_data(source):
+    return {
+        'nom': _get_text(source, 'nom'),
+        'cognom': _get_text(source, 'cognom'),
+        'cognom2': _get_text(source, 'cognom2'),
+        'data_naixement': _get_text(source, 'data_naixement'),
+        'identificador': _get_text(source, 'identificador', uppercase=True),
+    }
+
+
+def _validate_patient_data(data, future_message='La data de naixement no pot ser futura.'):
+    _validate_required(data, PATIENT_REQUIRED_FIELDS, 'Completa tots els camps.')
+    data['data_naixement'] = _parse_date_text(
+        data['data_naixement'],
+        'La data de naixement no és vàlida.',
+        future_message,
+    )
+
+
+def _create_patient_record(data):
+    return m.new_pacient(
+        data['nom'],
+        data['cognom'],
+        data['cognom2'],
+        data['data_naixement'],
+        data['identificador'],
+        username=_current_username(),
+    )
+
+
+def _read_employee_data(source):
+    return {
+        'nom': _get_text(source, 'nom'),
+        'cognom': _get_text(source, 'cognom'),
+        'cognom2': _get_text(source, 'cognom2'),
+        'data_naixement': _get_text(source, 'data_naixement'),
+        'telefon': _get_text(source, 'telefon'),
+        'telefon2': _get_text(source, 'telefon2'),
+        'email': _get_text(source, 'email'),
+        'email_intern': _get_text(source, 'email_intern'),
+        'dni': _get_text(source, 'dni', uppercase=True),
+        'tipus_feina': _get_text(source, 'tipus_feina'),
+        'data_alta': _get_text(source, 'data_alta'),
+        'especialitat': _get_text(source, 'especialitat'),
+        'cv_path': _get_text(source, 'cv_path'),
+        'id_metge_supervisor': _get_text(source, 'id_metge_supervisor'),
+        'cap_de_planta': _get_bool(source, 'cap_de_planta'),
+    }
+
+
+def _validate_employee_data(data, require_supervisor=False):
+    _validate_required(data, EMPLOYEE_REQUIRED_FIELDS, 'Completa tots els camps obligatoris.')
+    data['data_naixement'] = _parse_date_text(
+        data['data_naixement'],
+        'La data de naixement no és vàlida.',
+        'La data de naixement no pot ser futura.',
+    )
+
+    if data['tipus_feina'] == 'metge' and not data['especialitat']:
+        raise ValueError('Falta especialitat.')
+
+    if data['tipus_feina'] == 'infermer':
+        if data['cap_de_planta']:
+            data['id_metge_supervisor'] = None
+        elif not data['id_metge_supervisor']:
+            if require_supervisor:
+                raise ValueError('Selecciona un metge supervisor o marca cap de planta.')
+            data['id_metge_supervisor'] = None
+
+
+def _save_uploaded_cv(uploaded_file):
+    if uploaded_file is None or not getattr(uploaded_file, 'filename', ''):
+        raise ValueError('Falten especialitat o CV.')
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_file.filename)
+    uploaded_file.save(save_path)
+    return save_path
+
+
+def _copy_cv_file(cv_path):
+    if not cv_path:
+        raise ValueError('Falta la ruta del CV.')
+
+    if not os.path.isfile(cv_path):
+        raise ValueError('El fitxer CV no existeix.')
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+    filename = f"{timestamp}_{os.path.basename(cv_path)}"
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    shutil.copy2(cv_path, save_path)
+    return save_path
+
+
+def _create_employee_record(data, cv_file_path=None):
+    return m.new_employee(
+        data['nom'],
+        data['cognom'],
+        data['cognom2'],
+        data['data_naixement'],
+        data['telefon'],
+        data['telefon2'],
+        data['email'],
+        data['email_intern'],
+        data['dni'],
+        data['tipus_feina'],
+        data['data_alta'],
+        especialitat=data.get('especialitat') or None,
+        cv=cv_file_path,
+        mresp=data.get('id_metge_supervisor') or None,
+        username=_current_username(),
+    )
+
+
+def _render_report_page(template_name):
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
+    return render_template(f'reports/{template_name}.html')
+
+
+def _get_required_arg(name, label):
+    value = _get_text(request.args, name)
+    if not value:
+        raise ValueError(f'{label} parameter is required')
+    return value
+
+
+def _get_required_date_arg():
+    date_value = _get_required_arg('date', 'Date')
+
+    try:
+        datetime.datetime.strptime(date_value, '%Y-%m-%d')
+    except ValueError as exc:
+        raise ValueError('Invalid date format. Use YYYY-MM-DD') from exc
+
+    return date_value
+
+
+def _get_required_int_arg(name, label):
+    value = _get_required_arg(name, label)
+
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise ValueError(f'{label} parameter must be a valid integer') from exc
+
+
 
 ############
 # STATIC FILES
@@ -67,35 +353,35 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
 
-    username = request.form.get('username')
-    password = request.form.get('password')
+    data = _read_login_data(request.form)
 
-    ok, error, tipus = m.login(username, password)
+    try:
+        _validate_login_data(data)
+    except ValueError as exc:
+        return render_template('login.html', error=str(exc))
+
+    ok, error, tipus = m.login(data['username'], data['password'])
     if ok:
-        username = username.lower()
-        session['username'] = username
-        session['role'] = tipus
+        _set_logged_user(data['username'], tipus)
         return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-    data = request.get_json(silent=True) or {}
-    username = (data.get('username') or '').strip()
-    password = data.get('password') or ''
+    data = _read_login_data(request.get_json(silent=True) or {})
 
-    if not username or not password:
-        return jsonify({'ok': False, 'error': 'Username and password are required.'}), 400
+    try:
+        _validate_login_data(data)
+    except ValueError:
+        return _json_error('Username and password are required.')
 
-    ok, error, tipus = m.login(username, password)
+    ok, error, tipus = m.login(data['username'], data['password'])
     if not ok:
-        return jsonify({'ok': False, 'error': error}), 401
+        return _json_error(error, 401)
 
-    username = username.lower()
-    session['username'] = username
-    session['role'] = tipus
-    return jsonify({'ok': True, 'username': username, 'role': tipus})
+    _set_logged_user(data['username'], tipus)
+    return jsonify({'ok': True, 'username': data['username'].lower(), 'role': tipus})
 
 
 
@@ -104,16 +390,14 @@ def api_login():
 ############
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    session.pop('role', None)
+    _clear_logged_user()
     return redirect(url_for('login'))
 
 
 @app.route('/api/logout', methods=['POST'])
 def api_logout():
-    session.pop('username', None)
-    session.pop('role', None)
-    return jsonify({'ok': True})
+    _clear_logged_user()
+    return _json_ok()
 
 
 
@@ -123,51 +407,36 @@ def api_logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        return render_template('register.html', error=None)
+        return render_template(REGISTER_TEMPLATE, error=None)
 
-    username = request.form.get('username', '').strip()
-    password = request.form.get('password', '')
-    confirm_password = request.form.get('confirm_password', '')
-    id_intern_raw = request.form.get('id_intern', '').strip()
+    data = _read_register_data(request.form)
 
-    if not username or not password or not confirm_password or not id_intern_raw:
-        return render_template('register.html', error='Completa todos los campos.')
+    try:
+        _validate_register_data(data)
+    except ValueError as exc:
+        return render_template(REGISTER_TEMPLATE, error=str(exc))
 
-    if password != confirm_password:
-        return render_template('register.html', error='Las contraseñas no coinciden.')
-
-    if not id_intern_raw.isdigit():
-        return render_template('register.html', error='El id_intern debe ser un numero entero.')
-
-    ok, error = m.register(username, password, int(id_intern_raw))
+    ok, error = m.register(data['username'], data['password'], int(data['id_intern']))
     if ok:
         return redirect(url_for('login'))
 
-    return render_template('register.html', error=error)
+    return render_template(REGISTER_TEMPLATE, error=error)
 
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
-    data = request.get_json(silent=True) or {}
-    username = (data.get('username') or '').strip()
-    password = data.get('password') or ''
-    confirm_password = data.get('confirm_password') or ''
-    id_intern_raw = str(data.get('id_intern') or '').strip()
+    data = _read_register_data(request.get_json(silent=True) or {})
 
-    if not username or not password or not confirm_password or not id_intern_raw:
-        return jsonify({'ok': False, 'error': 'Completa todos los campos.'}), 400
+    try:
+        _validate_register_data(data)
+    except ValueError as exc:
+        return _json_error(str(exc))
 
-    if password != confirm_password:
-        return jsonify({'ok': False, 'error': 'Las contraseñas no coinciden.'}), 400
-
-    if not id_intern_raw.isdigit():
-        return jsonify({'ok': False, 'error': 'El id_intern debe ser un numero entero.'}), 400
-
-    ok, error = m.register(username, password, int(id_intern_raw))
+    ok, error = m.register(data['username'], data['password'], int(data['id_intern']))
     if ok:
-        return jsonify({'ok': True})
+        return _json_ok()
 
-    return jsonify({'ok': False, 'error': error}), 400
+    return _json_error(error)
 
 
 
@@ -176,8 +445,9 @@ def api_register():
 ############
 @app.route('/home')
 def home():
-    if 'username' not in session:
-        return redirect(url_for('login'))
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
     return render_template('home.html')
 
 
@@ -187,64 +457,39 @@ def home():
 ############
 @app.route('/pacient/alta', methods=['GET', 'POST'])
 def alta_pacient():
-    if 'username' not in session:
-        return _unauthorized_response()
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
 
     if request.method == 'GET':
-        return render_template('alta_pacient.html', error=None, success=None)
+        return _render_form(PATIENT_TEMPLATE)
 
-    nom = request.form.get('nom', '').strip()
-    cognom = request.form.get('cognom', '').strip()
-    cognom2 = request.form.get('cognom2', '').strip()
-    data_naixement_str = request.form.get('data_naixement', '').strip()
-    identificador = request.form.get('identificador', '').strip().upper()
-
-    if not nom or not cognom or not cognom2 or not data_naixement_str or not identificador:
-        return render_template('alta_pacient.html', error='Completa tots els camps.', success=None)
+    data = _read_patient_data(request.form)
 
     try:
-        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
-    except ValueError:
-        return render_template('alta_pacient.html', error='La data de naixement no és vàlida.', success=None)
+        _validate_patient_data(data, 'la data de naixement no pot ser futura.')
+    except ValueError as exc:
+        return _render_form(PATIENT_TEMPLATE, error=str(exc), success=None)
 
-    if data_naixement > datetime.date.today():
-        return render_template('alta_pacient.html', error='la data de naixement no pot ser futura.', success=None)
-
-    ok, error = m.new_pacient(nom, cognom, cognom2, data_naixement, identificador, username=session['username'])
-    if not ok:
-        return render_template('alta_pacient.html', error=error, success=None)
-
-    return render_template('alta_pacient.html', error=None, success='Pacient donat d\'alta correctament.')
+    ok, error = _create_patient_record(data)
+    return _action_response(ok, error, 'Pacient donat d\'alta correctament.', template_name=PATIENT_TEMPLATE)
 
 
 @app.route('/api/pacients', methods=['POST'])
 def create_pacient():
-    if 'username' not in session:
-        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
 
-    data = request.get_json(silent=True) or {}
-    nom = (data.get('nom') or '').strip()
-    cognom = (data.get('cognom') or '').strip()
-    cognom2 = (data.get('cognom2') or '').strip()
-    data_naixement_str = (data.get('data_naixement') or '').strip()
-    identificador = (data.get('identificador') or '').strip().upper()
-
-    if not nom or not cognom or not cognom2 or not data_naixement_str or not identificador:
-        return jsonify({'ok': False, 'error': 'Completa tots els camps.'}), 400
+    data = _read_patient_data(request.get_json(silent=True) or {})
 
     try:
-        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
-    except ValueError:
-        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
+        _validate_patient_data(data)
+    except ValueError as exc:
+        return _json_error(str(exc))
 
-    if data_naixement > datetime.date.today():
-        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
-
-    ok, error = m.new_pacient(nom, cognom, cognom2, data_naixement, identificador, username=session['username'])
-    if not ok:
-        return jsonify({'ok': False, 'error': error}), 400
-
-    return jsonify({'ok': True, 'message': 'Pacient donat d\'alta correctament.'})
+    ok, error = _create_patient_record(data)
+    return _action_response(ok, error, 'Pacient donat d\'alta correctament.')
 
 
 
@@ -253,234 +498,42 @@ def create_pacient():
 ############
 @app.route('/personal/alta', methods=['GET', 'POST'])
 def alta_personal():
-    if 'username' not in session:
-        return _unauthorized_response()
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
 
     if request.method == 'GET':
-        return render_template('alta_personal.html', error=None, success=None)
+        return _render_form(EMPLOYEE_TEMPLATE)
 
-    nom = request.form.get('nom', '').strip()
-    cognom = request.form.get('cognom', '').strip()
-    cognom2 = request.form.get('cognom2', '').strip()
-    data_naixement_str = request.form.get('data_naixement', '').strip()
-    telefon = request.form.get('telefon', '').strip()
-    telefon2 = request.form.get('telefon2', '').strip()
-    email = request.form.get('email', '').strip()
-    email_intern = request.form.get('email_intern', '').strip()
-    dni = request.form.get('dni', '').strip().upper()
-    tfeina = request.form.get('tipus_feina', '').strip()
-    data_alta_str = request.form.get('data_alta', '').strip()
-    mresp = request.form.get('id_metge_supervisor', '').strip()
-    try:
-        especialitat = request.form.get('especialitat', '').strip()
-        cv = request.files.get('cv')
-    except:
-        pass
-
-    if (
-        not nom
-        or not cognom
-        or not cognom2
-        or not data_naixement_str
-        or not telefon
-        or not email
-        or not email_intern
-        or not dni
-        or not tfeina
-        or not data_alta_str
-    ):
-        return render_template('alta_personal.html', error='Completa tots els camps obligatoris.', success=None)
+    data = _read_employee_data(request.form)
+    uploaded_cv = request.files.get('cv')
 
     try:
-        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
-    except ValueError:
-        return render_template('alta_personal.html', error='La data de naixement no és vàlida.', success=None)
-
-    if data_naixement > datetime.date.today():
-        return render_template('alta_personal.html', error='La data de naixement no pot ser futura.', success=None)
-
-    try:
-        if tfeina == 'metge':
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            filename = cv.filename if cv else None
-            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename) if filename else None
-            cv.save(save_path)
-            state, error = m.new_employee(
-                nom,
-                cognom,
-                cognom2,
-                data_naixement,
-                telefon,
-                telefon2,
-                email,
-                email_intern,
-                dni,
-                tfeina,
-                data_alta_str,
-                especialitat,
-                save_path,
-                username=session['username']
-            )
-        elif tfeina == 'infermer':
-            mresp = mresp if mresp else None
-            state, error = m.new_employee(
-                    nom,
-                    cognom,
-                    cognom2,
-                    data_naixement,
-                    telefon,
-                    telefon2,
-                    email,
-                    email_intern,
-                    dni,
-                    tfeina,
-                    data_alta_str,
-                    mresp=mresp,
-                    username=session['username']
-                )
-
-        else:
-            state, error = m.new_employee(
-                nom,
-                cognom,
-                cognom2,
-                data_naixement,
-                telefon,
-                telefon2,
-                email,
-                email_intern,
-                dni,
-                tfeina,
-                data_alta_str,
-                username=session['username']
-            )
-
-        if not state:
-            return render_template('alta_personal.html', error=error, success=None)
-
-        return render_template('alta_personal.html', error=None, success='Personal donat d\'alta correctament.')
-    except Exception as e:
-        return render_template('alta_personal.html', error=str(e), success=None)
+        _validate_employee_data(data)
+        cv_file_path = _save_uploaded_cv(uploaded_cv) if data['tipus_feina'] == 'metge' else None
+        state, error = _create_employee_record(data, cv_file_path)
+        return _action_response(state, error, 'Personal donat d\'alta correctament.', template_name=EMPLOYEE_TEMPLATE)
+    except Exception as exc:
+        return _render_form(EMPLOYEE_TEMPLATE, error=str(exc), success=None)
 
 
 @app.route('/api/personal', methods=['POST'])
 def create_personal():
-    if 'username' not in session:
-        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+    unauthorized = _require_login()
+    if unauthorized:
+        return unauthorized
 
-    data = request.get_json(silent=True) or {}
-    nom = (data.get('nom') or '').strip()
-    cognom = (data.get('cognom') or '').strip()
-    cognom2 = (data.get('cognom2') or '').strip()
-    data_naixement_str = (data.get('data_naixement') or '').strip()
-    telefon = (data.get('telefon') or '').strip()
-    telefon2 = (data.get('telefon2') or '').strip()
-    email = (data.get('email') or '').strip()
-    email_intern = (data.get('email_intern') or '').strip()
-    dni = (data.get('dni') or '').strip().upper()
-    tfeina = (data.get('tipus_feina') or '').strip()
-    data_alta_str = (data.get('data_alta') or '').strip()
-    especialitat = (data.get('especialitat') or '').strip()
-    cv_path = (data.get('cv_path') or '').strip()
-    mresp = (data.get('id_metge_supervisor') or '').strip()
-    cap_de_planta = bool(data.get('cap_de_planta'))
-
-    if (
-        not nom
-        or not cognom
-        or not cognom2
-        or not data_naixement_str
-        or not telefon
-        or not email
-        or not email_intern
-        or not dni
-        or not tfeina
-        or not data_alta_str
-    ):
-        return jsonify({'ok': False, 'error': 'Completa tots els camps obligatoris.'}), 400
+    data = _read_employee_data(request.get_json(silent=True) or {})
 
     try:
-        data_naixement = datetime.datetime.strptime(data_naixement_str, '%Y-%m-%d').date()
-    except ValueError:
-        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
-
-    if data_naixement > datetime.date.today():
-        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
-
-    try:
-        if tfeina == 'metge':
-            if not especialitat:
-                return jsonify({'ok': False, 'error': 'Falta especialitat.'}), 400
-
-            if not cv_path:
-                return jsonify({'ok': False, 'error': 'Falta la ruta del CV.'}), 400
-
-            if not os.path.isfile(cv_path):
-                return jsonify({'ok': False, 'error': 'El fitxer CV no existeix.'}), 400
-
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
-            filename = f"{timestamp}_{os.path.basename(cv_path)}"
-            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            shutil.copy2(cv_path, save_path)
-
-            state, error = m.new_employee(
-                nom,
-                cognom,
-                cognom2,
-                data_naixement,
-                telefon,
-                telefon2,
-                email,
-                email_intern,
-                dni,
-                tfeina,
-                data_alta_str,
-                especialitat,
-                save_path,
-                username=session['username'],
-            )
-        elif tfeina == 'infermer':
-            supervisor = None if cap_de_planta else (mresp or None)
-            if supervisor is None and not cap_de_planta:
-                return jsonify({'ok': False, 'error': 'Selecciona un metge supervisor o marca cap de planta.'}), 400
-            state, error = m.new_employee(
-                nom,
-                cognom,
-                cognom2,
-                data_naixement,
-                telefon,
-                telefon2,
-                email,
-                email_intern,
-                dni,
-                tfeina,
-                data_alta_str,
-                mresp=supervisor,
-                username=session['username'],
-            )
-        else:
-            state, error = m.new_employee(
-                nom,
-                cognom,
-                cognom2,
-                data_naixement,
-                telefon,
-                telefon2,
-                email,
-                email_intern,
-                dni,
-                tfeina,
-                data_alta_str,
-                username=session['username'],
-            )
-
-        if not state:
-            return jsonify({'ok': False, 'error': error}), 400
-
-        return jsonify({'ok': True, 'message': 'Personal donat d\'alta correctament.'})
-    except Exception as e:
-        return jsonify({'ok': False, 'error': str(e)}), 500
+        _validate_employee_data(data, require_supervisor=True)
+        cv_file_path = _copy_cv_file(data['cv_path']) if data['tipus_feina'] == 'metge' else None
+        state, error = _create_employee_record(data, cv_file_path)
+        return _action_response(state, error, 'Personal donat d\'alta correctament.')
+    except ValueError as exc:
+        return _json_error(str(exc))
+    except Exception as exc:
+        return _json_error(str(exc), 500)
 
 
 
@@ -489,9 +542,7 @@ def create_personal():
 ############
 @app.route('/informes/supervisio')
 def informes_supervisio():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/supervisio.html')
+    return _render_report_page('supervisio')
 
 
 ############
@@ -499,9 +550,7 @@ def informes_supervisio():
 ############
 @app.route('/informes/visites')
 def informes_visites():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/visites.html')
+    return _render_report_page('visites')
 
 
 
@@ -510,9 +559,7 @@ def informes_visites():
 ############
 @app.route('/informes/quirofans')
 def informes_quirofans():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/quirofans.html')
+    return _render_report_page('quirofans')
 
 
 ############
@@ -520,9 +567,7 @@ def informes_quirofans():
 ############
 @app.route('/informes/habitacions')
 def informes_habitacions():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/habitacions.html')
+    return _render_report_page('habitacions')
 
 
 ############
@@ -530,9 +575,7 @@ def informes_habitacions():
 ############
 @app.route('/informes/metge')
 def informes_metge():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/metge.html')
+    return _render_report_page('metge')
 
 
 ############
@@ -540,9 +583,7 @@ def informes_metge():
 ############
 @app.route('/informes/aparells')
 def informes_aparells():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/aparells.html')
+    return _render_report_page('aparells')
 
 
 ############
@@ -550,9 +591,7 @@ def informes_aparells():
 ############
 @app.route('/informes/pacient')
 def informes_pacient():
-    if 'username' not in session:
-        return _unauthorized_response()
-    return render_template('reports/pacient.html')
+    return _render_report_page('pacient')
 
 
 ###########################       API ENDPOINTS       ###########################
@@ -575,9 +614,10 @@ def api_response(result, data_key='data'):
 ############
 @app.route('/me')
 def me():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify({'username': session['username'], 'role': session.get('role')})
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return jsonify({'username': _current_username(), 'role': session.get('role')})
 
 
 def _mask_payload(payload):
@@ -607,9 +647,10 @@ def _mask_payload(payload):
 ############
 @app.route('/api/metges')
 def get_metges():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return api_response(m.get_metges(username=session['username']))
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_metges(username=_current_username()))
 
 
 
@@ -618,9 +659,10 @@ def get_metges():
 ############
 @app.route('/api/informes/supervisio')
 def get_informes_supervisio():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return api_response(m.get_informes('supervisio', username=session['username']))
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('supervisio', username=_current_username()))
 
 
 
@@ -629,18 +671,15 @@ def get_informes_supervisio():
 ############
 @app.route('/api/informes/visites')
 def get_informes_visites():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    date = request.args.get('date', '').strip()
-    if not date:
-        return jsonify({'error': 'Date parameter is required'}), 400
-
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
     try:
-        datetime.datetime.strptime(date, '%Y-%m-%d')
-    except ValueError:
-        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+        date_value = _get_required_date_arg()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    return api_response(m.get_informes('visites', (date,), username=session['username']))
+    return api_response(m.get_informes('visites', (date_value,), username=_current_username()))
 
 
 
@@ -649,18 +688,15 @@ def get_informes_visites():
 ############
 @app.route('/api/informes/quirofans')
 def get_informes_quirofans():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    date = request.args.get('date', '').strip()
-    if not date:
-        return jsonify({'error': 'Date parameter is required'}), 400
-
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
     try:
-        datetime.datetime.strptime(date, '%Y-%m-%d')
-    except ValueError:
-        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+        date_value = _get_required_date_arg()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    return api_response(m.get_informes('quirofans', (date,), username=session['username']))
+    return api_response(m.get_informes('quirofans', (date_value,), username=_current_username()))
 
 
 ############
@@ -668,14 +704,16 @@ def get_informes_quirofans():
 ############
 @app.route('/api/informes/habitacions')
 def get_informes_habitacions():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
 
-    habitacio = request.args.get('habitacio', '').strip()
-    if not habitacio:
-        return jsonify({'error': 'Room parameter is required'}), 400
+    try:
+        habitacio = _get_required_arg('habitacio', 'Room')
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    return api_response(m.get_informes('habitacions', (habitacio,), username=session['username']))
+    return api_response(m.get_informes('habitacions', (habitacio,), username=_current_username()))
 
 
 ############
@@ -683,29 +721,17 @@ def get_informes_habitacions():
 ############
 @app.route('/api/informes/metge')
 def get_informes_metge():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    metge = request.args.get('metge', '').strip()
-    date = request.args.get('date', '').strip()
-
-    if not metge:
-        return jsonify({'error': 'Doctor parameter is required'}), 400
-
-    if not date:
-        return jsonify({'error': 'Date parameter is required'}), 400
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
 
     try:
-        datetime.datetime.strptime(date, '%Y-%m-%d')
-    except ValueError:
-        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+        metge_id = _get_required_int_arg('metge', 'Doctor')
+        date_value = _get_required_date_arg()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    try:
-        metge_id = int(metge)
-    except ValueError:
-        return jsonify({'error': 'Doctor parameter must be a valid integer'}), 400
-
-    return api_response(m.get_informes('metge', (metge_id, date, metge_id, date), username=session['username']))
+    return api_response(m.get_informes('metge', (metge_id, date_value, metge_id, date_value), username=_current_username()))
 
 
 ############
@@ -713,9 +739,10 @@ def get_informes_metge():
 ############
 @app.route('/api/informes/aparells')
 def get_informes_aparells():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return api_response(m.get_informes('aparells', username=session['username']))
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('aparells', username=_current_username()))
 
 
 
@@ -724,9 +751,10 @@ def get_informes_aparells():
 ############
 @app.route('/api/habitacions')
 def get_habitacions():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return api_response(m.get_habitacions(username=session['username']))
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_habitacions(username=_current_username()))
 
 
 ############
@@ -734,9 +762,10 @@ def get_habitacions():
 ############
 @app.route('/api/pacients')
 def get_pacients():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    return api_response(m.get_pacients(username=session['username']))
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_pacients(username=_current_username()))
 
 
 ############
@@ -744,27 +773,24 @@ def get_pacients():
 ############
 @app.route('/api/informes/pacient')
 def get_informes_pacient():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    pacient = request.args.get('pacient', '').strip()
-    if not pacient:
-        return jsonify({'error': 'Patient parameter is required'}), 400
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
 
     try:
-        pacient_id = int(pacient)
-    except ValueError:
-        return jsonify({'error': 'Patient parameter must be a valid integer'}), 400
+        pacient_id = _get_required_int_arg('pacient', 'Patient')
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    return api_response(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=session['username']))
+    return api_response(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=_current_username()))
 
 
 
 if __name__ == '__main__':
-    host = os.getenv('FLASK_HOST', '0.0.0.0')
-    port = int(os.getenv('FLASK_PORT', '443'))
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    port = int(os.getenv('FLASK_PORT', '5000'))
     debug = _bool_env('FLASK_DEBUG', default=True)
-    use_ssl = _bool_env('FLASK_USE_SSL', default=True)
+    use_ssl = _bool_env('FLASK_USE_SSL', default=False)
 
     cert = os.getenv('CERT')
     key = os.getenv('KEY')

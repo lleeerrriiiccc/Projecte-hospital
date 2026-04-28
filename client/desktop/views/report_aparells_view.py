@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import tkinter as tk
 from tkinter import ttk
 
@@ -100,11 +98,8 @@ class ReportAparellsView(BaseView):
         self.cards_text.configure(state="disabled")
 
     def _load_data(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-
-        self.cards_text.configure(state="normal")
-        self.cards_text.delete("1.0", tk.END)
+        self.clear_tree(self.tree)
+        self.clear_text_widget(self.cards_text)
         self.cards_text.configure(state="disabled")
         self.rooms_var.set("Quirofans: 0")
         self.machines_var.set("Maquines totals: 0")

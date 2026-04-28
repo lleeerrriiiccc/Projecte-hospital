@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import datetime
 import tkinter as tk
 from tkinter import filedialog, ttk
@@ -86,7 +84,7 @@ class AltaPersonalView(BaseView):
             self.entries[key] = entry
             row += 1
 
-        self.entries["data_alta"].insert(0, datetime.date.today().isoformat())
+        self.entries["data_alta"].insert(0, self.today_iso())
 
         ttk.Label(card, text="Tipus feina").grid(row=13, column=0, sticky="w", pady=3)
         self.tipus_combo = ttk.Combobox(card, values=WORK_TYPES, state="readonly")
@@ -103,16 +101,7 @@ class AltaPersonalView(BaseView):
 
         payload = self.app_state["api"].get_metges()
         rows = payload.get("data") or []
-        metges = {}
-        for row in rows:
-            if isinstance(row, (list, tuple)) and len(row) >= 2:
-                metges[str(row[0])] = str(row[1])
-            elif isinstance(row, dict):
-                metge_id = row.get("id_intern") or row.get("id")
-                metge_name = row.get("nom_complet") or row.get("nom")
-                if metge_id and metge_name:
-                    metges[str(metge_id)] = str(metge_name)
-        self._metges_map = metges
+        self._metges_map = self.build_options_map(rows, ["id_intern", "id"], ["nom_complet", "nom"])
 
     def _browse_cv(self):
         file_path = filedialog.askopenfilename(
@@ -164,27 +153,21 @@ class AltaPersonalView(BaseView):
             ).grid(row=0, column=0, columnspan=2, sticky="w", pady=3)
 
             ttk.Label(self.dynamic_frame, text="Metge supervisor").grid(row=1, column=0, sticky="w", pady=3)
-            values = [f"{mid} - {name}" for mid, name in self._metges_map.items()]
+            values = self.build_combo_values(self._metges_map)
             self.supervisor_combo = ttk.Combobox(self.dynamic_frame, values=values, state="readonly")
             self.supervisor_combo.grid(row=1, column=1, sticky="we", pady=3)
             self._toggle_supervisor()
 
     def _validate_dates(self, payload):
-        try:
-            birth_date = datetime.datetime.strptime(payload["data_naixement"], "%Y-%m-%d").date()
-        except ValueError as exc:
-            raise ValueError("Data naixement invalida. Usa YYYY-MM-DD.") from exc
+        birth_date = self.parse_iso_date(payload["data_naixement"], "Data naixement invalida. Usa YYYY-MM-DD.")
 
         if birth_date > datetime.date.today():
             raise ValueError("La data de naixement no pot ser futura.")
 
-        try:
-            datetime.datetime.strptime(payload["data_alta"], "%Y-%m-%d")
-        except ValueError as exc:
-            raise ValueError("Data alta invalida. Usa YYYY-MM-DD.") from exc
+        self.parse_iso_date(payload["data_alta"], "Data alta invalida. Usa YYYY-MM-DD.")
 
     def _build_payload(self):
-        payload = {key: entry.get().strip() for key, entry in self.entries.items()}
+        payload = self.get_entry_values(self.entries)
         payload["tipus_feina"] = self.tipus_combo.get().strip()
         payload["dni"] = payload["dni"].upper()
 
@@ -222,7 +205,7 @@ class AltaPersonalView(BaseView):
                 selected_value = selected.get().strip() if selected else ""
                 if not selected_value:
                     raise ValueError("Selecciona un metge supervisor o marca cap de planta.")
-                payload["id_metge_supervisor"] = selected_value.split(" - ", 1)[0]
+                payload["id_metge_supervisor"] = self.split_combo_value(selected_value)
 
         return payload
 
@@ -238,9 +221,7 @@ class AltaPersonalView(BaseView):
             self.status_var.set(f"Error inesperado: {exc}")
 
     def _reset_form(self):
-        for entry in self.entries.values():
-            entry.delete(0, tk.END)
-        self.entries["data_alta"].insert(0, datetime.date.today().isoformat())
+        self.reset_entries(self.entries, {"data_alta": self.today_iso()})
         self.tipus_combo.set("")
         self.cv_path_var.set("")
         self.cap_de_planta_var.set(False)

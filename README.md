@@ -155,10 +155,17 @@ Els endpoints API de consultes ja existents (`/api/informes/*`, `/api/metges`, `
 ### Variables d'entorn utiles
 
 - `FLASK_USE_SSL`: `true` o `false` per activar/desactivar SSL al backend.
-- `FLASK_HOST`: host de Flask (per defecte `0.0.0.0`).
-- `FLASK_PORT`: port de Flask (per defecte `443`).
-- `DESKTOP_API_BASE_URL`: URL base que usa Tkinter (per defecte `http://127.0.0.1:443`).
+- `FLASK_HOST`: host de Flask (per defecte `127.0.0.1`).
+- `FLASK_PORT`: port de Flask (per defecte `5000`).
+- `DESKTOP_API_BASE_URL`: URL base que usa Tkinter (per defecte `http://127.0.0.1:5000`).
 - `DESKTOP_API_VERIFY_TLS`: `true` o `false` per verificar certificat TLS al client desktop.
+- `DB_SSLMODE`: mode SSL de PostgreSQL. Per treballar en local és recomanable `prefer`.
+
+### Requisit per executar-ho tot
+
+- Cal tenir PostgreSQL instal.lat i en marxa.
+- La base de dades `hosp_blanes` ha d'existir abans de fer login o carregar dades.
+- Si PostgreSQL no està arrencat, el backend i el client s'obriran igualment, pero les accions que depenen de base de dades retornaran error.
 
 ### Execucio en local (web + desktop)
 
@@ -166,14 +173,21 @@ Els endpoints API de consultes ja existents (`/api/informes/*`, `/api/metges`, `
 
 ```bash
 cd server
-FLASK_USE_SSL=false FLASK_PORT=443 python3 main.py
+FLASK_USE_SSL=false FLASK_PORT=5000 python3 main.py
 ```
 
 2. En una altra terminal, arrenca la GUI Tkinter:
 
 ```bash
 cd client
-DESKTOP_API_BASE_URL=http://127.0.0.1:443 python3 desktop_main.py
+DESKTOP_API_BASE_URL=http://127.0.0.1:5000 python3 desktop_main.py
+```
+
+3. Si cal preparar la base de dades, carrega primer l'esquema i despres les dades de prova:
+
+```bash
+psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
 ```
 
 ### Millores opcionals pendents

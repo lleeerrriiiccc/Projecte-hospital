@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import datetime
 import tkinter as tk
 from tkinter import ttk
@@ -97,8 +95,7 @@ class ReportHabitacionsView(BaseView):
         return occupants
 
     def _render_calendar(self, month_value, rows):
-        self.calendar_text.configure(state="normal")
-        self.calendar_text.delete("1.0", tk.END)
+        self.clear_text_widget(self.calendar_text)
 
         year, month = month_value.split("-")
         year_int = int(year)
@@ -150,16 +147,8 @@ class ReportHabitacionsView(BaseView):
     def _load_rooms(self):
         payload = self.app_state["api"].get_habitacions()
         rows = payload.get("data") or []
-        values = []
-        for row in rows:
-            if isinstance(row, dict):
-                room = row.get("num_habitacio")
-            elif isinstance(row, (list, tuple)) and row:
-                room = row[0]
-            else:
-                room = None
-            if room is not None:
-                values.append(str(room))
+        mapping = self.build_options_map(rows, ["num_habitacio", "id"], ["num_habitacio", "nom"])
+        values = list(mapping.values())
 
         self.room_combo.configure(values=values)
         if values and not self.room_combo.get():
@@ -186,16 +175,14 @@ class ReportHabitacionsView(BaseView):
 
         if month_value:
             try:
-                datetime.datetime.strptime(month_value + "-01", "%Y-%m-%d")
+                self.parse_iso_date(month_value + "-01", "El mes")
             except ValueError:
                 self.message_var.set("Formato de mes invalido. Usa YYYY-MM.")
                 return
 
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        self.clear_tree(self.tree)
 
-        self.calendar_text.configure(state="normal")
-        self.calendar_text.delete("1.0", tk.END)
+        self.clear_text_widget(self.calendar_text)
         self.calendar_text.configure(state="disabled")
 
         try:

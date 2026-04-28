@@ -1,22 +1,44 @@
-from __future__ import annotations
-
+import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 
-from .api_client import ApiClient
-from .config import WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH
-from .theme import PALETTE
-from .views.alta_pacient_view import AltaPacientView
-from .views.alta_personal_view import AltaPersonalView
-from .views.report_aparells_view import ReportAparellsView
-from .views.report_habitacions_view import ReportHabitacionsView
-from .views.report_metge_view import ReportMetgeView
-from .views.report_pacient_view import ReportPacientView
-from .views.report_quirofans_view import ReportQuirofansView
-from .views.report_supervisio_view import ReportSupervisioView
-from .views.home_view import HomeView
-from .views.login_view import LoginView
-from .views.report_visites_view import ReportVisitesView
+try:
+    from .api_client import ApiClient
+    from .config import WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH
+    from .theme import PALETTE
+    from .views.alta_pacient_view import AltaPacientView
+    from .views.alta_personal_view import AltaPersonalView
+    from .views.report_aparells_view import ReportAparellsView
+    from .views.report_habitacions_view import ReportHabitacionsView
+    from .views.report_metge_view import ReportMetgeView
+    from .views.report_pacient_view import ReportPacientView
+    from .views.report_quirofans_view import ReportQuirofansView
+    from .views.report_supervisio_view import ReportSupervisioView
+    from .views.home_view import HomeView
+    from .views.login_view import LoginView
+    from .views.report_visites_view import ReportVisitesView
+except ImportError:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    client_dir = os.path.dirname(current_dir)
+
+    if client_dir not in sys.path:
+        sys.path.insert(0, client_dir)
+
+    from desktop.api_client import ApiClient
+    from desktop.config import WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH
+    from desktop.theme import PALETTE
+    from desktop.views.alta_pacient_view import AltaPacientView
+    from desktop.views.alta_personal_view import AltaPersonalView
+    from desktop.views.report_aparells_view import ReportAparellsView
+    from desktop.views.report_habitacions_view import ReportHabitacionsView
+    from desktop.views.report_metge_view import ReportMetgeView
+    from desktop.views.report_pacient_view import ReportPacientView
+    from desktop.views.report_quirofans_view import ReportQuirofansView
+    from desktop.views.report_supervisio_view import ReportSupervisioView
+    from desktop.views.home_view import HomeView
+    from desktop.views.login_view import LoginView
+    from desktop.views.report_visites_view import ReportVisitesView
 
 
 class DesktopApp(tk.Tk):

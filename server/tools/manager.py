@@ -10,6 +10,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
+
+def _connect_for_user(username=None):
+    if username is None:
+        return db.connect()
+    return db.connect(username=username)
+
 #############################
 # HELPER DE ERRORES
 #############################
@@ -53,6 +59,42 @@ def handle_db_error(e, con):
     return False, f"Error intern: {str(e)}"
 
 
+def _execute_write(query, params, username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = _connect_for_user(username)
+        cur.execute(query, params)
+        con.commit()
+        return True, None
+    except Exception as e:
+        return handle_db_error(e, con)
+    finally:
+        _close_db(con, cur)
+
+
+def _fetch_rows(query, params=None, username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = _connect_for_user(username)
+        cur.execute(query, params or ())
+        return True, cur.fetchall()
+    except Exception as e:
+        ok, msg = handle_db_error(e, con)
+        return ok, msg
+    finally:
+        _close_db(con, cur)
+
+
+def _read_report_sql(report_name):
+    report_file = BASE_DIR / ".." / "sql" / f"informe_{report_name}.sql"
+    with open(report_file, encoding="utf-8") as sql_file:
+        return sql_file.read()
+
+
 ############
 # LOGIN FUNCTION
 ############
@@ -61,7 +103,7 @@ def login(username, password):
     cur = None
 
     try:
-        con, cur = db.connect()
+        con, cur = _connect_for_user()
         username = username.lower()
         cur.execute(
             "SELECT id_intern, password FROM usuaris WHERE username = %s",
@@ -104,7 +146,7 @@ def register(username, password, id_intern):
 
     try:
         username = username.lower()
-        con, cur = db.connect()
+        con, cur = _connect_for_user()
         cur.execute("SELECT 1 FROM personal WHERE id_intern = %s", (id_intern,))
         if cur.fetchone() is None:
             return False, "El id intern no existeix"
@@ -134,24 +176,12 @@ def register(username, password, id_intern):
 # NEW PACIENT FUNCTION
 ############
 def new_pacient(name, surename, surename2, birth_date, ident, username):
-    con = None
-    cur = None
-
-    try:
-        con, cur = db.connect(username=username)
-        cur.execute("""
-            INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (name, surename, surename2, birth_date, ident))
-
-        con.commit()
-        return True, None
-
-    except Exception as e:
-        return handle_db_error(e, con)
-
-    finally:
-        _close_db(con, cur)
+    query = """
+        INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    params = (name, surename, surename2, birth_date, ident)
+    return _execute_write(query, params, username=username)
 
 
 ############
@@ -166,43 +196,20 @@ def new_employee(
     cur = None
 
     try:
-        con, cur = db.connect(username=username)
-        match tfeina:
-            case 'metge':
-                if not especialitat or not cv:
-                    return False, "Falten especialitat o CV."
+        con, cur = _connect_for_user(username)
+        if tfeina == 'metge':
+            if not especialitat or not cv:
+                return False, "Falten especialitat o CV."
 
-                query = "SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                params = (
-                    name, surename, surename2, birthdate,
-                    phone, phone2, email, email_intern,
-                    dni, tfeina, data_alta_str,
-                    especialitat, cv
-                )
-
-            case 'infermer':
-                if not mresp:
-                    query = """
-                        INSERT INTO personal (
-                            nom, cognom, cognom2, data_naixement,
-                            telefon, telefon2, email, email_intern,
-                            dni, tipus_feina, data_alta
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """
-                    params = (
-                        name, surename, surename2, birthdate,
-                        phone, phone2, email, email_intern,
-                        dni, tfeina, data_alta_str
-                    )
-                else:
-                    query = "SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                    params = (
-                        name, surename, surename2, birthdate,
-                        phone, phone2, email, email_intern,
-                        dni, tfeina, data_alta_str, mresp
-                    )
-
-            case _:
+            query = "SELECT afegir_metge(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            params = (
+                name, surename, surename2, birthdate,
+                phone, phone2, email, email_intern,
+                dni, tfeina, data_alta_str,
+                especialitat, cv
+            )
+        elif tfeina == 'infermer':
+            if not mresp:
                 query = """
                     INSERT INTO personal (
                         nom, cognom, cognom2, data_naixement,
@@ -215,6 +222,26 @@ def new_employee(
                     phone, phone2, email, email_intern,
                     dni, tfeina, data_alta_str
                 )
+            else:
+                query = "SELECT afegir_infermer(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                params = (
+                    name, surename, surename2, birthdate,
+                    phone, phone2, email, email_intern,
+                    dni, tfeina, data_alta_str, mresp
+                )
+        else:
+            query = """
+                INSERT INTO personal (
+                    nom, cognom, cognom2, data_naixement,
+                    telefon, telefon2, email, email_intern,
+                    dni, tipus_feina, data_alta
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            params = (
+                name, surename, surename2, birthdate,
+                phone, phone2, email, email_intern,
+                dni, tfeina, data_alta_str
+            )
 
         cur.execute(query, params)
         con.commit()
@@ -231,23 +258,11 @@ def new_employee(
 # GET METGES
 ############
 def get_metges(username=None):
-    con = None
-    cur = None
-
-    try:
-        con, cur = db.connect(username=username)
-        cur.execute("""
-            SELECT id_intern, CONCAT(nom, ' ', cognom)
-            FROM personal WHERE tipus_feina = 'metge'
-        """)
-        return True, cur.fetchall()
-
-    except Exception as e:
-        ok, msg = handle_db_error(e, con)
-        return ok, msg
-
-    finally:
-        _close_db(con, cur)
+    query = """
+        SELECT id_intern, CONCAT(nom, ' ', cognom)
+        FROM personal WHERE tipus_feina = 'metge'
+    """
+    return _fetch_rows(query, username=username)
 
 
 ############
@@ -258,10 +273,8 @@ def get_informes(informe, params=None, username=None):
     cur = None
 
     try:
-        con, cur = db.connect(username=username)
-        informe_file = BASE_DIR / ".." / "sql" / f"informe_{informe}.sql"
-        with open(informe_file) as f:
-            sql = f.read()
+        con, cur = _connect_for_user(username)
+        sql = _read_report_sql(informe)
 
         if params:
             if not isinstance(params, (tuple, list)):
@@ -272,75 +285,82 @@ def get_informes(informe, params=None, username=None):
 
         rows = cur.fetchall()
 
-        match informe:
-            case 'supervisio':
-                return True, rows
+        if informe == 'supervisio':
+            return True, rows
 
-            case 'visites':
-                return True, [
-                    {"pacient": r[0], "metge": r[1], "hora_visita": str(r[2])}
-                    for r in rows
-                ]
+        if informe == 'visites':
+            result = []
+            for row in rows:
+                result.append({
+                    "pacient": row[0],
+                    "metge": row[1],
+                    "hora_visita": str(row[2]),
+                })
+            return True, result
 
-            case 'quirofans':
-                return True, [
-                    {
-                        "id_operacio": r[0],
-                        "data_operacio": str(r[1]),
-                        "hora_operacio": str(r[2]),
-                        "procediment": r[3],
-                        "pacient": r[4],
-                        "metge": r[5],
-                        "infermers_assistents": r[6],
-                    }
-                    for r in rows
-                ]
+        if informe == 'quirofans':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_operacio": row[0],
+                    "data_operacio": str(row[1]),
+                    "hora_operacio": str(row[2]),
+                    "procediment": row[3],
+                    "pacient": row[4],
+                    "metge": row[5],
+                    "infermers_assistents": row[6],
+                })
+            return True, result
 
-            case 'habitacions':
-                return True, [
-                    {
-                        "num_habitacio": r[0],
-                        "data_inici": str(r[1]),
-                        "data_fi": str(r[2]),
-                        "pacient": r[3],
-                    }
-                    for r in rows
-                ]
+        if informe == 'habitacions':
+            result = []
+            for row in rows:
+                result.append({
+                    "num_habitacio": row[0],
+                    "data_inici": str(row[1]),
+                    "data_fi": str(row[2]),
+                    "pacient": row[3],
+                })
+            return True, result
 
-            case 'metge':
-                return True, [
-                    {
-                        "tipus": r[0],
-                        "data": str(r[1]),
-                        "hora": str(r[2]),
-                        "pacient": r[3],
-                        "metge": r[4],
-                        "detall": r[5],
-                    }
-                    for r in rows
-                ]
+        if informe == 'metge':
+            result = []
+            for row in rows:
+                result.append({
+                    "tipus": row[0],
+                    "data": str(row[1]),
+                    "hora": str(row[2]),
+                    "pacient": row[3],
+                    "metge": row[4],
+                    "detall": row[5],
+                })
+            return True, result
 
-            case 'pacient':
-                return True, [
-                    {
-                        "tipus": r[0],
-                        "data_event": str(r[1]),
-                        "hora_event": str(r[2]) if r[2] is not None else None,
-                        "descripcio": r[3],
-                        "info_extra": r[4],
-                    }
-                    for r in rows
-                ]
+        if informe == 'pacient':
+            result = []
+            for row in rows:
+                hora_event = None
+                if row[2] is not None:
+                    hora_event = str(row[2])
 
-            case 'aparells':
-                return True, [
-                    {
-                        "id_quirofan": r[0],
-                        "planta": r[1],
-                        "maquinari": r[2],
-                    }
-                    for r in rows
-                ]
+                result.append({
+                    "tipus": row[0],
+                    "data_event": str(row[1]),
+                    "hora_event": hora_event,
+                    "descripcio": row[3],
+                    "info_extra": row[4],
+                })
+            return True, result
+
+        if informe == 'aparells':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_quirofan": row[0],
+                    "planta": row[1],
+                    "maquinari": row[2],
+                })
+            return True, result
 
         return True, rows
 
@@ -356,50 +376,37 @@ def get_informes(informe, params=None, username=None):
 # GET HABITACIONS
 ############
 def get_habitacions(username=None):
-    con = None
-    cur = None
+    query = """
+        SELECT num_habitacio
+        FROM habitacio
+        ORDER BY num_habitacio
+    """
+    ok, rows = _fetch_rows(query, username=username)
+    if not ok:
+        return ok, rows
 
-    try:
-        con, cur = db.connect(username=username)
-        cur.execute("""
-            SELECT num_habitacio
-            FROM habitacio
-            ORDER BY num_habitacio
-        """)
-        rows = cur.fetchall()
-        return True, [{"num_habitacio": r[0]} for r in rows]
+    result = []
+    for row in rows:
+        result.append({"num_habitacio": row[0]})
 
-    except Exception as e:
-        ok, msg = handle_db_error(e, con)
-        return ok, msg
-
-    finally:
-        _close_db(con, cur)
+    return True, result
 
 
 ############
 # GET PACIENTS
 ############
 def get_pacients(username=None):
-    con = None
-    cur = None
+    query = """
+        SELECT id_pacient, CONCAT(nom, ' ', cognom, ' ', cognom2)
+        FROM pacient
+        ORDER BY cognom, cognom2, nom
+    """
+    ok, rows = _fetch_rows(query, username=username)
+    if not ok:
+        return ok, rows
 
-    try:
-        con, cur = db.connect(username=username)
-        cur.execute("""
-            SELECT id_pacient, CONCAT(nom, ' ', cognom, ' ', cognom2)
-            FROM pacient
-            ORDER BY cognom, cognom2, nom
-        """)
-        rows = cur.fetchall()
-        return True, [
-            {"id_pacient": r[0], "nom_complet": r[1]}
-            for r in rows
-        ]
+    result = []
+    for row in rows:
+        result.append({"id_pacient": row[0], "nom_complet": row[1]})
 
-    except Exception as e:
-        ok, msg = handle_db_error(e, con)
-        return ok, msg
-
-    finally:
-        _close_db(con, cur)
+    return True, result

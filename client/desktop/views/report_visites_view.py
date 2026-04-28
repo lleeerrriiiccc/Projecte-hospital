@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import datetime
 import tkinter as tk
 from tkinter import ttk
@@ -30,7 +28,7 @@ class ReportVisitesView(BaseView):
         ttk.Label(controls, text="Fecha (YYYY-MM-DD)").grid(row=0, column=0, sticky="w")
         self.date_entry = ttk.Entry(controls, width=16)
         self.date_entry.grid(row=0, column=1, sticky="w", padx=(8, 8))
-        self.date_entry.insert(0, datetime.date.today().isoformat())
+        self.date_entry.insert(0, self.today_iso())
 
         ttk.Button(controls, text="Cargar", style="Primary.TButton", command=self._load_data).grid(row=0, column=2, sticky="w")
         ttk.Button(controls, text="Volver", command=lambda: self.navigate("home")).grid(row=0, column=3, sticky="w", padx=(8, 0))
@@ -55,13 +53,12 @@ class ReportVisitesView(BaseView):
     def _load_data(self):
         date_value = self.date_entry.get().strip()
         try:
-            datetime.datetime.strptime(date_value, "%Y-%m-%d")
-        except ValueError:
-            self.message_var.set("Formato de fecha invalido. Usa YYYY-MM-DD.")
+            self.parse_iso_date(date_value, "Formato de fecha invalido. Usa YYYY-MM-DD.")
+        except ValueError as exc:
+            self.message_var.set(str(exc))
             return
 
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        self.clear_tree(self.tree)
 
         try:
             payload = self.app_state["api"].get_visites(date_value)

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import tkinter as tk
 from tkinter import ttk
 
@@ -43,8 +41,7 @@ class ReportSupervisioView(BaseView):
         self.tree.configure(yscrollcommand=scrollbar.set)
 
     def _load_data(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
+        self.clear_tree(self.tree)
 
         try:
             payload = self.app_state["api"].get_report("supervisio")
