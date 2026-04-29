@@ -61,7 +61,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 ```
 
-![Pantalla d'autenticació](extras/images/login.png)
+![Pantalla d'autenticació](/extras/images/login.png)
 
 ### 2.3 Verificacions  
 
@@ -92,11 +92,11 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 ```
 
-![Login cloud](extras/images/login.png)
+![Login cloud](/extras/images/login.png)
 
 ### 3.3 Verificacions  
 
-![Dispositius](extras/images/devices.png)
+![Dispositius](/extras/images/devices.png)
 
 ### 3.4 Post-instal·lació  
 
