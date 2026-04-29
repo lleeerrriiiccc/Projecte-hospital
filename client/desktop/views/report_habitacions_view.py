@@ -2,105 +2,90 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 
-from ..api_client import ApiError
-from .base import BaseView
+from .. import api_client as api
+from .base import parse_iso_date, clear_tree, clear_text_widget, build_options_map
 
 
-class ReportHabitacionsView(BaseView):
-    route = "report_habitacions"
+def create_report_habitacions_view(parent, app_state, navigate):
+    frame = ttk.Frame(parent, style='App.TFrame')
+    frame.columnconfigure(0, weight=1)
+    frame.rowconfigure(0, weight=1)
 
-    def __init__(self, master, app_state, navigate, *args, **kwargs):
-        super().__init__(master, app_state, navigate, *args, **kwargs)
+    card = ttk.Frame(frame, style='Card.TFrame', padding=20)
+    card.grid(row=0, column=0, sticky='nsew', padx=16, pady=16)
+    card.columnconfigure(0, weight=1)
+    card.rowconfigure(4, weight=1)
+    card.rowconfigure(6, weight=1)
 
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
+    ttk.Label(card, text="Informe d'Habitacions", style='Title.TLabel').grid(row=0, column=0, sticky='w')
 
-        card = ttk.Frame(self, style="Card.TFrame", padding=20)
-        card.grid(row=0, column=0, sticky="nsew", padx=16, pady=16)
-        card.columnconfigure(0, weight=1)
-        card.rowconfigure(4, weight=1)
-        card.rowconfigure(6, weight=1)
+    controls = ttk.Frame(card)
+    controls.grid(row=1, column=0, sticky='we', pady=(10, 8))
 
-        ttk.Label(card, text="Informe d'Habitacions", style="Title.TLabel").grid(row=0, column=0, sticky="w")
+    ttk.Label(controls, text='Habitacio').grid(row=0, column=0, sticky='w')
+    room_combo = ttk.Combobox(controls, state='readonly', width=16)
+    room_combo.grid(row=0, column=1, sticky='w', padx=(8, 14))
 
-        controls = ttk.Frame(card)
-        controls.grid(row=1, column=0, sticky="we", pady=(10, 8))
+    ttk.Label(controls, text='Mes (YYYY-MM)').grid(row=0, column=2, sticky='w')
+    month_entry = ttk.Entry(controls, width=12)
+    month_entry.grid(row=0, column=3, sticky='w', padx=(8, 8))
+    month_entry.insert(0, datetime.date.today().strftime('%Y-%m'))
 
-        ttk.Label(controls, text="Habitacio").grid(row=0, column=0, sticky="w")
-        self.room_combo = ttk.Combobox(controls, state="readonly", width=16)
-        self.room_combo.grid(row=0, column=1, sticky="w", padx=(8, 14))
+    ttk.Button(controls, text='Cargar', style='Primary.TButton', command=lambda: load_data()).grid(row=0, column=4, sticky='w')
+    ttk.Button(controls, text='Volver', command=lambda: navigate('home')).grid(row=0, column=5, sticky='w', padx=(8, 0))
 
-        ttk.Label(controls, text="Mes (YYYY-MM)").grid(row=0, column=2, sticky="w")
-        self.month_entry = ttk.Entry(controls, width=12)
-        self.month_entry.grid(row=0, column=3, sticky="w", padx=(8, 8))
-        self.month_entry.insert(0, datetime.date.today().strftime("%Y-%m"))
+    message_var = tk.StringVar(value='Selecciona habitacio y mes para consultar ocupacion.')
+    ttk.Label(card, textvariable=message_var, style='Muted.TLabel').grid(row=2, column=0, sticky='w', pady=(0, 8))
 
-        ttk.Button(controls, text="Cargar", style="Primary.TButton", command=self._load_data).grid(row=0, column=4, sticky="w")
-        ttk.Button(controls, text="Volver", command=lambda: self.navigate("home")).grid(row=0, column=5, sticky="w", padx=(8, 0))
+    summary_var = tk.StringVar(value='')
+    ttk.Label(card, textvariable=summary_var, style='Muted.TLabel').grid(row=3, column=0, sticky='w', pady=(0, 8))
 
-        self.message_var = tk.StringVar(value="Selecciona habitacio y mes para consultar ocupacion.")
-        ttk.Label(card, textvariable=self.message_var, style="Muted.TLabel").grid(row=2, column=0, sticky="w", pady=(0, 8))
+    ttk.Label(card, text="Calendari d'ocupacio", style='Muted.TLabel').grid(row=4, column=0, sticky='w', pady=(0, 6))
 
-        self.summary_var = tk.StringVar(value="")
-        ttk.Label(card, textvariable=self.summary_var, style="Muted.TLabel").grid(row=3, column=0, sticky="w", pady=(0, 8))
+    calendar_text = tk.Text(card, height=14, wrap='none', relief='solid', borderwidth=1, font=('Courier New', 10), background='#ffffff')
+    calendar_text.grid(row=5, column=0, sticky='nsew')
 
-        ttk.Label(card, text="Calendari d'ocupacio", style="Muted.TLabel").grid(row=4, column=0, sticky="w", pady=(0, 6))
+    cal_scroll = ttk.Scrollbar(card, orient='vertical', command=calendar_text.yview)
+    cal_scroll.grid(row=5, column=1, sticky='ns')
+    calendar_text.configure(yscrollcommand=cal_scroll.set)
 
-        self.calendar_text = tk.Text(
-            card,
-            height=14,
-            wrap="none",
-            relief="solid",
-            borderwidth=1,
-            font=("Courier New", 10),
-            background="#ffffff",
-        )
-        self.calendar_text.grid(row=5, column=0, sticky="nsew")
+    cols = ('data_inici', 'data_fi', 'pacient')
+    tree = ttk.Treeview(card, columns=cols, show='headings', height=8)
+    tree.heading('data_inici', text='Data inici')
+    tree.heading('data_fi', text='Data fi')
+    tree.heading('pacient', text='Pacient')
+    tree.column('data_inici', width=120, anchor='center')
+    tree.column('data_fi', width=120, anchor='center')
+    tree.column('pacient', width=460, anchor='w')
+    tree.grid(row=6, column=0, sticky='nsew', pady=(8, 0))
 
-        cal_scroll = ttk.Scrollbar(card, orient="vertical", command=self.calendar_text.yview)
-        cal_scroll.grid(row=5, column=1, sticky="ns")
-        self.calendar_text.configure(yscrollcommand=cal_scroll.set)
+    scrollbar = ttk.Scrollbar(card, orient='vertical', command=tree.yview)
+    scrollbar.grid(row=6, column=1, sticky='ns', pady=(8, 0))
+    tree.configure(yscrollcommand=scrollbar.set)
 
-        cols = ("data_inici", "data_fi", "pacient")
-        self.tree = ttk.Treeview(card, columns=cols, show="headings", height=8)
-        self.tree.heading("data_inici", text="Data inici")
-        self.tree.heading("data_fi", text="Data fi")
-        self.tree.heading("pacient", text="Pacient")
-        self.tree.column("data_inici", width=120, anchor="center")
-        self.tree.column("data_fi", width=120, anchor="center")
-        self.tree.column("pacient", width=460, anchor="w")
-        self.tree.grid(row=6, column=0, sticky="nsew", pady=(8, 0))
-
-        scrollbar = ttk.Scrollbar(card, orient="vertical", command=self.tree.yview)
-        scrollbar.grid(row=6, column=1, sticky="ns", pady=(8, 0))
-        self.tree.configure(yscrollcommand=scrollbar.set)
-
-    def _to_date(self, value):
+    def to_date(value):
         try:
-            return datetime.datetime.strptime(str(value), "%Y-%m-%d").date()
+            return datetime.datetime.strptime(str(value), '%Y-%m-%d').date()
         except ValueError:
             return None
 
-    def _occupants_for_day(self, day_date, rows):
+    def occupants_for_day(day_date, rows):
         occupants = []
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            start = self._to_date(row.get("data_inici"))
-            end = self._to_date(row.get("data_fi"))
+            start = to_date(row.get('data_inici'))
+            end = to_date(row.get('data_fi'))
             if start is None or end is None:
                 continue
             if start <= day_date <= end:
-                occupants.append(str(row.get("pacient") or "pacient"))
+                occupants.append(str(row.get('pacient') or 'pacient'))
         return occupants
 
-    def _render_calendar(self, month_value, rows):
-        self.clear_text_widget(self.calendar_text)
+    def render_calendar(month_value, rows):
+        clear_text_widget(calendar_text)
 
-        year, month = month_value.split("-")
-        year_int = int(year)
-        month_int = int(month)
-
+        year_int, month_int = int(month_value[:4]), int(month_value[5:7])
         first = datetime.date(year_int, month_int, 1)
         if month_int == 12:
             next_month = datetime.date(year_int + 1, 1, 1)
@@ -110,117 +95,100 @@ class ReportHabitacionsView(BaseView):
         last_day = (next_month - datetime.timedelta(days=1)).day
         offset = first.weekday()
 
-        self.calendar_text.insert(tk.END, "Dl  Dt  Dc  Dj  Dv  Ds  Dg\n")
-        self.calendar_text.insert(tk.END, "-" * 48 + "\n")
+        calendar_text.insert(tk.END, 'Dl  Dt  Dc  Dj  Dv  Ds  Dg\n')
+        calendar_text.insert(tk.END, '-' * 48 + '\n')
 
         current_col = 0
         if offset > 0:
-            self.calendar_text.insert(tk.END, "    " * offset)
+            calendar_text.insert(tk.END, '    ' * offset)
             current_col = offset
 
         for day in range(1, last_day + 1):
             day_date = datetime.date(year_int, month_int, day)
-            occupants = self._occupants_for_day(day_date, rows)
-            marker = "*" if occupants else " "
-            token = f"{day:02d}{marker} "
-            self.calendar_text.insert(tk.END, token)
+            occupants = occupants_for_day(day_date, rows)
+            marker = '*' if occupants else ' '
+            calendar_text.insert(tk.END, f'{day:02d}{marker} ')
             current_col += 1
-
             if current_col == 7:
-                if occupants:
-                    pass
-                self.calendar_text.insert(tk.END, "\n")
+                calendar_text.insert(tk.END, '\n')
                 current_col = 0
 
         if current_col != 0:
-            self.calendar_text.insert(tk.END, "\n")
+            calendar_text.insert(tk.END, '\n')
 
-        self.calendar_text.insert(tk.END, "\nLlegenda: * dia ocupat\n\n")
+        calendar_text.insert(tk.END, '\nLlegenda: * dia ocupat\n\n')
         for day in range(1, last_day + 1):
             day_date = datetime.date(year_int, month_int, day)
-            occupants = self._occupants_for_day(day_date, rows)
+            occupants = occupants_for_day(day_date, rows)
             if occupants:
-                self.calendar_text.insert(tk.END, f"{day:02d}: {', '.join(occupants)}\n")
+                calendar_text.insert(tk.END, f'{day:02d}: {", ".join(occupants)}\n')
 
-        self.calendar_text.configure(state="disabled")
+        calendar_text.configure(state='disabled')
 
-    def _load_rooms(self):
-        payload = self.app_state["api"].get_habitacions()
-        rows = payload.get("data") or []
-        mapping = self.build_options_map(rows, ["num_habitacio", "id"], ["num_habitacio", "nom"])
+    def load_rooms():
+        payload = api.get_habitacions()
+        rows = payload.get('data') or []
+        mapping = build_options_map(rows, ['num_habitacio', 'id'], ['num_habitacio', 'nom'])
         values = list(mapping.values())
+        room_combo.configure(values=values)
+        if values and not room_combo.get():
+            room_combo.set(values[0])
 
-        self.room_combo.configure(values=values)
-        if values and not self.room_combo.get():
-            self.room_combo.set(values[0])
-
-    def _month_matches(self, row, month_prefix):
-        if not month_prefix:
-            return True
-        start = str(row.get("data_inici") or "")
-        end = str(row.get("data_fi") or "")
-        return start.startswith(month_prefix) or end.startswith(month_prefix)
-
-    def _load_data(self):
-        room_value = self.room_combo.get().strip()
-        month_value = self.month_entry.get().strip()
+    def load_data():
+        room_value = room_combo.get().strip()
+        month_value = month_entry.get().strip()
 
         if not room_value:
-            self.message_var.set("Selecciona una habitacio.")
+            message_var.set('Selecciona una habitacio.')
             return
 
         if not month_value:
-            self.message_var.set("Selecciona un mes.")
+            message_var.set('Selecciona un mes.')
             return
 
-        if month_value:
-            try:
-                self.parse_iso_date(month_value + "-01", "El mes")
-            except ValueError:
-                self.message_var.set("Formato de mes invalido. Usa YYYY-MM.")
-                return
+        try:
+            parse_iso_date(month_value + '-01', 'El mes')
+        except ValueError:
+            message_var.set('Formato de mes invalido. Usa YYYY-MM.')
+            return
 
-        self.clear_tree(self.tree)
-
-        self.clear_text_widget(self.calendar_text)
-        self.calendar_text.configure(state="disabled")
+        clear_tree(tree)
+        clear_text_widget(calendar_text)
+        calendar_text.configure(state='disabled')
 
         try:
-            payload = self.app_state["api"].get_report("habitacions", params={"habitacio": room_value})
-            rows = payload.get("data") or []
-            filtered = [row for row in rows if isinstance(row, dict) and self._month_matches(row, month_value)]
+            payload = api.get_report('habitacions', params={'habitacio': room_value})
+            rows = payload.get('data') or []
+            filtered = [row for row in rows if isinstance(row, dict) and
+                        (str(row.get('data_inici') or '').startswith(month_value) or
+                         str(row.get('data_fi') or '').startswith(month_value))]
 
             if not filtered:
-                self.summary_var.set("")
-                self.message_var.set("No hay ocupaciones para el filtro seleccionado.")
-                self._render_calendar(month_value, [])
+                summary_var.set('')
+                message_var.set('No hay ocupaciones para el filtro seleccionado.')
+                render_calendar(month_value, [])
                 return
 
             for row in filtered:
-                self.tree.insert(
-                    "",
-                    "end",
-                    values=(
-                        row.get("data_inici") or "-",
-                        row.get("data_fi") or "-",
-                        row.get("pacient") or "-",
-                    ),
-                )
+                tree.insert('', 'end', values=(
+                    row.get('data_inici') or '-',
+                    row.get('data_fi') or '-',
+                    row.get('pacient') or '-',
+                ))
 
-            self.summary_var.set(f"Reservas: {len(filtered)}")
-            self.message_var.set("Informe cargado correctamente.")
-            self._render_calendar(month_value, filtered)
-        except ApiError as exc:
-            self.summary_var.set("")
-            self.message_var.set(str(exc))
+            summary_var.set(f'Reservas: {len(filtered)}')
+            message_var.set('Informe cargado correctamente.')
+            render_calendar(month_value, filtered)
         except Exception as exc:
-            self.summary_var.set("")
-            self.message_var.set(f"Error: {exc}")
+            summary_var.set('')
+            message_var.set(str(exc))
 
-    def on_show(self):
-        self.summary_var.set("")
+    def on_show():
+        summary_var.set('')
         try:
-            self._load_rooms()
-            self.message_var.set("Selecciona habitacio y mes para consultar ocupacion.")
+            load_rooms()
+            message_var.set('Selecciona habitacio y mes para consultar ocupacion.')
         except Exception as exc:
-            self.message_var.set(f"No se pudieron cargar habitacions: {exc}")
+            message_var.set(f'No se pudieron cargar habitacions: {exc}')
+
+    return frame, on_show

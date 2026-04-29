@@ -25,79 +25,51 @@ FULL_ACCESS_ROLES = {
 
 
 ############
-# UTILITATS BÀSIQUES
+# CONTROL D'ACCÉS
 ############
-def _normalize_role(role_name):
+def can_view_full_data(role_name):
 	if role_name is None:
-		return ''
-	return str(role_name).strip().lower()
-
-
-def _clean_text(value):
-	if value is None:
-		return ''
-	return str(value).strip()
-
-
-def _mask_generic(value, visible_start=2, visible_end=2, mask_char='*'):
-	text = _clean_text(value)
-
-	if not text:
-		return value
-
-	if len(text) <= visible_start + visible_end:
-		return mask_char * len(text)
-
-	masked_middle = mask_char * (len(text) - visible_start - visible_end)
-	return text[:visible_start] + masked_middle + text[-visible_end:]
+		return False
+	return str(role_name).strip().lower() in FULL_ACCESS_ROLES
 
 
 ############
 # MASKING PER CAMP
 ############
 def mask_dni(value):
-	return _mask_generic(value, visible_start=2, visible_end=2)
+	text = str(value or '').strip()
+	if not text or len(text) <= 4:
+		return '*' * len(text) if text else value
+	return text[:2] + '*' * (len(text) - 4) + text[-2:]
 
 
 def mask_phone(value):
-	return _mask_generic(value, visible_start=3, visible_end=2)
+	text = str(value or '').strip()
+	if not text or len(text) <= 5:
+		return '*' * len(text) if text else value
+	return text[:3] + '*' * (len(text) - 5) + text[-2:]
 
 
 def mask_email(value):
-	text = _clean_text(value)
-
+	text = str(value or '').strip()
 	if not text:
 		return value
-
 	if '@' not in text:
-		return _mask_generic(text, visible_start=2, visible_end=2)
-
+		return text[:2] + '***' if len(text) > 2 else '***'
 	local_part, domain_part = text.split('@', 1)
 	if not local_part:
-		return '*' + '@' + domain_part
-
-	if len(local_part) == 1:
-		return local_part[0] + '***@' + domain_part
-
+		return '*@' + domain_part
 	return local_part[0] + '***@' + domain_part
 
 
 def mask_date(value):
 	if value is None:
 		return value
-
-	if isinstance(value, (date, datetime)):
-		return '****-**-**'
-
-	text = _clean_text(value)
-	if not text:
-		return value
-
 	return '****-**-**'
 
 
 def mask_value(field_name, value):
-	field = _clean_text(field_name).lower()
+	field = str(field_name or '').strip().lower()
 
 	if field == 'dni':
 		return mask_dni(value)
@@ -112,13 +84,6 @@ def mask_value(field_name, value):
 		return mask_date(value)
 
 	return value
-
-
-############
-# CONTROL D'ACCÉS
-############
-def can_view_full_data(role_name):
-	return _normalize_role(role_name) in FULL_ACCESS_ROLES
 
 
 ############
@@ -152,4 +117,26 @@ def mask_personal_list(rows, role_name=None, fields=None):
 		return list(rows)
 
 	return [mask_personal_data(row, role_name=role_name, fields=fields) for row in rows]
+
+
+############
+# MASKING RECURSIU DE PAYLOAD
+############
+def mask_payload(payload, role_name):
+	if can_view_full_data(role_name):
+		return payload
+
+	if isinstance(payload, dict):
+		result = {}
+		for key, value in payload.items():
+			if isinstance(value, (dict, list)):
+				result[key] = mask_payload(value, role_name)
+			else:
+				result[key] = mask_value(key, value)
+		return result
+
+	if isinstance(payload, list):
+		return [mask_payload(item, role_name) for item in payload]
+
+	return payload
 

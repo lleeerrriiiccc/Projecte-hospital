@@ -1,102 +1,84 @@
+import os
 import requests
 
 from .config import API_BASE_URL, API_VERIFY_TLS
 
 
-class ApiError(Exception):
-    pass
+# Sessió compartida que manté les cookies entre peticions (necessari per a la sessió de Flask)
+_session = requests.Session()
 
 
-class ApiClient:
-    def __init__(self, base_url=API_BASE_URL, verify_tls=API_VERIFY_TLS):
-        self.base_url = base_url.rstrip("/")
-        self.verify_tls = verify_tls
-        self.session = requests.Session()
+def _request(method, path, **kwargs):
+    url = API_BASE_URL.rstrip('/') + path
+    kwargs.setdefault('timeout', 20)
+    kwargs['verify'] = API_VERIFY_TLS
+    response = _session.request(method=method, url=url, **kwargs)
 
-    def _url(self, path):
-        if not path.startswith("/"):
-            path = f"/{path}"
-        return f"{self.base_url}{path}"
+    content_type = response.headers.get('Content-Type', '')
+    payload = {}
+    if 'application/json' in content_type:
+        payload = response.json()
 
-    def _request(self, method, path, **kwargs):
-        timeout = kwargs.pop("timeout", 20)
-        response = self.session.request(
-            method=method,
-            url=self._url(path),
-            timeout=timeout,
-            verify=self.verify_tls,
-            **kwargs,
-        )
+    if not response.ok:
+        message = payload.get('error') if isinstance(payload, dict) else response.text
+        raise Exception(message or f'HTTP {response.status_code}')
 
-        content_type = response.headers.get("Content-Type", "")
-        payload = {}
-        if "application/json" in content_type:
-            payload = response.json()
+    if isinstance(payload, dict) and payload.get('ok') is False:
+        raise Exception(payload.get('error') or 'API error')
 
-        if not response.ok:
-            message = payload.get("error") if isinstance(payload, dict) else response.text
-            raise ApiError(message or f"HTTP {response.status_code}")
+    return payload
 
-        if isinstance(payload, dict) and payload.get("ok") is False:
-            raise ApiError(payload.get("error") or "API error")
 
-        return payload
+def login(username, password):
+    return _request('POST', '/api/login', json={'username': username, 'password': password})
 
-    def login(self, username, password):
-        return self._request("POST", "/api/login", json={"username": username, "password": password})
 
-    def register(self, username, password, confirm_password, id_intern):
-        return self._request(
-            "POST",
-            "/api/register",
-            json={
-                "username": username,
-                "password": password,
-                "confirm_password": confirm_password,
-                "id_intern": id_intern,
-            },
-        )
+def logout():
+    _request('POST', '/api/logout')
 
-    def logout(self):
-        self._request("POST", "/api/logout")
 
-    def me(self):
-        return self._request("GET", "/me")
+def register(username, password, confirm_password, id_intern):
+    return _request('POST', '/api/register', json={
+        'username': username,
+        'password': password,
+        'confirm_password': confirm_password,
+        'id_intern': id_intern,
+    })
 
-    def create_patient(
-        self,
-        nom,
-        cognom,
-        cognom2,
-        data_naixement,
-        identificador,
-    ):
-        return self._request(
-            "POST",
-            "/api/pacients",
-            json={
-                "nom": nom,
-                "cognom": cognom,
-                "cognom2": cognom2,
-                "data_naixement": data_naixement,
-                "identificador": identificador,
-            },
-        )
 
-    def create_personal(self, payload):
-        return self._request("POST", "/api/personal", json=payload)
+def me():
+    return _request('GET', '/me')
 
-    def get_visites(self, date_value):
-        return self._request("GET", "/api/informes/visites", params={"date": date_value})
 
-    def get_metges(self):
-        return self._request("GET", "/api/metges")
+def create_patient(nom, cognom, cognom2, data_naixement, identificador):
+    return _request('POST', '/api/pacients', json={
+        'nom': nom,
+        'cognom': cognom,
+        'cognom2': cognom2,
+        'data_naixement': data_naixement,
+        'identificador': identificador,
+    })
 
-    def get_pacients(self):
-        return self._request("GET", "/api/pacients")
 
-    def get_habitacions(self):
-        return self._request("GET", "/api/habitacions")
+def create_personal(payload):
+    return _request('POST', '/api/personal', json=payload)
 
-    def get_report(self, report_name, params=None):
-        return self._request("GET", f"/api/informes/{report_name}", params=params or {})
+
+def get_metges():
+    return _request('GET', '/api/metges')
+
+
+def get_pacients():
+    return _request('GET', '/api/pacients')
+
+
+def get_habitacions():
+    return _request('GET', '/api/habitacions')
+
+
+def get_visites(date_value):
+    return _request('GET', '/api/informes/visites', params={'date': date_value})
+
+
+def get_report(report_name, params=None):
+    return _request('GET', f'/api/informes/{report_name}', params=params or {})

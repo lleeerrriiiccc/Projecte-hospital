@@ -9,6 +9,524 @@ import tools.masking as masking
 import tools.manager as m
 
 
+############
+# APP CONFIG
+############
+template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'html'))
+app = Flask(__name__, template_folder=template_dir)
+dotenv.load_dotenv()
+app.secret_key = os.getenv("FLASK_SECRET")
+app.config['UPLOAD_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'uploads'))
+
+
+############
+# STATIC FILES
+############
+@app.route('/css/<path:filename>')
+def css(filename):
+    css_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'css'))
+    return send_from_directory(css_dir, filename)
+
+
+############
+# MAIN ROUTE
+############
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return redirect(url_for('login'))
+
+
+############
+# LOGIN ROUTE
+############
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+
+    if not username or not password:
+        return render_template('login.html', error='Completa todos los campos.')
+
+    ok, error, tipus = m.login(username, password)
+    if ok:
+        session['username'] = username.lower()
+        session['role'] = tipus
+        return redirect(url_for('home'))
+    return render_template('login.html', error=error)
+
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json(silent=True) or {}
+    username = data.get('username', '').strip()
+    password = data.get('password', '')
+
+    if not username or not password:
+        return jsonify({'ok': False, 'error': 'Username and password are required.'}), 400
+
+    ok, error, tipus = m.login(username, password)
+    if not ok:
+        return jsonify({'ok': False, 'error': error}), 401
+
+    session['username'] = username.lower()
+    session['role'] = tipus
+    return jsonify({'ok': True, 'username': username.lower(), 'role': tipus})
+
+
+############
+# LOGOUT ROUTE
+############
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/api/logout', methods=['POST'])
+def api_logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    return jsonify({'ok': True})
+
+
+############
+# REGISTER ROUTE
+############
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html', error=None)
+
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+    confirm = request.form.get('confirm_password', '')
+    id_intern = request.form.get('id_intern', '').strip()
+
+    if not username or not password or not confirm or not id_intern:
+        return render_template('register.html', error='Completa todos los campos.')
+
+    if password != confirm:
+        return render_template('register.html', error='Las contraseñas no coinciden.')
+
+    if not id_intern.isdigit():
+        return render_template('register.html', error='El id_intern debe ser un numero entero.')
+
+    ok, error = m.register(username, password, int(id_intern))
+    if ok:
+        return redirect(url_for('login'))
+    return render_template('register.html', error=error)
+
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    data = request.get_json(silent=True) or {}
+    username = data.get('username', '').strip()
+    password = data.get('password', '')
+    confirm = data.get('confirm_password', '')
+    id_intern = str(data.get('id_intern', '')).strip()
+
+    if not username or not password or not confirm or not id_intern:
+        return jsonify({'ok': False, 'error': 'Completa todos los campos.'}), 400
+
+    if password != confirm:
+        return jsonify({'ok': False, 'error': 'Las contraseñas no coinciden.'}), 400
+
+    if not id_intern.isdigit():
+        return jsonify({'ok': False, 'error': 'El id_intern debe ser un numero entero.'}), 400
+
+    ok, error = m.register(username, password, int(id_intern))
+    if ok:
+        return jsonify({'ok': True})
+    return jsonify({'ok': False, 'error': error}), 400
+
+
+############
+# HOME ROUTE
+############
+@app.route('/home')
+def home():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('home.html')
+
+
+############
+# NEW PACIENT ROUTE
+############
+@app.route('/pacient/alta', methods=['GET', 'POST'])
+def alta_pacient():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        return render_template('alta_pacient.html')
+
+    nom = request.form.get('nom', '').strip()
+    cognom = request.form.get('cognom', '').strip()
+    cognom2 = request.form.get('cognom2', '').strip()
+    data_naixement = request.form.get('data_naixement', '').strip()
+    identificador = request.form.get('identificador', '').strip().upper()
+
+    if not nom or not cognom or not cognom2 or not data_naixement or not identificador:
+        return render_template('alta_pacient.html', error='Completa tots els camps.')
+
+    try:
+        parsed_date = datetime.datetime.strptime(data_naixement, '%Y-%m-%d').date()
+    except ValueError:
+        return render_template('alta_pacient.html', error='La data de naixement no és vàlida.')
+
+    if parsed_date > datetime.date.today():
+        return render_template('alta_pacient.html', error='La data de naixement no pot ser futura.')
+
+    ok, error = m.new_pacient(nom, cognom, cognom2, parsed_date, identificador, username=session.get('username'))
+    if ok:
+        return render_template('alta_pacient.html', success="Pacient donat d'alta correctament.")
+    return render_template('alta_pacient.html', error=error)
+
+
+@app.route('/api/pacients', methods=['POST'])
+def create_pacient():
+    if 'username' not in session:
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+
+    data = request.get_json(silent=True) or {}
+    nom = data.get('nom', '').strip()
+    cognom = data.get('cognom', '').strip()
+    cognom2 = data.get('cognom2', '').strip()
+    data_naixement = data.get('data_naixement', '').strip()
+    identificador = data.get('identificador', '').strip().upper()
+
+    if not nom or not cognom or not cognom2 or not data_naixement or not identificador:
+        return jsonify({'ok': False, 'error': 'Completa tots els camps.'}), 400
+
+    try:
+        parsed_date = datetime.datetime.strptime(data_naixement, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
+
+    if parsed_date > datetime.date.today():
+        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
+
+    ok, error = m.new_pacient(nom, cognom, cognom2, parsed_date, identificador, username=session.get('username'))
+    if ok:
+        return jsonify({'ok': True, 'message': "Pacient donat d'alta correctament."})
+    return jsonify({'ok': False, 'error': error}), 400
+
+
+############
+# PERSONAL ROUTE
+############
+@app.route('/personal/alta', methods=['GET', 'POST'])
+def alta_personal():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        return render_template('alta_personal.html')
+
+    nom = request.form.get('nom', '').strip()
+    cognom = request.form.get('cognom', '').strip()
+    cognom2 = request.form.get('cognom2', '').strip()
+    data_naixement = request.form.get('data_naixement', '').strip()
+    telefon = request.form.get('telefon', '').strip()
+    telefon2 = request.form.get('telefon2', '').strip()
+    email = request.form.get('email', '').strip()
+    email_intern = request.form.get('email_intern', '').strip()
+    dni = request.form.get('dni', '').strip().upper()
+    tipus_feina = request.form.get('tipus_feina', '').strip()
+    data_alta = request.form.get('data_alta', '').strip()
+    especialitat = request.form.get('especialitat', '').strip()
+    id_metge_supervisor = request.form.get('id_metge_supervisor', '').strip() or None
+    cap_de_planta = request.form.get('cap_de_planta', 'false').lower() in ('1', 'true', 'yes', 'on')
+
+    if not nom or not cognom or not cognom2 or not data_naixement or not telefon or not email or not email_intern or not dni or not tipus_feina or not data_alta:
+        return render_template('alta_personal.html', error='Completa tots els camps obligatoris.')
+
+    try:
+        datetime.datetime.strptime(data_naixement, '%Y-%m-%d')
+    except ValueError:
+        return render_template('alta_personal.html', error='La data de naixement no és vàlida.')
+
+    if tipus_feina == 'metge' and not especialitat:
+        return render_template('alta_personal.html', error='Falta especialitat.')
+
+    cv_file_path = None
+    if tipus_feina == 'metge':
+        uploaded_cv = request.files.get('cv')
+        if uploaded_cv is None or not uploaded_cv.filename:
+            return render_template('alta_personal.html', error='Falten especialitat o CV.')
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        cv_file_path = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_cv.filename)
+        uploaded_cv.save(cv_file_path)
+
+    if tipus_feina == 'infermer' and cap_de_planta:
+        id_metge_supervisor = None
+
+    ok, error = m.new_employee(
+        nom, cognom, cognom2, data_naixement, telefon, telefon2,
+        email, email_intern, dni, tipus_feina, data_alta,
+        especialitat=especialitat or None,
+        cv=cv_file_path,
+        mresp=id_metge_supervisor,
+        username=session.get('username'),
+    )
+    if ok:
+        return render_template('alta_personal.html', success="Personal donat d'alta correctament.")
+    return render_template('alta_personal.html', error=error)
+
+
+@app.route('/api/personal', methods=['POST'])
+def create_personal():
+    if 'username' not in session:
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+
+    data = request.get_json(silent=True) or {}
+    nom = data.get('nom', '').strip()
+    cognom = data.get('cognom', '').strip()
+    cognom2 = data.get('cognom2', '').strip()
+    data_naixement = data.get('data_naixement', '').strip()
+    telefon = data.get('telefon', '').strip()
+    telefon2 = data.get('telefon2', '').strip()
+    email = data.get('email', '').strip()
+    email_intern = data.get('email_intern', '').strip()
+    dni = data.get('dni', '').strip().upper()
+    tipus_feina = data.get('tipus_feina', '').strip()
+    data_alta = data.get('data_alta', '').strip()
+    especialitat = data.get('especialitat', '').strip()
+    cv_path = data.get('cv_path', '').strip()
+    id_metge_supervisor = data.get('id_metge_supervisor') or None
+    cap_de_planta = bool(data.get('cap_de_planta', False))
+
+    if not nom or not cognom or not cognom2 or not data_naixement or not telefon or not email or not email_intern or not dni or not tipus_feina or not data_alta:
+        return jsonify({'ok': False, 'error': 'Completa tots els camps obligatoris.'}), 400
+
+    try:
+        parsed_date = datetime.datetime.strptime(data_naixement, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'ok': False, 'error': 'La data de naixement no és vàlida.'}), 400
+
+    if parsed_date > datetime.date.today():
+        return jsonify({'ok': False, 'error': 'La data de naixement no pot ser futura.'}), 400
+
+    if tipus_feina == 'metge' and not especialitat:
+        return jsonify({'ok': False, 'error': 'Falta especialitat.'}), 400
+
+    cv_file_path = None
+    if tipus_feina == 'metge':
+        if not cv_path or not os.path.isfile(cv_path):
+            return jsonify({'ok': False, 'error': 'El fitxer CV no existeix.'}), 400
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+        filename = f"{timestamp}_{os.path.basename(cv_path)}"
+        cv_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        shutil.copy2(cv_path, cv_file_path)
+
+    if tipus_feina == 'infermer' and cap_de_planta:
+        id_metge_supervisor = None
+
+    ok, error = m.new_employee(
+        nom, cognom, cognom2, data_naixement, telefon, telefon2,
+        email, email_intern, dni, tipus_feina, data_alta,
+        especialitat=especialitat or None,
+        cv=cv_file_path,
+        mresp=id_metge_supervisor,
+        username=session.get('username'),
+    )
+    if ok:
+        return jsonify({'ok': True, 'message': "Personal donat d'alta correctament."})
+    return jsonify({'ok': False, 'error': error}), 400
+
+
+############
+# REPORT PAGES
+############
+@app.route('/informes/supervisio')
+def informes_supervisio():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/supervisio.html')
+
+
+@app.route('/informes/visites')
+def informes_visites():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/visites.html')
+
+
+@app.route('/informes/quirofans')
+def informes_quirofans():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/quirofans.html')
+
+
+@app.route('/informes/habitacions')
+def informes_habitacions():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/habitacions.html')
+
+
+@app.route('/informes/metge')
+def informes_metge():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/metge.html')
+
+
+@app.route('/informes/aparells')
+def informes_aparells():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/aparells.html')
+
+
+@app.route('/informes/pacient')
+def informes_pacient():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('reports/pacient.html')
+
+
+############
+# USER INFO ROUTE
+############
+@app.route('/me')
+def me():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify({'username': session.get('username'), 'role': session.get('role')})
+
+
+############
+# API DATA ENDPOINTS
+############
+def mask_and_return(result):
+    ok, payload = result
+    if ok:
+        payload = masking.mask_payload(payload, session.get('role'))
+        return jsonify({'ok': True, 'data': payload})
+    error_text = str(payload)
+    status_code = 403 if 'permis' in error_text.lower() else 400
+    return jsonify({'ok': False, 'error': error_text}), status_code
+
+
+@app.route('/api/metges')
+def get_metges():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return mask_and_return(m.get_metges(username=session.get('username')))
+
+
+@app.route('/api/informes/supervisio')
+def get_informes_supervisio():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return mask_and_return(m.get_informes('supervisio', username=session.get('username')))
+
+
+@app.route('/api/informes/visites')
+def get_informes_visites():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    date_value = request.args.get('date', '').strip()
+    if not date_value:
+        return jsonify({'error': 'Date parameter is required'}), 400
+    try:
+        datetime.datetime.strptime(date_value, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+    return mask_and_return(m.get_informes('visites', (date_value,), username=session.get('username')))
+
+
+@app.route('/api/informes/quirofans')
+def get_informes_quirofans():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    date_value = request.args.get('date', '').strip()
+    if not date_value:
+        return jsonify({'error': 'Date parameter is required'}), 400
+    try:
+        datetime.datetime.strptime(date_value, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+    return mask_and_return(m.get_informes('quirofans', (date_value,), username=session.get('username')))
+
+
+@app.route('/api/informes/habitacions')
+def get_informes_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    habitacio = request.args.get('habitacio', '').strip()
+    if not habitacio:
+        return jsonify({'error': 'Room parameter is required'}), 400
+    return mask_and_return(m.get_informes('habitacions', (habitacio,), username=session.get('username')))
+
+
+@app.route('/api/informes/metge')
+def get_informes_metge():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    metge_id = request.args.get('metge', '').strip()
+    date_value = request.args.get('date', '').strip()
+    if not metge_id or not date_value:
+        return jsonify({'error': 'metge and date parameters are required'}), 400
+    try:
+        metge_id = int(metge_id)
+        datetime.datetime.strptime(date_value, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'error': 'Invalid parameters'}), 400
+    return mask_and_return(m.get_informes('metge', (metge_id, date_value, metge_id, date_value), username=session.get('username')))
+
+
+@app.route('/api/informes/aparells')
+def get_informes_aparells():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return mask_and_return(m.get_informes('aparells', username=session.get('username')))
+
+
+@app.route('/api/habitacions')
+def get_habitacions():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return mask_and_return(m.get_habitacions(username=session.get('username')))
+
+
+@app.route('/api/pacients')
+def get_pacients():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return mask_and_return(m.get_pacients(username=session.get('username')))
+
+
+@app.route('/api/informes/pacient')
+def get_informes_pacient():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    pacient_id = request.args.get('pacient', '').strip()
+    if not pacient_id:
+        return jsonify({'error': 'Patient parameter is required'}), 400
+    try:
+        pacient_id = int(pacient_id)
+    except ValueError:
+        return jsonify({'error': 'Patient parameter must be a valid integer'}), 400
+    return mask_and_return(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=session.get('username')))
+
+
+if __name__ == '__main__':
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    port = int(os.getenv('FLASK_PORT', '5000'))
+    debug = os.getenv('FLASK_DEBUG', 'true').strip().lower() in ('1', 'true', 'yes', 'on')
+    app.run(debug=debug, host=host, port=port)
+
+
+
 
 
 ############

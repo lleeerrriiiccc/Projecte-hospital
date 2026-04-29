@@ -2,83 +2,89 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 
-from ..api_client import ApiError
-from .base import BaseView
+from .. import api_client as api
+from .base import today_iso, parse_iso_date
 
 
-class AltaPacientView(BaseView):
-    route = "alta_pacient"
-    DEFAULT_BIRTH_DATE = "1990-01-01"
+def create_alta_pacient_view(parent, app_state, navigate):
+    frame = ttk.Frame(parent, style='App.TFrame')
+    frame.columnconfigure(0, weight=1)
 
-    def __init__(self, master, app_state, navigate, *args, **kwargs):
-        super().__init__(master, app_state, navigate, *args, **kwargs)
+    card = ttk.Frame(frame, style='Card.TFrame', padding=20)
+    card.grid(row=0, column=0, sticky='n', padx=16, pady=16)
+    card.columnconfigure(1, weight=1)
 
-        self.columnconfigure(0, weight=1)
+    ttk.Label(card, text='Alta de Paciente', style='Title.TLabel').grid(row=0, column=0, columnspan=2, sticky='w')
+    ttk.Label(card, text='Introduce los datos del paciente.', style='Muted.TLabel').grid(row=1, column=0, columnspan=2, sticky='w', pady=(5, 10))
 
-        card = ttk.Frame(self, style="Card.TFrame", padding=20)
-        card.grid(row=0, column=0, sticky="n", padx=16, pady=16)
-        card.columnconfigure(1, weight=1)
+    status_var = tk.StringVar(value='')
+    ttk.Label(card, textvariable=status_var, style='Muted.TLabel').grid(row=2, column=0, columnspan=2, sticky='we', pady=(0, 8))
 
-        ttk.Label(card, text="Alta de Paciente", style="Title.TLabel").grid(row=0, column=0, columnspan=2, sticky="w")
-        ttk.Label(card, text="Introduce los datos del paciente.", style="Muted.TLabel").grid(
-            row=1, column=0, columnspan=2, sticky="w", pady=(5, 10)
-        )
+    # Camps del formulari
+    ttk.Label(card, text='Nom').grid(row=3, column=0, sticky='w', pady=3)
+    nom_entry = ttk.Entry(card, width=36)
+    nom_entry.grid(row=3, column=1, sticky='we', pady=3)
 
-        self.status_var = tk.StringVar(value="")
-        self.status_lbl = ttk.Label(card, textvariable=self.status_var, style="Muted.TLabel")
-        self.status_lbl.grid(row=2, column=0, columnspan=2, sticky="we", pady=(0, 8))
+    ttk.Label(card, text='Primer cognom').grid(row=4, column=0, sticky='w', pady=3)
+    cognom_entry = ttk.Entry(card, width=36)
+    cognom_entry.grid(row=4, column=1, sticky='we', pady=3)
 
-        self.fields = {}
-        labels = [
-            ("Nom", "nom"),
-            ("Primer cognom", "cognom"),
-            ("Segon cognom", "cognom2"),
-            ("Data naixement (YYYY-MM-DD)", "data_naixement"),
-            ("Identificador", "identificador"),
-        ]
+    ttk.Label(card, text='Segon cognom').grid(row=5, column=0, sticky='w', pady=3)
+    cognom2_entry = ttk.Entry(card, width=36)
+    cognom2_entry.grid(row=5, column=1, sticky='we', pady=3)
 
-        for idx, (label, key) in enumerate(labels, start=3):
-            ttk.Label(card, text=label).grid(row=idx, column=0, sticky="w", pady=3)
-            entry = ttk.Entry(card, width=36)
-            entry.grid(row=idx, column=1, sticky="we", pady=3)
-            self.fields[key] = entry
+    ttk.Label(card, text='Data naixement (YYYY-MM-DD)').grid(row=6, column=0, sticky='w', pady=3)
+    data_entry = ttk.Entry(card, width=36)
+    data_entry.grid(row=6, column=1, sticky='we', pady=3)
+    data_entry.insert(0, '1990-01-01')
 
-        self.fields["data_naixement"].insert(0, self.DEFAULT_BIRTH_DATE)
+    ttk.Label(card, text='Identificador').grid(row=7, column=0, sticky='w', pady=3)
+    ident_entry = ttk.Entry(card, width=36)
+    ident_entry.grid(row=7, column=1, sticky='we', pady=3)
 
-        buttons = ttk.Frame(card)
-        buttons.grid(row=9, column=0, columnspan=2, sticky="we", pady=(10, 0))
-        buttons.columnconfigure(0, weight=1)
-        buttons.columnconfigure(1, weight=1)
+    buttons = ttk.Frame(card)
+    buttons.grid(row=9, column=0, columnspan=2, sticky='we', pady=(10, 0))
+    buttons.columnconfigure(0, weight=1)
+    buttons.columnconfigure(1, weight=1)
 
-        ttk.Button(buttons, text="Guardar", style="Primary.TButton", command=self._submit).grid(row=0, column=0, sticky="we", padx=(0, 6))
-        ttk.Button(buttons, text="Volver", command=lambda: self.navigate("home")).grid(row=0, column=1, sticky="we", padx=(6, 0))
+    def submit():
+        nom = nom_entry.get().strip()
+        cognom = cognom_entry.get().strip()
+        cognom2 = cognom2_entry.get().strip()
+        data_naixement = data_entry.get().strip()
+        identificador = ident_entry.get().strip().upper()
 
-    def _show_status(self, text):
-        self.status_var.set(text)
-
-    def _validate(self, payload):
-        for key, value in payload.items():
-            if not value:
-                raise ValueError("Completa todos los campos.")
-
-        parsed_date = self.parse_iso_date(payload["data_naixement"], "La fecha debe tener formato YYYY-MM-DD.")
-
-        if parsed_date > datetime.date.today():
-            raise ValueError("La fecha de nacimiento no puede ser futura.")
-
-    def _submit(self):
-        payload = self.get_entry_values(self.fields)
-        payload["identificador"] = payload["identificador"].upper()
+        if not nom or not cognom or not cognom2 or not data_naixement or not identificador:
+            status_var.set('Completa todos los campos.')
+            return
 
         try:
-            self._validate(payload)
-            self.app_state["api"].create_patient(**payload)
-            self._show_status("Paciente dado de alta correctamente.")
-            self.reset_entries(self.fields, {"data_naixement": self.DEFAULT_BIRTH_DATE})
-        except (ApiError, ValueError) as exc:
-            self._show_status(str(exc))
-        except Exception as exc:
-            self._show_status(f"Error inesperado: {exc}")
+            parsed_date = parse_iso_date(data_naixement, 'La fecha debe tener formato YYYY-MM-DD.')
+        except ValueError as exc:
+            status_var.set(str(exc))
+            return
 
-    def on_show(self):
-        self._show_status("")
+        if parsed_date > datetime.date.today():
+            status_var.set('La fecha de nacimiento no puede ser futura.')
+            return
+
+        try:
+            api.create_patient(nom, cognom, cognom2, data_naixement, identificador)
+            status_var.set('Paciente dado de alta correctamente.')
+            # Netejar el formulari
+            nom_entry.delete(0, tk.END)
+            cognom_entry.delete(0, tk.END)
+            cognom2_entry.delete(0, tk.END)
+            data_entry.delete(0, tk.END)
+            data_entry.insert(0, '1990-01-01')
+            ident_entry.delete(0, tk.END)
+        except Exception as exc:
+            status_var.set(str(exc))
+
+    ttk.Button(buttons, text='Guardar', style='Primary.TButton', command=submit).grid(row=0, column=0, sticky='we', padx=(0, 6))
+    ttk.Button(buttons, text='Volver', command=lambda: navigate('home')).grid(row=0, column=1, sticky='we', padx=(6, 0))
+
+    def on_show():
+        status_var.set('')
+
+    return frame, on_show
