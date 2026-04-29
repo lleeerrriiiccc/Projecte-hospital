@@ -92,11 +92,11 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 ```
 
-![Login cloud](images/cloud-login.png)
+![Login cloud](extras/images/login.png)
 
 ### 3.3 Verificacions  
 
-![Dispositius](images/devices.png)
+![Dispositius](extras/images/devices.png)
 
 ### 3.4 Post-instal·lació  
 
