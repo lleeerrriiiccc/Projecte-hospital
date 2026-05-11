@@ -31,7 +31,7 @@ def connect(username="default"):
         )
         cursor = con.cursor()
 
-        if username == "default":
+        if username is None or username == "default":
             return con, cursor
 
         cursor.execute("SELECT 1 FROM pg_roles WHERE rolname=%s", (username,))

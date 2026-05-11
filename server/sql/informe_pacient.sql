@@ -3,9 +3,10 @@ WITH informe AS (
         'visita' AS tipus,
         v.data_visita AS data_event,
         v.hora_visita AS hora_event,
-        v.diagnostic AS descripcio,
+        COALESCE(m.nom, v.diagnostic) AS descripcio,
         NULL::text AS info_extra
     FROM visita v
+    LEFT JOIN malaltia m ON m.id_malaltia = v.id_malaltia
     WHERE v.id_pacient = %s
 
     UNION ALL

@@ -430,20 +430,6 @@ def get_informes_supervisio():
     return mask_and_return(m.get_informes('supervisio', username=session.get('username')))
 
 
-@app.route('/api/informes/visites')
-def get_informes_visites():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    date_value = request.args.get('date', '').strip()
-    if not date_value:
-        return jsonify({'error': 'Date parameter is required'}), 400
-    try:
-        datetime.datetime.strptime(date_value, '%Y-%m-%d')
-    except ValueError:
-        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
-    return mask_and_return(m.get_informes('visites', (date_value,), username=session.get('username')))
-
-
 @app.route('/api/informes/quirofans')
 def get_informes_quirofans():
     if 'username' not in session:
@@ -519,11 +505,6 @@ def get_informes_pacient():
     return mask_and_return(m.get_informes('pacient', (pacient_id, pacient_id, pacient_id, pacient_id), username=session.get('username')))
 
 
-if __name__ == '__main__':
-    host = os.getenv('FLASK_HOST', '127.0.0.1')
-    port = int(os.getenv('FLASK_PORT', '5000'))
-    debug = os.getenv('FLASK_DEBUG', 'true').strip().lower() in ('1', 'true', 'yes', 'on')
-    app.run(debug=debug, host=host, port=port)
 
 
 
@@ -1105,6 +1086,68 @@ def informes_aparells():
 
 
 ############
+# REPORT PLANTA ROUTE
+############
+@app.route('/informes/planta')
+def informes_planta():
+    return _render_report_page('planta')
+
+
+############
+# REPORT PERSONAL ROUTE
+############
+@app.route('/informes/personal')
+def informes_personal():
+    return _render_report_page('personal')
+
+
+############
+# REPORT MALALTIES ROUTE
+############
+@app.route('/informes/malalties')
+def informes_malalties():
+    return _render_report_page('malalties')
+
+
+############
+# REPORT RANKING METGES ROUTE
+############
+############
+# MALALTIES REPORT INFO ROUTE
+############
+@app.route('/api/informes/malalties')
+def get_informes_malalties():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('malalties', username=_current_username()))
+
+
+@app.route('/informes/ranking_metges')
+def informes_ranking_metges():
+    return _render_report_page('ranking_metges')
+
+
+############
+# REPORT VISITES PER DIA ROUTE
+############
+############
+# RANKING METGES REPORT INFO ROUTE
+############
+@app.route('/api/informes/ranking_metges')
+def get_informes_ranking_metges():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('ranking_metges', username=_current_username()))
+
+
+@app.route('/informes/visites_dia')
+def informes_visites_dia():
+    return _render_report_page('visites_dia')
+
+
+############
 # REPORT PACIENT ROUTE
 ############
 @app.route('/informes/pacient')
@@ -1192,13 +1235,32 @@ def get_informes_visites():
     unauthorized = _require_plain_api_login()
     if unauthorized:
         return unauthorized
-    try:
-        date_value = _get_required_date_arg()
-    except ValueError as exc:
-        return _plain_json_error(str(exc))
+    start_date = (request.args.get('start_date') or request.args.get('date') or '').strip()
+    end_date = (request.args.get('end_date') or request.args.get('date') or '').strip()
 
-    return api_response(m.get_informes('visites', (date_value,), username=_current_username()))
+    if start_date in ('undefined', 'null'):
+        start_date = ''
 
+    if end_date in ('undefined', 'null'):
+        end_date = ''
+
+    if not start_date and not end_date:
+        ok, date_range = m.get_visites_date_range()
+        if not ok:
+            return _plain_json_error(date_range)
+        start_date, end_date = date_range
+    elif not start_date:
+        start_date = end_date
+    elif not end_date:
+        end_date = start_date
+
+    if not start_date:
+        return _plain_json_error('Date parameter is required')
+
+    if start_date > end_date:
+        return _plain_json_error('Start date must be earlier than or equal to end date')
+
+    return api_response(m.get_informes('visites', (start_date, end_date)))
 
 
 ############
@@ -1261,6 +1323,83 @@ def get_informes_aparells():
     if unauthorized:
         return unauthorized
     return api_response(m.get_informes('aparells', username=_current_username()))
+
+
+
+############
+# PLANTA REPORT INFO ROUTE
+############
+@app.route('/api/informes/planta')
+def get_informes_planta():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('planta', username=_current_username()))
+
+
+
+############
+# PERSONAL REPORT INFO ROUTE
+############
+@app.route('/api/informes/personal')
+def get_informes_personal():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('personal', username=_current_username()))
+
+
+
+############
+# MALALTIES REPORT INFO ROUTE
+############
+@app.route('/api/informes/malalties')
+def get_informes_malalties():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+    return api_response(m.get_informes('malalties', username=_current_username()))
+
+
+
+############
+# VISITES PER DIA REPORT INFO ROUTE
+############
+@app.route('/api/informes/visites_dia')
+def get_informes_visites_dia():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+
+    start_date = (request.args.get('start_date') or request.args.get('date') or '').strip()
+    end_date = (request.args.get('end_date') or request.args.get('date') or '').strip()
+
+    if start_date in ('undefined', 'null'):
+        start_date = ''
+
+    if end_date in ('undefined', 'null'):
+        end_date = ''
+
+    if not start_date and not end_date:
+        ok, date_range = m.get_visites_date_range()
+        if not ok:
+            return _plain_json_error(date_range)
+        start_date, end_date = date_range
+    elif not start_date:
+        start_date = end_date
+    elif not end_date:
+        end_date = start_date
+
+    if not start_date:
+        return _plain_json_error('Start date parameter is required')
+
+    if not end_date:
+        end_date = start_date
+
+    if start_date > end_date:
+        return _plain_json_error('Start date must be earlier than or equal to end date')
+
+    return api_response(m.get_informes('visites_dia', (start_date, end_date)))
 
 
 

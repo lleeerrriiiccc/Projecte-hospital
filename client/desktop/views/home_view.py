@@ -30,6 +30,13 @@ def create_home_view(parent, app_state, navigate):
 
     # Seccions de navegació agrupades per àrea
     sections = [
+        ('Consultes i informes', [
+            ('Informe per planta', lambda: navigate('report_planta')),
+            ('Informe personal', lambda: navigate('report_personal')),
+            ('Malalties més comunes', lambda: navigate('report_malalties')),
+            ('Ranking de metges', lambda: navigate('report_ranking_metges')),
+            ('Visites per dia', lambda: navigate('report_visites_dia')),
+        ]),
         ('Pacients', [
             ('Nou pacient', lambda: navigate('alta_pacient')),
             ('Informe pacient', lambda: navigate('report_pacient')),

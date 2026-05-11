@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe per Planta</title>
+	<link rel="stylesheet" href="/css/visites.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="planta-title">
+			<h1 id="planta-title">Informe per Planta</h1>
+			<p class="subtitle">Consulta quantes habitacions, quiròfans i infermers té cada planta de l'hospital.</p>
+
+			<p id="message" class="message" role="status">Carregant informe...</p>
+
+			<div id="results" hidden>
+				<div class="table-wrap">
+					<table aria-label="Resultats informe planta">
+						<thead>
+							<tr>
+								<th scope="col">Planta</th>
+								<th scope="col">Habitacions</th>
+								<th scope="col">Quirofans</th>
+								<th scope="col">Infermers</th>
+							</tr>
+						</thead>
+						<tbody id="rows"></tbody>
+					</table>
+				</div>
+				<p id="empty" class="empty" hidden>No hi ha dades de plantes.</p>
+			</div>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const messageEl = document.getElementById('message');
+		const resultsEl = document.getElementById('results');
+		const rowsEl = document.getElementById('rows');
+		const emptyEl = document.getElementById('empty');
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const renderRows = (data) => {
+			rowsEl.innerHTML = '';
+
+			if (!Array.isArray(data) || data.length === 0) {
+				emptyEl.hidden = false;
+				resultsEl.hidden = false;
+				return;
+			}
+
+			emptyEl.hidden = true;
+			data.forEach((row) => {
+				const tr = document.createElement('tr');
+
+				const values = [
+					row.planta ?? '-',
+					row.habitacions ?? 0,
+					row.quirofans ?? 0,
+					row.infermeres ?? 0,
+				];
+
+				values.forEach((value) => {
+					const td = document.createElement('td');
+					td.textContent = value;
+					tr.appendChild(td);
+				});
+
+				rowsEl.appendChild(tr);
+			});
+
+			resultsEl.hidden = false;
+		};
+
+		const loadReport = async () => {
+			setMessage('Carregant informe per planta...');
+			resultsEl.hidden = true;
+
+			const response = await fetch('/api/informes/planta');
+			const payload = await response.json();
+
+			if (!response.ok || payload.ok === false) {
+				setMessage(payload.error || 'No s han pogut carregar les dades.', true);
+				rowsEl.innerHTML = '';
+				emptyEl.hidden = true;
+				resultsEl.hidden = true;
+				return;
+			}
+
+			setMessage('Informe carregat correctament.');
+			renderRows(Array.isArray(payload.data) ? payload.data : []);
+		};
+
+		loadReport();
+	</script>
+</body>
+</html>

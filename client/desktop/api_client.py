@@ -76,8 +76,38 @@ def get_habitacions():
     return _request('GET', '/api/habitacions')
 
 
-def get_visites(date_value):
-    return _request('GET', '/api/informes/visites', params={'date': date_value})
+def get_visites(date_value=None, end_date=None):
+    params = {}
+    if date_value and end_date:
+        params = {'start_date': date_value, 'end_date': end_date}
+    elif date_value:
+        params = {'date': date_value}
+    return _request('GET', '/api/informes/visites', params=params)
+
+
+def get_planta_report():
+    return _request('GET', '/api/informes/planta')
+
+
+def get_personal_report():
+    return _request('GET', '/api/informes/personal')
+
+
+def get_malalties_report():
+    return _request('GET', '/api/informes/malalties')
+
+
+def get_ranking_metges_report():
+    return _request('GET', '/api/informes/ranking_metges')
+
+
+def get_visites_dia(start_date=None, end_date=None):
+    params = {}
+    if start_date and end_date:
+        params = {'start_date': start_date, 'end_date': end_date}
+    elif start_date:
+        params = {'date': start_date}
+    return _request('GET', '/api/informes/visites_dia', params=params)
 
 
 def get_report(report_name, params=None):

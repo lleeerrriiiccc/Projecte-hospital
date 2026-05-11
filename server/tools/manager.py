@@ -39,6 +39,36 @@ def handle_db_error(e, con):
 
 
 ############
+# VISITS DATE RANGE
+############
+def get_visites_date_range(username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+        cur.execute("""
+            SELECT MIN(data_visita), MAX(data_visita)
+            FROM visita
+        """)
+        row = cur.fetchone()
+
+        if row is None or row[0] is None or row[1] is None:
+            return False, "No hi ha visites disponibles."
+
+        return True, (str(row[0]), str(row[1]))
+
+    except Exception as e:
+        return handle_db_error(e, con)
+
+    finally:
+        if cur is not None:
+            cur.close()
+        if con is not None:
+            con.close()
+
+
+############
 # LOGIN FUNCTION
 ############
 def login(username, password):
@@ -279,9 +309,10 @@ def get_informes(informe, params=None, username=None):
             result = []
             for row in rows:
                 result.append({
-                    "pacient": row[0],
-                    "metge": row[1],
-                    "hora_visita": str(row[2]),
+                    "data_visita": str(row[0]),
+                    "pacient": row[1],
+                    "metge": row[2],
+                    "hora_visita": str(row[3]),
                 })
             return True, result
 
@@ -342,6 +373,62 @@ def get_informes(informe, params=None, username=None):
                     "id_quirofan": row[0],
                     "planta": row[1],
                     "maquinari": row[2],
+                })
+            return True, result
+
+        if informe == 'planta':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_planta": row[0],
+                    "planta": row[1],
+                    "habitacions": row[2],
+                    "quirofans": row[3],
+                    "infermeres": row[4],
+                })
+            return True, result
+
+        if informe == 'personal':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_intern": row[0],
+                    "nom_complet": row[1],
+                    "tipus_feina": row[2],
+                    "telefon": row[3],
+                    "email": row[4],
+                    "data_alta": str(row[5]),
+                })
+            return True, result
+
+        if informe == 'ranking_metges':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_intern": row[0],
+                    "metge": row[1],
+                    "pacients_atesos": row[2],
+                    "total_visites": row[3],
+                })
+            return True, result
+
+        if informe == 'malalties':
+            result = []
+            for row in rows:
+                result.append({
+                    "id_malaltia": row[0],
+                    "malaltia": row[1],
+                    "total_visites": row[2],
+                    "pacients_afectats": row[3],
+                })
+            return True, result
+
+        if informe == 'visites_dia':
+            result = []
+            for row in rows:
+                result.append({
+                    "data_visita": str(row[0]),
+                    "total_visites": row[1],
                 })
             return True, result
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Metges</title>
+    <link rel="stylesheet" href="/css/visites.css">
+</head>
+<body>
+    <main class="page">
+        <section class="report-card" aria-labelledby="ranking-metges-title">
+            <h1 id="ranking-metges-title">Ranking de Metges</h1>
+            <p class="subtitle">Mostra els metges que han atès més pacients.</p>
+
+            <p id="message" class="message" role="status">Carregant ranking...</p>
+
+            <div id="results" hidden>
+                <div class="table-wrap">
+                    <table aria-label="Resultats ranking metges">
+                        <thead>
+                            <tr>
+                                <th scope="col">Metge</th>
+                                <th scope="col">Pacients atesos</th>
+                                <th scope="col">Total visites</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows"></tbody>
+                    </table>
+                </div>
+                <p id="empty" class="empty" hidden>No hi ha dades de metges.</p>
+            </div>
+
+            <a class="back-link" href="/home">Tornar al menu</a>
+        </section>
+    </main>
+
+    <script>
+        const messageEl = document.getElementById('message');
+        const resultsEl = document.getElementById('results');
+        const rowsEl = document.getElementById('rows');
+        const emptyEl = document.getElementById('empty');
+
+        const setMessage = (text, isError = false) => {
+            messageEl.hidden = false;
+            messageEl.textContent = text;
+            messageEl.classList.toggle('error', isError);
+        };
+
+        const renderRows = (data) => {
+            rowsEl.innerHTML = '';
+
+            if (!Array.isArray(data) || data.length === 0) {
+                emptyEl.hidden = false;
+                resultsEl.hidden = false;
+                return;
+            }
+
+            emptyEl.hidden = true;
+            data.forEach((row) => {
+                const tr = document.createElement('tr');
+
+                const tdMetge = document.createElement('td');
+                tdMetge.textContent = row.metge ?? '-';
+
+                const tdPacients = document.createElement('td');
+                tdPacients.textContent = row.pacients_atesos ?? 0;
+
+                const tdVisites = document.createElement('td');
+                tdVisites.textContent = row.total_visites ?? 0;
+
+                tr.appendChild(tdMetge);
+                tr.appendChild(tdPacients);
+                tr.appendChild(tdVisites);
+                rowsEl.appendChild(tr);
+            });
+
+            resultsEl.hidden = false;
+        };
+
+        const loadReport = async () => {
+            setMessage('Carregant ranking de metges...');
+            resultsEl.hidden = true;
+
+            const response = await fetch('/api/informes/ranking_metges');
+            const payload = await response.json();
+
+            if (!response.ok || payload.ok === false) {
+                setMessage(payload.error || 'No s han pogut carregar les dades.', true);
+                rowsEl.innerHTML = '';
+                emptyEl.hidden = true;
+                resultsEl.hidden = true;
+                return;
+            }
+
+            setMessage('Informe carregat correctament.');
+            renderRows(Array.isArray(payload.data) ? payload.data : []);
+        };
+
+        loadReport();
+    </script>
+</body>
+</html>

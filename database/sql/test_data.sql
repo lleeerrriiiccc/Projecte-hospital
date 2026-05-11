@@ -10,7 +10,9 @@ INSERT INTO personal
 VALUES
 ('Marc', 'Serra', 'Pujol', '1985-04-12', '600111222', '600333444', 'marc.serra@gmail.com', 'm.serra@hospital.local', '11111111A', 'metge', '2020-01-10'),
 ('Laura', 'Vila', 'Roca', '1990-09-22', '600222333', '600444555', 'laura.vila@gmail.com', 'l.vila@hospital.local', '22222222B', 'enfermer', '2021-03-15'),
-('Jordi', 'Ferrer', 'Solé', '1978-11-05', '600555666', '600777888', 'jordi.ferrer@gmail.com', 'j.ferrer@hospital.local', '33333333C', 'metge', '2018-07-01');
+('Jordi', 'Ferrer', 'Solé', '1978-11-05', '600555666', '600777888', 'jordi.ferrer@gmail.com', 'j.ferrer@hospital.local', '33333333C', 'metge', '2018-07-01'),
+('Marta', 'Rius', 'Soler', '1992-01-30', '600888111', '600999222', 'marta.rius@gmail.com', 'm.rius@hospital.local', '44444444D', 'enfermer', '2022-05-20'),
+('Nuria', 'Costa', 'Marti', '1988-07-14', '601111222', '601333444', 'nuria.costa@gmail.com', 'n.costa@hospital.local', '55555555E', 'enfermer', '2023-02-08');
 
 -- METGE / ENFERMER
 INSERT INTO metge VALUES
@@ -18,7 +20,9 @@ INSERT INTO metge VALUES
 (3, 'Traumatologia', 'CV_Jordi.pdf');
 
 INSERT INTO enfermer VALUES
-(2);
+(2),
+(4),
+(5);
 
 -- PACIENT
 INSERT INTO pacient (nom, cognom, cognom2, data_naixement, identificador)
@@ -38,6 +42,12 @@ INSERT INTO medicament (descripcio) VALUES
 ('Ibuprofèn 600mg'),
 ('Amoxicil·lina 500mg');
 
+-- MALALTIA
+INSERT INTO malaltia (nom) VALUES
+('Grip'),
+('Bronquitis'),
+('Migranya');
+
 -- QUIROFAN
 INSERT INTO quirofan (id_planta) VALUES
 (2),
@@ -50,9 +60,12 @@ INSERT INTO maquina (nom, descripcio) VALUES
 ('Desfibril·lador', 'Emergències cardíaques');
 
 -- VISITA
-INSERT INTO visita (id_pacient, id_metge, data_visita, hora_visita) VALUES
-(1, 1, '2026-04-10', '10:30'),
-(2, 3, '2026-04-11', '12:00');
+INSERT INTO visita (id_pacient, id_metge, id_malaltia, data_visita, hora_visita, diagnostic) VALUES
+(1, 1, 1, '2026-04-05', '09:00', 'Grip'),
+(2, 3, 2, '2026-04-06', '11:30', 'Bronquitis'),
+(1, 1, 1, '2026-04-07', '16:15', 'Grip'),
+(2, 3, 3, '2026-04-09', '08:45', 'Migranya'),
+(1, 1, NULL, '2026-04-10', '10:20', 'Revisió sense diagnòstic');
 
 -- RECEPTA
 INSERT INTO recepta VALUES
@@ -87,9 +100,17 @@ INSERT INTO supervisio VALUES
 (2, 1),
 (2, 3);
 
+-- ASSIGNACIO INFERMER PLANTA
+INSERT INTO assignacio_infermer_planta VALUES
+(2, 1),
+(4, 2),
+(5, 3);
+
 -- USUARIS
 INSERT INTO usuaris (username, password, id_intern, rol) VALUES
 ('mserra', 'hashed_password_1', 1, 'metge'),
 ('lvila', 'hashed_password_2', 2, 'enfermer'),
-('jferrer', 'hashed_password_3', 3, 'metge');
+('jferrer', 'hashed_password_3', 3, 'metge'),
+('mrius', 'hashed_password_4', 4, 'enfermer'),
+('ncosta', 'hashed_password_5', 5, 'enfermer');
 

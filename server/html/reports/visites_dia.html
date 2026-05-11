@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Visites per Dia</title>
+	<link rel="stylesheet" href="/css/visites.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="visites-dia-title">
+			<h1 id="visites-dia-title">Visites per Dia</h1>
+			<p class="subtitle">Consulta les visites d'una sola data concreta.</p>
+
+			<form id="filters-form" class="filters" novalidate>
+				<div class="field">
+					<label for="report-date">Data</label>
+					<input id="report-date" name="report-date" type="date">
+				</div>
+				<button id="load-btn" type="submit">Carregar informe</button>
+			</form>
+
+			<p id="message" class="message" role="status">Selecciona una data per carregar el resum del dia.</p>
+
+			<div id="results" hidden>
+				<div class="table-wrap">
+					<table aria-label="Resultats informe visites per dia">
+						<thead>
+							<tr>
+								<th scope="col">Dia</th>
+								<th scope="col">Total visites</th>
+							</tr>
+						</thead>
+						<tbody id="rows"></tbody>
+					</table>
+				</div>
+					<p id="empty" class="empty" hidden>No hi ha visites per a aquest dia.</p>
+			</div>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const form = document.getElementById('filters-form');
+		const dateInput = document.getElementById('report-date');
+		const messageEl = document.getElementById('message');
+		const resultsEl = document.getElementById('results');
+		const rowsEl = document.getElementById('rows');
+		const emptyEl = document.getElementById('empty');
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const renderRows = (data) => {
+			rowsEl.innerHTML = '';
+
+			if (!Array.isArray(data) || data.length === 0) {
+				emptyEl.hidden = false;
+				resultsEl.hidden = false;
+				return;
+			}
+
+			emptyEl.hidden = true;
+			data.forEach((row) => {
+				const tr = document.createElement('tr');
+
+				const tdDate = document.createElement('td');
+				tdDate.textContent = row.data_visita ?? '-';
+
+				const tdTotal = document.createElement('td');
+				tdTotal.textContent = row.total_visites ?? 0;
+
+				tr.appendChild(tdDate);
+				tr.appendChild(tdTotal);
+				rowsEl.appendChild(tr);
+			});
+
+			resultsEl.hidden = false;
+		};
+
+		const loadReport = async (dateValue = null) => {
+			setMessage('Carregant visites per dia...');
+			resultsEl.hidden = true;
+
+			const response = await fetch('/api/informes/visites_dia' + (dateValue ? '?date=' + encodeURIComponent(dateValue) : ''));
+			const payload = await response.json();
+
+			if (!response.ok || payload.ok === false) {
+				setMessage(payload.error || 'No s han pogut carregar les dades.', true);
+				rowsEl.innerHTML = '';
+				emptyEl.hidden = true;
+				resultsEl.hidden = true;
+				return;
+			}
+
+			setMessage('Informe carregat correctament.');
+			renderRows(Array.isArray(payload.data) ? payload.data : []);
+		};
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+				const dateValue = dateInput.value;
+
+				if (!dateValue) {
+					setMessage('Selecciona una data.', true);
+				return;
+			}
+
+				loadReport(dateValue);
+		});
+	</script>
+</body>
+</html>

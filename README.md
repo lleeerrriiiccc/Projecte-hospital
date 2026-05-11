@@ -4,16 +4,22 @@ Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreS
 
 ## Estructura del projecte
 
-- `server/main.py`: punt d'entrada de l'aplicació web.
+- `iniciar.py`: script per arrencar el servidor i el client d'un sol cop.
+- `server/main.py`: punt d'entrada de l'aplicació web (Flask).
 - `server/tools/db_driver.py`: connexió a PostgreSQL i funcions bàsiques de base de dades.
-- `server/tools/manager.py`: lògica de login, registre i gestió d'usuaris.
-- `server/tools/masking.py`: utilitats previstes per emmascarar dades sensibles.
+- `server/tools/manager.py`: lògica de login, registre i gestió d'usuaris i dades.
+- `server/tools/crypt.py`: funcions per xifrar i verificar contrasenyes amb bcrypt.
+- `server/tools/masking.py`: emmascarament de dades sensibles segons el rol de l'usuari.
 - `server/html/`: plantilles HTML.
 - `server/css/`: fitxers CSS.
-- `server/uploads/`: fitxers pujats pel backend.
+- `server/uploads/`: fitxers pujats pel backend (CV de metges).
 - `server/sql/`: consultes SQL dels informes.
 - `client/desktop_main.py`: punt d'entrada del client d'escriptori.
-- `client/desktop/`: interfície Tkinter i vistes.
+- `client/desktop/app.py`: bootstrap de la finestra Tkinter i navegació entre pantalles.
+- `client/desktop/api_client.py`: funcions per fer peticions HTTP al backend Flask.
+- `client/desktop/config.py`: configuració del client (URL del servidor, mida de finestra).
+- `client/desktop/theme.py`: paleta de colors i estils visuals de la interfície.
+- `client/desktop/views/`: pantalles de la interfície Tkinter.
 - `database/sql/implementacio.sql`: esquema principal de la base de dades.
 - `database/sql/esquemadeseguretat.sql`: esquema de seguretat i permisos.
 - `database/sql/test_data.sql`: dades de prova per fer consultes i comprovacions.
@@ -40,6 +46,7 @@ La base de dades està pensada per a PostgreSQL i modela l'entorn hospitalari.
 - `inventari`
 - `reserva_habitacio`
 - `supervisio`
+- `assignacio_infermer_planta`
 - `usuaris`
 
 ### Relacions principals
@@ -52,11 +59,19 @@ La base de dades està pensada per a PostgreSQL i modela l'entorn hospitalari.
 - `inventari` relaciona quiròfans amb màquines.
 - `reserva_habitacio` relaciona pacients amb habitacions.
 - `supervisio` relaciona personal amb metges.
+- `assignacio_infermer_planta` relaciona els infermers amb la planta on treballen per poder fer informes per planta.
 - `usuaris` guarda les credencials de l'aplicació i el vincle amb personal.
 
 ### Dades de prova
 
-En un futur es generara la dummy data per omplir tota la base de dades amb informació necessaria.
+El fitxer `database/sql/test_data.sql` conté dades de prova per omplir totes les taules i poder fer consultes i comprovacions sense dades reals.
+També inclou exemples d'assignació d'infermers a plantes per poder provar el bloc de consultes i informes.
+
+### Canvi de model per als informes
+
+Per poder calcular quants infermers treballen a cada planta s'ha afegit la taula de relació `assignacio_infermer_planta` entre `enfermer` i `planta`.
+
+Si la base de dades ja tenia la versió anterior de l'esquema, només cal executar el bloc de migració afegit al final de `database/sql/implementacio.sql` per crear aquesta relació nova sense reconstruir tota la base de dades.
 
 ## Esquema de seguretat
 
@@ -84,6 +99,7 @@ L'esquema de seguretat s'ha plantejat amb rols de login i rols de grup.
 - Els usuaris reals de la web es desen a la taula `usuaris`.
 - Els rols funcionals de l'aplicació també existeixen com a rols de PostgreSQL i tambe es guarden a la base de dades per poder identificar a cada usuari correctament.
 - El backend continua controlant la lògica de negoci i el filtratge funcional.
+- La relació `assignacio_infermer_planta` s'ha afegit per poder fer informes de plantilla per planta de manera clara i senzilla.
 
 ### Accés del pacient
 
@@ -104,89 +120,123 @@ Per garantir una connexió segura, més endavant s'implementarà l'ús d'un cert
 
 ## Emmascarament de dades
 
-Per protegir les dades personals de grau alt, més endavant s'implementarà un sistema d'emmascarament al backend.
+El backend disposa d'un sistema d'emmascarament implementat a `server/tools/masking.py` que protegeix les dades personals de grau alt.
 
-### Com es faria
+### Com funciona
 
-- Es determinarien els camps de caràcter personal de grau alt, com ara `dni`, `telefon`, `telefon2`, `email`, `email_intern` i `data_naixement`.
-- Es definiria quins rols poden veure la informació completa i quins només la versió parcialment amagada.
-- L'emmascarament es faria a l'aplicació, abans de mostrar les dades a pantalla o retornar-les per API.
-- A la base de dades es mantindrien les dades originals, sense modificar-les.
+- Els camps sensibles són: `dni`, `telefon`, `telefon2`, `email`, `email_intern` i `data_naixement`.
+- Cada camp té la seva pròpia funció de màscara: `mask_dni`, `mask_phone`, `mask_email`, `mask_date`.
+- La funció `mask_payload` recorre totes les files retornades per la base de dades i aplica les màscares necessàries.
+- L'emmascarament es fa al backend, just abans de retornar les dades per API. La base de dades guarda sempre les dades originals.
 
-### Criteri proposat
+### Criteri d'accés
 
-- L'usuari amb accés complet veuria les dades senceres.
-- La resta d'usuaris veurien els camps sensibles amb una màscara parcial.
-- Si més endavant es volgués reforçar la seguretat, es podrien afegir vistes o consultes específiques per a cada rol.
+- Els rols `hosp_admin`, `administrador` i `rol_administrador` veuen les dades senceres.
+- La resta d'usuaris veuen els camps sensibles amb una màscara parcial.
+- Si més endavant cal més aïllament, es poden afegir vistes o consultes específiques per a cada rol.
 
-## Migracio inicial a Tkinter
+## Client d'escriptori Tkinter
 
-S'ha iniciat la migracio de la interfície web cap a una aplicacio d'escriptori amb Tkinter mantenint el backend Flask.
+La interfície principal de l'aplicació és un client d'escriptori fet amb Tkinter que es connecta al backend Flask per HTTP.
 
-Estat actual: migracio funcional completada (web i desktop poden conviure).
+Estat actual: client completament funcional, conviu amb el frontend web original.
 
-### Estat actual
+### Pantalles disponibles
 
-- Es manté el frontend web existent.
-- S'ha afegit un client desktop en `client/desktop/`.
-- Ja hi ha aquestes pantalles en Tkinter:
-	- Login
-	- Home
-	- Alta de pacient
-	- Alta de personal
-	- Informe de visites
-	- Informe de quirofans
-	- Informe d'aparells
-	- Informe de supervisio
-	- Informe d'habitacions
-	- Informe de metge
-	- Informe de pacient
+- Login
+- Home
+- Alta de pacient
+- Alta de personal
+- Informe per planta
+- Informe de personal
+- Visites per dia
+- Informe de visites
+- Informe de quiròfans
+- Informe d'aparells
+- Informe de supervisió
+- Informe d'habitacions
+- Informe de metge
+- Informe de pacient
 
-### Nous endpoints JSON per a desktop
+### Endpoints del backend
 
+**Autenticació:**
 - `POST /api/login`
 - `POST /api/logout`
 - `POST /api/register`
+- `GET /me`
+
+**Alta de dades:**
 - `POST /api/pacients`
 - `POST /api/personal`
 
-Els endpoints API de consultes ja existents (`/api/informes/*`, `/api/metges`, `/api/habitacions`, `/api/pacients`) es mantenen.
+**Consultes:**
+- `GET /api/metges`
+- `GET /api/pacients`
+- `GET /api/habitacions`
+- `GET /api/informes/planta`
+- `GET /api/informes/personal`
+- `GET /api/informes/visites_dia?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/informes/supervisio`
+- `GET /api/informes/visites?date=YYYY-MM-DD` o `GET /api/informes/visites?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/informes/quirofans?date=YYYY-MM-DD`
+- `GET /api/informes/habitacions?habitacio=NUM`
+- `GET /api/informes/metge?metge=ID&date=YYYY-MM-DD`
+- `GET /api/informes/aparells`
+- `GET /api/informes/pacient?pacient=ID`
 
-### Variables d'entorn utiles
+### Variables d'entorn
 
 - `FLASK_USE_SSL`: `true` o `false` per activar/desactivar SSL al backend.
 - `FLASK_HOST`: host de Flask (per defecte `127.0.0.1`).
 - `FLASK_PORT`: port de Flask (per defecte `5000`).
-- `DESKTOP_API_BASE_URL`: URL base que usa Tkinter (per defecte `http://127.0.0.1:5000`).
+- `FLASK_SECRET`: clau secreta de Flask per a les sessions.
+- `DESKTOP_API_BASE_URL`: URL base que usa el client desktop (per defecte `http://127.0.0.1:5000`).
 - `DESKTOP_API_VERIFY_TLS`: `true` o `false` per verificar certificat TLS al client desktop.
+- `DB_HOST`: adreça del servidor PostgreSQL.
+- `DB_DATABASE`: nom de la base de dades (per exemple `hosp_blanes`).
+- `DB_USER`: usuari de connexió a PostgreSQL.
+- `DB_PASSWORD`: contrasenya de l'usuari de PostgreSQL.
 - `DB_SSLMODE`: mode SSL de PostgreSQL. Per treballar en local és recomanable `prefer`.
 
-### Requisit per executar-ho tot
+### Requisits per executar-ho
 
-- Cal tenir PostgreSQL instal.lat i en marxa.
-- La base de dades `hosp_blanes` ha d'existir abans de fer login o carregar dades.
-- Si PostgreSQL no està arrencat, el backend i el client s'obriran igualment, pero les accions que depenen de base de dades retornaran error.
+- Cal tenir PostgreSQL instal·lat i en marxa.
+- La base de dades ha d'existir i tenir l'esquema carregat abans de fer login o carregar dades.
+- Si PostgreSQL no està arrencat, el backend i el client s'obriran igualment, però les accions que depenen de base de dades retornaran error.
+- Cal un fitxer `.env` a l'arrel del projecte (o a `server/`) amb les variables d'entorn.
 
-### Execucio en local (web + desktop)
+### Execució en local
+
+**Opció 1 — script d'inici ràpid (recomanat):**
+
+```bash
+python iniciar.py
+```
+
+Aquesta ordre arrenca el servidor Flask i el client Tkinter d'un sol cop. Quan es tanca la finestra del client, el servidor s'atura automàticament.
+
+**Opció 2 — arrencada manual en dues terminals:**
 
 1. Arrenca el backend:
 
 ```bash
 cd server
-FLASK_USE_SSL=false FLASK_PORT=5000 python3 main.py
+python main.py
 ```
 
-2. En una altra terminal, arrenca la GUI Tkinter:
+2. En una altra terminal, arrenca el client:
 
 ```bash
 cd client
-DESKTOP_API_BASE_URL=http://127.0.0.1:5000 python3 desktop_main.py
+python desktop_main.py
 ```
 
-3. Si cal preparar la base de dades, carrega primer l'esquema i despres les dades de prova:
+**Preparació de la base de dades (primera vegada):**
 
 ```bash
 psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
 psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
 ```
 

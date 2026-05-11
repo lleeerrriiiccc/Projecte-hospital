@@ -133,6 +133,7 @@ GRANT SELECT ON TABLE
 	planta,
 	habitacio,
 	medicament,
+	malaltia,
 	quirofan,
 	maquina
 TO personal;
@@ -144,6 +145,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 	enfermer,
 	pacient,
 	visita,
+	malaltia,
 	recepta,
 	operacio,
 	assisteix,
@@ -154,6 +156,7 @@ GRANT SELECT ON TABLE
 	planta,
 	habitacio,
 	medicament,
+	malaltia,
 	quirofan,
 	maquina,
 	inventari,
@@ -171,6 +174,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 	planta,
 	habitacio,
 	medicament,
+	malaltia,
 	quirofan,
 	maquina,
 	visita,
@@ -184,6 +188,7 @@ GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO gestio;
 GRANT SELECT ON TABLE
 	planta,
 	habitacio,
+	malaltia,
 	quirofan,
 	maquina,
 	inventari
@@ -199,6 +204,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 	planta,
 	habitacio,
 	medicament,
+	malaltia,
 	quirofan,
 	maquina,
 	visita,

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Informe de Personal</title>
+	<link rel="stylesheet" href="/css/visites.css">
+</head>
+<body>
+	<main class="page">
+		<section class="report-card" aria-labelledby="personal-title">
+			<h1 id="personal-title">Informe de Personal</h1>
+			<p class="subtitle">Consulta tot el personal que treballa a l'hospital.</p>
+
+			<p id="message" class="message" role="status">Carregant informe...</p>
+
+			<div id="results" hidden>
+				<div class="table-wrap">
+					<table aria-label="Resultats informe personal">
+						<thead>
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">Nom complet</th>
+								<th scope="col">Feina</th>
+								<th scope="col">Telefon</th>
+								<th scope="col">Email</th>
+								<th scope="col">Alta</th>
+							</tr>
+						</thead>
+						<tbody id="rows"></tbody>
+					</table>
+				</div>
+				<p id="empty" class="empty" hidden>No hi ha personal disponible.</p>
+			</div>
+
+			<a class="back-link" href="/home">Tornar al menu</a>
+		</section>
+	</main>
+
+	<script>
+		const messageEl = document.getElementById('message');
+		const resultsEl = document.getElementById('results');
+		const rowsEl = document.getElementById('rows');
+		const emptyEl = document.getElementById('empty');
+
+		const setMessage = (text, isError = false) => {
+			messageEl.hidden = false;
+			messageEl.textContent = text;
+			messageEl.classList.toggle('error', isError);
+		};
+
+		const renderRows = (data) => {
+			rowsEl.innerHTML = '';
+
+			if (!Array.isArray(data) || data.length === 0) {
+				emptyEl.hidden = false;
+				resultsEl.hidden = false;
+				return;
+			}
+
+			emptyEl.hidden = true;
+			data.forEach((row) => {
+				const tr = document.createElement('tr');
+				const values = [
+					row.id_intern ?? '-',
+					row.nom_complet ?? '-',
+					row.tipus_feina ?? '-',
+					row.telefon ?? '-',
+					row.email ?? '-',
+					row.data_alta ?? '-',
+				];
+
+				values.forEach((value) => {
+					const td = document.createElement('td');
+					td.textContent = value;
+					tr.appendChild(td);
+				});
+
+				rowsEl.appendChild(tr);
+			});
+
+			resultsEl.hidden = false;
+		};
+
+		const loadReport = async () => {
+			setMessage('Carregant informe de personal...');
+			resultsEl.hidden = true;
+
+			const response = await fetch('/api/informes/personal');
+			const payload = await response.json();
+
+			if (!response.ok || payload.ok === false) {
+				setMessage(payload.error || 'No s han pogut carregar les dades.', true);
+				rowsEl.innerHTML = '';
+				emptyEl.hidden = true;
+				resultsEl.hidden = true;
+				return;
+			}
+
+			setMessage('Informe carregat correctament.');
+			renderRows(Array.isArray(payload.data) ? payload.data : []);
+		};
+
+		loadReport();
+	</script>
+</body>
+</html>

@@ -7,11 +7,16 @@ from .theme import PALETTE
 from .views.alta_pacient_view import create_alta_pacient_view
 from .views.alta_personal_view import create_alta_personal_view
 from .views.report_aparells_view import create_report_aparells_view
+from .views.report_personal_view import create_report_personal_view
 from .views.report_habitacions_view import create_report_habitacions_view
 from .views.report_metge_view import create_report_metge_view
+from .views.report_malalties_view import create_report_malalties_view
+from .views.report_planta_view import create_report_planta_view
 from .views.report_pacient_view import create_report_pacient_view
 from .views.report_quirofans_view import create_report_quirofans_view
+from .views.report_ranking_metges_view import create_report_ranking_metges_view
 from .views.report_supervisio_view import create_report_supervisio_view
+from .views.report_visites_dia_view import create_report_visites_dia_view
 from .views.home_view import create_home_view
 from .views.login_view import create_login_view
 from .views.report_visites_view import create_report_visites_view
@@ -88,6 +93,11 @@ def main():
         ('home', create_home_view),
         ('alta_pacient', create_alta_pacient_view),
         ('alta_personal', create_alta_personal_view),
+        ('report_planta', create_report_planta_view),
+        ('report_personal', create_report_personal_view),
+        ('report_malalties', create_report_malalties_view),
+        ('report_ranking_metges', create_report_ranking_metges_view),
+        ('report_visites_dia', create_report_visites_dia_view),
         ('report_visites', create_report_visites_view),
         ('report_quirofans', create_report_quirofans_view),
         ('report_aparells', create_report_aparells_view),
