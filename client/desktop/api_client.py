@@ -29,6 +29,34 @@ def _request(method, path, **kwargs):
     return payload
 
 
+def _download(path, params=None):
+    url = API_BASE_URL.rstrip('/') + path
+    response = _session.request(
+        method='GET',
+        url=url,
+        params=params or {},
+        timeout=20,
+        verify=API_VERIFY_TLS,
+    )
+
+    payload = {}
+    content_type = response.headers.get('Content-Type', '')
+    if 'application/json' in content_type:
+        try:
+            payload = response.json()
+        except ValueError:
+            payload = {}
+
+    if not response.ok:
+        message = payload.get('error') if isinstance(payload, dict) else response.text
+        raise Exception(message or f'HTTP {response.status_code}')
+
+    if isinstance(payload, dict) and payload.get('ok') is False:
+        raise Exception(payload.get('error') or 'API error')
+
+    return response.content
+
+
 def login(username, password):
     return _request('POST', '/api/login', json={'username': username, 'password': password})
 
@@ -101,14 +129,25 @@ def get_ranking_metges_report():
     return _request('GET', '/api/informes/ranking_metges')
 
 
-def get_visites_dia(start_date=None, end_date=None):
+def get_visites_dia(date_value=None):
     params = {}
-    if start_date and end_date:
-        params = {'start_date': start_date, 'end_date': end_date}
-    elif start_date:
-        params = {'date': start_date}
+    if date_value:
+        params = {'date': date_value}
     return _request('GET', '/api/informes/visites_dia', params=params)
 
 
 def get_report(report_name, params=None):
     return _request('GET', f'/api/informes/{report_name}', params=params or {})
+
+
+def download_visites_export(export_format, start_date=None, end_date=None):
+    params = {}
+    if start_date:
+        params['start_date'] = start_date
+    if end_date:
+        params['end_date'] = end_date
+    return _download(f'/api/exportacions/visites/{export_format}', params=params)
+
+
+def download_visites_schema(schema_format):
+    return _download(f'/api/exportacions/visites/schema/{schema_format}')

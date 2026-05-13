@@ -1,0 +1,50 @@
+{
+	"data_inici": "2025-01-10",
+	"data_fi": "2025-01-12",
+	"visites": [
+		{
+			"id_visita": 1,
+			"dia": "2025-01-10",
+			"metge": "Joan Garcia Lopez",
+			"pacient": {
+				"id_pacient": 1,
+				"nom": "Laura",
+				"cognom": "Diaz",
+				"cognom2": "Gomez"
+			}
+		},
+		{
+			"id_visita": 4,
+			"dia": "2025-01-10",
+			"metge": "Anna Martinez Ruiz",
+			"pacient": {
+				"id_pacient": 4,
+				"nom": "Miguel",
+				"cognom": "Santos",
+				"cognom2": "Ruiz"
+			}
+		},
+		{
+			"id_visita": 2,
+			"dia": "2025-01-11",
+			"metge": "Anna Martinez Ruiz",
+			"pacient": {
+				"id_pacient": 2,
+				"nom": "Carlos",
+				"cognom": "Fernandez",
+				"cognom2": "Lopez"
+			}
+		},
+		{
+			"id_visita": 3,
+			"dia": "2025-01-12",
+			"metge": "Joan Garcia Lopez",
+			"pacient": {
+				"id_pacient": 3,
+				"nom": "Anna",
+				"cognom": "Lopez",
+				"cognom2": "Marti"
+			}
+		}
+	]
+}

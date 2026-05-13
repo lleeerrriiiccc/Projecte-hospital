@@ -110,6 +110,73 @@ body {
     background-color: var(--danger-bg);
 }
 
+.export-panel {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fbfdff;
+}
+
+.export-copy h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    color: var(--hospital-blue);
+}
+
+.export-copy p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+.export-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.secondary-btn,
+.schema-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.secondary-btn {
+    border: 1px solid var(--hospital-blue);
+    color: var(--hospital-blue);
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.secondary-btn:hover {
+    color: #ffffff;
+    background: var(--hospital-blue);
+}
+
+.schema-link {
+    border: 1px dashed #8eb4d1;
+    color: #2c5878;
+    background: #f3f8fc;
+}
+
+.schema-link:hover {
+    border-style: solid;
+    background: #e8f2fa;
+}
+
 .table-wrap {
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -180,7 +247,21 @@ tbody tr:hover {
         grid-template-columns: 1fr;
     }
 
+    .export-panel {
+        flex-direction: column;
+    }
+
+    .export-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
     #load-btn {
+        width: 100%;
+    }
+
+    .secondary-btn,
+    .schema-link {
         width: 100%;
     }
 

@@ -24,6 +24,19 @@
                 <button id="load-btn" type="submit">Carregar informe</button>
             </form>
 
+            <section class="export-panel" aria-labelledby="export-title">
+                <div class="export-copy">
+                    <h2 id="export-title">Exportació de dades</h2>
+                    <p>Descarrega les visites filtrades en JSON o XML i obtén també els esquemes associats.</p>
+                </div>
+                <div class="export-actions">
+                    <button id="download-json-btn" class="secondary-btn" type="button">Descarregar JSON</button>
+                    <button id="download-xml-btn" class="secondary-btn" type="button">Descarregar XML</button>
+                    <a class="schema-link" href="/api/exportacions/visites/schema/json">JSON Schema</a>
+                    <a class="schema-link" href="/api/exportacions/visites/schema/xml">XSD</a>
+                </div>
+            </section>
+
             <p id="message" class="message" role="status">Carregant informe per defecte...</p>
 
             <div id="results" hidden>
@@ -51,6 +64,8 @@
         const form = document.getElementById('filters-form');
         const dateInput = document.getElementById('report-date');
         const endDateInput = document.getElementById('report-end-date');
+        const downloadJsonBtn = document.getElementById('download-json-btn');
+        const downloadXmlBtn = document.getElementById('download-xml-btn');
         const messageEl = document.getElementById('message');
         const resultsEl = document.getElementById('results');
         const rowsEl = document.getElementById('rows');
@@ -60,6 +75,40 @@
             messageEl.hidden = false;
             messageEl.textContent = text;
             messageEl.classList.toggle('error', isError);
+        };
+
+        const resolveDateRange = () => {
+            const dateValue = dateInput.value;
+            const endDateValue = endDateInput.value;
+
+            if (!dateValue && !endDateValue) {
+                return { startDate: null, endDate: null };
+            }
+
+            const startDate = dateValue || endDateValue;
+            const endDate = endDateValue || startDate;
+
+            if (startDate && endDate && startDate > endDate) {
+                throw new Error("La data d'inici ha de ser anterior o igual a la data de fi.");
+            }
+
+            return { startDate, endDate };
+        };
+
+        const buildQueryString = () => {
+            const { startDate, endDate } = resolveDateRange();
+            const params = new URLSearchParams();
+
+            if (startDate) {
+                params.set('start_date', startDate);
+            }
+
+            if (endDate) {
+                params.set('end_date', endDate);
+            }
+
+            const queryString = params.toString();
+            return queryString ? '?' + queryString : '';
         };
 
         const renderRows = (data) => {
@@ -124,25 +173,42 @@
             renderRows(Array.isArray(payload.data) ? payload.data : []);
         };
 
+        const downloadExport = (format) => {
+            let queryString = '';
+
+            try {
+                queryString = buildQueryString();
+            } catch (error) {
+                setMessage(error.message || 'No s ha pogut preparar l\'exportació.', true);
+                return;
+            }
+
+            setMessage('S\'ha iniciat la descàrrega de l\'exportació.');
+            window.location.href = '/api/exportacions/visites/' + format + queryString;
+        };
+
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const dateValue = dateInput.value;
-            const endDateValue = endDateInput.value;
-            if (!dateValue && !endDateValue) {
+            let dateRange;
+
+            try {
+                dateRange = resolveDateRange();
+            } catch (error) {
+                setMessage(error.message || 'No s ha pogut validar el rang de dates.', true);
+                return;
+            }
+
+            if (!dateRange.startDate && !dateRange.endDate) {
                 loadVisites();
                 return;
             }
 
-            const effectiveDateValue = dateValue || endDateValue;
-
-            if (dateValue && endDateValue && dateValue > endDateValue) {
-                setMessage("La data d'inici ha de ser anterior o igual a la data de fi.", true);
-                return;
-            }
-
-            loadVisites(effectiveDateValue, endDateValue || null);
+            loadVisites(dateRange.startDate, dateRange.endDate);
         });
+
+        downloadJsonBtn.addEventListener('click', () => downloadExport('json'));
+        downloadXmlBtn.addEventListener('click', () => downloadExport('xml'));
 
         loadVisites();
     </script>

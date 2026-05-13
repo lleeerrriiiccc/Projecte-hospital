@@ -10,21 +10,17 @@
 	<main class="page">
 		<section class="report-card" aria-labelledby="visites-dia-title">
 			<h1 id="visites-dia-title">Visites per Dia</h1>
-			<p class="subtitle">Consulta les visites d'una data concreta o d'un rang entre dues dates.</p>
+			<p class="subtitle">Consulta el total de visites d'una data concreta.</p>
 
 			<form id="filters-form" class="filters" novalidate>
 				<div class="field">
-					<label for="report-date">Data inici</label>
+					<label for="report-date">Data</label>
 					<input id="report-date" name="report-date" type="date">
-				</div>
-				<div class="field">
-					<label for="report-end-date">Data fi</label>
-					<input id="report-end-date" name="report-end-date" type="date">
 				</div>
 				<button id="load-btn" type="submit">Carregar informe</button>
 			</form>
 
-			<p id="message" class="message" role="status">Selecciona una data o un rang per carregar el resum.</p>
+			<p id="message" class="message" role="status">Selecciona una data per carregar el resum.</p>
 
 			<div id="results" hidden>
 				<div class="table-wrap">
@@ -48,7 +44,6 @@
 	<script>
 		const form = document.getElementById('filters-form');
 		const dateInput = document.getElementById('report-date');
-		const endDateInput = document.getElementById('report-end-date');
 		const messageEl = document.getElementById('message');
 		const resultsEl = document.getElementById('results');
 		const rowsEl = document.getElementById('rows');
@@ -87,16 +82,13 @@
 			resultsEl.hidden = false;
 		};
 
-		const loadReport = async (dateValue = null, endDateValue = null) => {
+		const loadReport = async (dateValue) => {
 			setMessage('Carregant visites per dia...');
 			resultsEl.hidden = true;
 
 			const params = [];
 			if (dateValue) {
-				params.push('start_date=' + encodeURIComponent(dateValue));
-			}
-			if (endDateValue) {
-				params.push('end_date=' + encodeURIComponent(endDateValue));
+				params.push('date=' + encodeURIComponent(dateValue));
 			}
 
 			const response = await fetch('/api/informes/visites_dia' + (params.length ? '?' + params.join('&') : ''));
@@ -118,19 +110,13 @@
 			event.preventDefault();
 
 			const dateValue = dateInput.value;
-			const endDateValue = endDateInput.value;
 
-			if (!dateValue && !endDateValue) {
-				setMessage('Selecciona una data o un rang de dates.', true);
+			if (!dateValue) {
+				setMessage('Selecciona una data.', true);
 				return;
 			}
 
-			if (dateValue && endDateValue && dateValue > endDateValue) {
-				setMessage("La data d'inici ha de ser anterior o igual a la data de fi.", true);
-				return;
-			}
-
-			loadReport(dateValue || endDateValue, endDateValue || null);
+			loadReport(dateValue);
 		});
 	</script>
 </body>

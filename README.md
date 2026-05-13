@@ -158,6 +158,8 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - Informe de metge
 - Informe de pacient
 
+L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara un bloc d'exportació de dades. Aquest bloc permet descarregar el rang seleccionat en format JSON o XML, i també baixar el JSON Schema i l'XSD corresponents.
+
 ### Endpoints del backend
 
 **Autenticació:**
@@ -176,7 +178,7 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - `GET /api/habitacions`
 - `GET /api/informes/planta`
 - `GET /api/informes/personal`
-- `GET /api/informes/visites_dia?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/informes/visites_dia?date=YYYY-MM-DD`
 - `GET /api/informes/supervisio`
 - `GET /api/informes/visites?date=YYYY-MM-DD` o `GET /api/informes/visites?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
 - `GET /api/informes/quirofans?date=YYYY-MM-DD`
@@ -184,6 +186,14 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - `GET /api/informes/metge?metge=ID&date=YYYY-MM-DD`
 - `GET /api/informes/aparells`
 - `GET /api/informes/pacient?pacient=ID`
+
+**Exportació de visites:**
+- `GET /api/exportacions/visites/json?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/exportacions/visites/xml?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/exportacions/visites/schema/json`
+- `GET /api/exportacions/visites/schema/xml`
+
+Els fitxers d'exportació inclouen el rang de dates i, per a cada visita, `id_visita`, `dia`, `metge` i un bloc `pacient` amb `id_pacient`, `nom`, `cognom` i `cognom2`. Tant el JSON com l'XML es generen indentats amb tabulacions.
 
 ### Variables d'entorn
 

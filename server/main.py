@@ -1,6 +1,8 @@
 import datetime
+import json
 import os
 import shutil
+import xml.etree.ElementTree as ET
 
 import dotenv
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
@@ -17,6 +19,7 @@ app = Flask(__name__, template_folder=template_dir)
 dotenv.load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET")
 app.config['UPLOAD_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'uploads'))
+app.config['SCHEMA_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas'))
 
 
 ############
@@ -444,16 +447,6 @@ def get_informes_quirofans():
     return mask_and_return(m.get_informes('quirofans', (date_value,), username=session.get('username')))
 
 
-@app.route('/api/informes/habitacions')
-def get_informes_habitacions():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
-    habitacio = request.args.get('habitacio', '').strip()
-    if not habitacio:
-        return jsonify({'error': 'Room parameter is required'}), 400
-    return mask_and_return(m.get_informes('habitacions', (habitacio,), username=session.get('username')))
-
-
 @app.route('/api/informes/metge')
 def get_informes_metge():
     if 'username' not in session:
@@ -518,6 +511,7 @@ app = Flask(__name__, template_folder=template_dir)
 dotenv.load_dotenv()
 app.secret_key = os.getenv("FLASK_SECRET")
 app.config['UPLOAD_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'uploads'))
+app.config['SCHEMA_FOLDER'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'schemas'))
 
 
 def _is_json_request():
@@ -821,6 +815,102 @@ def _get_required_int_arg(name, label):
         return int(value)
     except ValueError as exc:
         raise ValueError(f'{label} parameter must be a valid integer') from exc
+
+
+def _resolve_visites_date_range():
+    start_date = (request.args.get('start_date') or request.args.get('date') or '').strip()
+    end_date = (request.args.get('end_date') or request.args.get('date') or '').strip()
+
+    if start_date in ('undefined', 'null'):
+        start_date = ''
+
+    if end_date in ('undefined', 'null'):
+        end_date = ''
+
+    if not start_date and not end_date:
+        ok, date_range = m.get_visites_date_range(username=_current_username())
+        if not ok:
+            raise ValueError(str(date_range))
+        start_date, end_date = date_range
+    elif not start_date:
+        start_date = end_date
+    elif not end_date:
+        end_date = start_date
+
+    if not start_date:
+        raise ValueError('Date parameter is required')
+
+    for value in (start_date, end_date):
+        try:
+            datetime.datetime.strptime(value, '%Y-%m-%d')
+        except ValueError as exc:
+            raise ValueError('Invalid date format. Use YYYY-MM-DD') from exc
+
+    if start_date > end_date:
+        raise ValueError('Start date must be earlier than or equal to end date')
+
+    return start_date, end_date
+
+
+def _build_visites_export_filename(start_date, end_date, extension):
+    date_segment = start_date if start_date == end_date else f'{start_date}_{end_date}'
+    return f'visites_{date_segment}.{extension}'
+
+
+def _build_download_response(content, mimetype, filename):
+    return app.response_class(
+        response=content,
+        mimetype=mimetype,
+        headers={
+            'Content-Disposition': f'attachment; filename="{filename}"',
+        },
+    )
+
+
+def _build_xml_text_element(parent, tag_name, value):
+    element = ET.SubElement(parent, tag_name)
+    element.text = '' if value is None else str(value)
+    return element
+
+
+def _serialize_visites_export_json(payload):
+    return json.dumps(payload, ensure_ascii=False, indent='\t') + '\n'
+
+
+def _serialize_visites_export_xml(payload):
+    root = ET.Element('exportacio_visites')
+
+    rang_dates = ET.SubElement(root, 'rang_dates')
+    _build_xml_text_element(rang_dates, 'data_inici', payload.get('data_inici'))
+    _build_xml_text_element(rang_dates, 'data_fi', payload.get('data_fi'))
+
+    visites_element = ET.SubElement(root, 'visites')
+    for visita in payload.get('visites', []):
+        visita_element = ET.SubElement(visites_element, 'visita')
+        _build_xml_text_element(visita_element, 'id_visita', visita.get('id_visita'))
+        _build_xml_text_element(visita_element, 'dia', visita.get('dia'))
+        _build_xml_text_element(visita_element, 'metge', visita.get('metge'))
+
+        pacient_element = ET.SubElement(visita_element, 'pacient')
+        pacient = visita.get('pacient') or {}
+        _build_xml_text_element(pacient_element, 'id_pacient', pacient.get('id_pacient'))
+        _build_xml_text_element(pacient_element, 'nom', pacient.get('nom'))
+        _build_xml_text_element(pacient_element, 'cognom', pacient.get('cognom'))
+        _build_xml_text_element(pacient_element, 'cognom2', pacient.get('cognom2'))
+
+    tree = ET.ElementTree(root)
+    ET.indent(tree, space='\t')
+    return ET.tostring(root, encoding='utf-8', xml_declaration=True)
+
+
+def _get_visites_export_payload():
+    start_date, end_date = _resolve_visites_date_range()
+    ok, payload = m.get_visites_export(start_date, end_date, username=_current_username())
+
+    if not ok:
+        raise RuntimeError(str(payload))
+
+    return start_date, end_date, payload
 
 
 
@@ -1166,8 +1256,13 @@ def api_response(result, data_key='data'):
         return jsonify({'ok': True, data_key: payload})
 
     error_text = str(payload)
-    status_code = 403 if 'permis' in error_text.lower() or 'permission' in error_text.lower() else 400
+    status_code = _error_status_code(error_text)
     return jsonify({'ok': False, 'error': error_text}), status_code
+
+
+def _error_status_code(error_text):
+    lowered = str(error_text).lower()
+    return 403 if 'permis' in lowered or 'permission' in lowered else 400
 
 
 ############
@@ -1235,32 +1330,83 @@ def get_informes_visites():
     unauthorized = _require_plain_api_login()
     if unauthorized:
         return unauthorized
-    start_date = (request.args.get('start_date') or request.args.get('date') or '').strip()
-    end_date = (request.args.get('end_date') or request.args.get('date') or '').strip()
+    try:
+        start_date, end_date = _resolve_visites_date_range()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
 
-    if start_date in ('undefined', 'null'):
-        start_date = ''
+    return api_response(m.get_informes('visites', (start_date, end_date), username=_current_username()))
 
-    if end_date in ('undefined', 'null'):
-        end_date = ''
 
-    if not start_date and not end_date:
-        ok, date_range = m.get_visites_date_range()
-        if not ok:
-            return _plain_json_error(date_range)
-        start_date, end_date = date_range
-    elif not start_date:
-        start_date = end_date
-    elif not end_date:
-        end_date = start_date
+############
+# VISITES EXPORT ROUTES
+############
+@app.route('/api/exportacions/visites/json')
+def download_visites_export_json():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
 
-    if not start_date:
-        return _plain_json_error('Date parameter is required')
+    try:
+        start_date, end_date, payload = _get_visites_export_payload()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
+    except RuntimeError as exc:
+        return _plain_json_error(str(exc), _error_status_code(str(exc)))
 
-    if start_date > end_date:
-        return _plain_json_error('Start date must be earlier than or equal to end date')
+    return _build_download_response(
+        _serialize_visites_export_json(payload),
+        'application/json',
+        _build_visites_export_filename(start_date, end_date, 'json'),
+    )
 
-    return api_response(m.get_informes('visites', (start_date, end_date)))
+
+@app.route('/api/exportacions/visites/xml')
+def download_visites_export_xml():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+
+    try:
+        start_date, end_date, payload = _get_visites_export_payload()
+    except ValueError as exc:
+        return _plain_json_error(str(exc))
+    except RuntimeError as exc:
+        return _plain_json_error(str(exc), _error_status_code(str(exc)))
+
+    return _build_download_response(
+        _serialize_visites_export_xml(payload),
+        'application/xml',
+        _build_visites_export_filename(start_date, end_date, 'xml'),
+    )
+
+
+@app.route('/api/exportacions/visites/schema/json')
+def download_visites_export_json_schema():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+
+    return send_from_directory(
+        app.config['SCHEMA_FOLDER'],
+        'visites_export.schema.json',
+        as_attachment=True,
+        download_name='visites_export.schema.json',
+    )
+
+
+@app.route('/api/exportacions/visites/schema/xml')
+def download_visites_export_xml_schema():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+
+    return send_from_directory(
+        app.config['SCHEMA_FOLDER'],
+        'visites_export.xsd',
+        as_attachment=True,
+        download_name='visites_export.xsd',
+    )
 
 
 ############
@@ -1359,35 +1505,27 @@ def get_informes_visites_dia():
     if unauthorized:
         return unauthorized
 
-    start_date = (request.args.get('start_date') or request.args.get('date') or '').strip()
-    end_date = (request.args.get('end_date') or request.args.get('date') or '').strip()
+    date_value = (request.args.get('date') or request.args.get('start_date') or '').strip()
+    end_date = (request.args.get('end_date') or '').strip()
 
-    if start_date in ('undefined', 'null'):
-        start_date = ''
+    if date_value in ('undefined', 'null'):
+        date_value = ''
 
     if end_date in ('undefined', 'null'):
         end_date = ''
 
-    if not start_date and not end_date:
-        ok, date_range = m.get_visites_date_range()
-        if not ok:
-            return _plain_json_error(date_range)
-        start_date, end_date = date_range
-    elif not start_date:
-        start_date = end_date
-    elif not end_date:
-        end_date = start_date
+    if not date_value:
+        return _plain_json_error('Date parameter is required')
 
-    if not start_date:
-        return _plain_json_error('Start date parameter is required')
+    try:
+        datetime.datetime.strptime(date_value, '%Y-%m-%d')
+    except ValueError:
+        return _plain_json_error('Invalid date format. Use YYYY-MM-DD')
 
-    if not end_date:
-        end_date = start_date
+    if end_date and end_date != date_value:
+        return _plain_json_error('This report only supports a single date. Use /api/informes/visites for date ranges.')
 
-    if start_date > end_date:
-        return _plain_json_error('Start date must be earlier than or equal to end date')
-
-    return api_response(m.get_informes('visites_dia', (start_date, end_date)))
+    return api_response(m.get_informes('visites_dia', (date_value,), username=_current_username()))
 
 
 

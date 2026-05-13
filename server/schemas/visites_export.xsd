@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="exportacio_visites">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="rang_dates">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="data_inici" type="xs:date"/>
+							<xs:element name="data_fi" type="xs:date"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="visites">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="visita" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="id_visita" type="xs:positiveInteger"/>
+										<xs:element name="dia" type="xs:date"/>
+										<xs:element name="metge" type="xs:string"/>
+										<xs:element name="pacient">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="id_pacient" type="xs:positiveInteger"/>
+													<xs:element name="nom" type="xs:string"/>
+													<xs:element name="cognom" type="xs:string"/>
+													<xs:element name="cognom2" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -69,6 +69,54 @@ def get_visites_date_range(username=None):
 
 
 ############
+# VISITS EXPORT
+############
+def get_visites_export(start_date, end_date, username=None):
+    con = None
+    cur = None
+
+    try:
+        con, cur = db.connect(username=username)
+
+        sql_file = BASE_DIR / ".." / "sql" / "informe_visites_export.sql"
+        with open(sql_file, encoding="utf-8") as f:
+            sql = f.read()
+
+        cur.execute(sql, (start_date, end_date))
+        rows = cur.fetchall()
+
+        result = {
+            "data_inici": str(start_date),
+            "data_fi": str(end_date),
+            "visites": [],
+        }
+
+        for row in rows:
+            result["visites"].append({
+                "id_visita": row[0],
+                "dia": str(row[1]),
+                "metge": row[2],
+                "pacient": {
+                    "id_pacient": row[3],
+                    "nom": row[4],
+                    "cognom": row[5],
+                    "cognom2": row[6],
+                },
+            })
+
+        return True, result
+
+    except Exception as e:
+        return handle_db_error(e, con)
+
+    finally:
+        if cur is not None:
+            cur.close()
+        if con is not None:
+            con.close()
+
+
+############
 # LOGIN FUNCTION
 ############
 def login(username, password):

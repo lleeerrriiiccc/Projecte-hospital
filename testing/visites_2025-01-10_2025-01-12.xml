@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<exportacio_visites>
+	<rang_dates>
+		<data_inici>2025-01-10</data_inici>
+		<data_fi>2025-01-12</data_fi>
+	</rang_dates>
+	<visites>
+		<visita>
+			<id_visita>1</id_visita>
+			<dia>2025-01-10</dia>
+			<metge>Joan Garcia Lopez</metge>
+			<pacient>
+				<id_pacient>1</id_pacient>
+				<nom>Laura</nom>
+				<cognom>Diaz</cognom>
+				<cognom2>Gomez</cognom2>
+			</pacient>
+		</visita>
+		<visita>
+			<id_visita>4</id_visita>
+			<dia>2025-01-10</dia>
+			<metge>Anna Martinez Ruiz</metge>
+			<pacient>
+				<id_pacient>4</id_pacient>
+				<nom>Miguel</nom>
+				<cognom>Santos</cognom>
+				<cognom2>Ruiz</cognom2>
+			</pacient>
+		</visita>
+		<visita>
+			<id_visita>2</id_visita>
+			<dia>2025-01-11</dia>
+			<metge>Anna Martinez Ruiz</metge>
+			<pacient>
+				<id_pacient>2</id_pacient>
+				<nom>Carlos</nom>
+				<cognom>Fernandez</cognom>
+				<cognom2>Lopez</cognom2>
+			</pacient>
+		</visita>
+		<visita>
+			<id_visita>3</id_visita>
+			<dia>2025-01-12</dia>
+			<metge>Joan Garcia Lopez</metge>
+			<pacient>
+				<id_pacient>3</id_pacient>
+				<nom>Anna</nom>
+				<cognom>Lopez</cognom>
+				<cognom2>Marti</cognom2>
+			</pacient>
+		</visita>
+	</visites>
+</exportacio_visites>
