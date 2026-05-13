@@ -46,7 +46,8 @@ INSERT INTO medicament (descripcio) VALUES
 INSERT INTO malaltia (nom) VALUES
 ('Grip'),
 ('Bronquitis'),
-('Migranya');
+('Migranya')
+ON CONFLICT (nom) DO NOTHING;
 
 -- QUIROFAN
 INSERT INTO quirofan (id_planta) VALUES
@@ -102,9 +103,9 @@ INSERT INTO supervisio VALUES
 
 -- ASSIGNACIO INFERMER PLANTA
 INSERT INTO assignacio_infermer_planta VALUES
-(2, 1),
-(4, 2),
-(5, 3);
+(4, 1),
+(5, 2),
+(4, 3);
 
 -- USUARIS
 INSERT INTO usuaris (username, password, id_intern, rol) VALUES

@@ -194,6 +194,7 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - `DESKTOP_API_BASE_URL`: URL base que usa el client desktop (per defecte `http://127.0.0.1:5000`).
 - `DESKTOP_API_VERIFY_TLS`: `true` o `false` per verificar certificat TLS al client desktop.
 - `DB_HOST`: adreça del servidor PostgreSQL.
+- `DB_PORT`: port del servidor PostgreSQL o de PgBouncer. Per defecte `5432`.
 - `DB_DATABASE`: nom de la base de dades (per exemple `hosp_blanes`).
 - `DB_USER`: usuari de connexió a PostgreSQL.
 - `DB_PASSWORD`: contrasenya de l'usuari de PostgreSQL.

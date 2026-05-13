@@ -27,6 +27,8 @@ BEGIN
     VALUES (nom, cognom, cognom2, data_naixement, telefon, telefon2, email, email_intern, dni, tipus_feina, data_alta)
     RETURNING id_intern INTO id_intern_query;
 
+    INSERT INTO enfermer (id_intern) VALUES (id_intern_query);
+
     INSERT INTO supervisio (id_intern, id_metge) VALUES (id_intern_query, mresp);
 
 END;

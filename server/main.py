@@ -1120,7 +1120,7 @@ def get_informes_malalties():
     unauthorized = _require_plain_api_login()
     if unauthorized:
         return unauthorized
-    return api_response(m.get_informes('malalties', username=_current_username()))
+    return api_response(m.get_informes('malalties'))
 
 
 @app.route('/informes/ranking_metges')
@@ -1334,7 +1334,7 @@ def get_informes_planta():
     unauthorized = _require_plain_api_login()
     if unauthorized:
         return unauthorized
-    return api_response(m.get_informes('planta', username=_current_username()))
+    return api_response(m.get_informes('planta'))
 
 
 
@@ -1347,18 +1347,6 @@ def get_informes_personal():
     if unauthorized:
         return unauthorized
     return api_response(m.get_informes('personal', username=_current_username()))
-
-
-
-############
-# MALALTIES REPORT INFO ROUTE
-############
-@app.route('/api/informes/malalties')
-def get_informes_malalties():
-    unauthorized = _require_plain_api_login()
-    if unauthorized:
-        return unauthorized
-    return api_response(m.get_informes('malalties', username=_current_username()))
 
 
 

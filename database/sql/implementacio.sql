@@ -227,6 +227,13 @@ BEGIN
 END $$;
 
 INSERT INTO malaltia (nom)
+VALUES
+    ('Grip'),
+    ('Bronquitis'),
+    ('Migranya')
+ON CONFLICT (nom) DO NOTHING;
+
+INSERT INTO malaltia (nom)
 SELECT DISTINCT INITCAP(TRIM(diagnostic))
 FROM visita
 WHERE diagnostic IS NOT NULL AND TRIM(diagnostic) <> ''

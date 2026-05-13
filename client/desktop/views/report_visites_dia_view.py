@@ -16,19 +16,23 @@ def create_report_visites_dia_view(parent, app_state, navigate):
     card.rowconfigure(4, weight=1)
 
     ttk.Label(card, text='Visites per Dia', style='Title.TLabel').grid(row=0, column=0, sticky='w')
-    ttk.Label(card, text="Consulta les visites d'una sola data concreta.", style='Muted.TLabel').grid(row=1, column=0, sticky='w', pady=(4, 8))
+    ttk.Label(card, text="Consulta les visites d'una data concreta o d'un rang entre dues dates.", style='Muted.TLabel').grid(row=1, column=0, sticky='w', pady=(4, 8))
 
     controls = ttk.Frame(card)
     controls.grid(row=2, column=0, sticky='we', pady=(0, 8))
 
-    ttk.Label(controls, text='Data').grid(row=0, column=0, sticky='w')
+    ttk.Label(controls, text='Data inici').grid(row=0, column=0, sticky='w')
     date_entry = ttk.Entry(controls, width=14)
     date_entry.grid(row=0, column=1, sticky='w', padx=(8, 16))
 
-    ttk.Button(controls, text='Cargar', style='Primary.TButton', command=lambda: load_data()).grid(row=0, column=2, sticky='w')
-    ttk.Button(controls, text='Volver', command=lambda: navigate('home')).grid(row=0, column=3, sticky='w', padx=(8, 0))
+    ttk.Label(controls, text='Data fi').grid(row=0, column=2, sticky='w')
+    end_date_entry = ttk.Entry(controls, width=14)
+    end_date_entry.grid(row=0, column=3, sticky='w', padx=(8, 16))
 
-    message_var = tk.StringVar(value='Selecciona una data per carregar el resum del dia.')
+    ttk.Button(controls, text='Cargar', style='Primary.TButton', command=lambda: load_data()).grid(row=0, column=4, sticky='w')
+    ttk.Button(controls, text='Volver', command=lambda: navigate('home')).grid(row=0, column=5, sticky='w', padx=(8, 0))
+
+    message_var = tk.StringVar(value='Selecciona una data o un rang per carregar el resum.')
     ttk.Label(card, textvariable=message_var, style='Muted.TLabel').grid(row=3, column=0, sticky='w', pady=(0, 8))
 
     cols = ('data_visita', 'total_visites')
@@ -45,13 +49,18 @@ def create_report_visites_dia_view(parent, app_state, navigate):
 
     def load_data():
         date_value = date_entry.get().strip()
+        end_date_value = end_date_entry.get().strip()
 
-        if not date_value:
-            message_var.set('Selecciona una data.')
+        if not date_value and not end_date_value:
+            message_var.set('Selecciona una data o un rang de dates.')
+            return
+
+        if date_value and end_date_value and date_value > end_date_value:
+            message_var.set('La data d\'inici ha de ser anterior o igual a la data de fi.')
             return
 
         clear_tree(tree)
-        payload = api.get_visites_dia(date_value)
+        payload = api.get_visites_dia(date_value or end_date_value, end_date_value or None)
 
         rows = payload.get('data') or []
 
@@ -69,7 +78,8 @@ def create_report_visites_dia_view(parent, app_state, navigate):
 
     def on_show():
         date_entry.delete(0, tk.END)
-        message_var.set('Selecciona una data per carregar el resum del dia.')
+        end_date_entry.delete(0, tk.END)
+        message_var.set('Selecciona una data o un rang per carregar el resum.')
         clear_tree(tree)
 
     return frame, on_show

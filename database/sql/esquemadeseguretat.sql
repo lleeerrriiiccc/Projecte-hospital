@@ -135,7 +135,8 @@ GRANT SELECT ON TABLE
 	medicament,
 	malaltia,
 	quirofan,
-	maquina
+	maquina,
+	assignacio_infermer_planta
 TO personal;
 
 -- Perfil funcional sanitari.
@@ -160,7 +161,8 @@ GRANT SELECT ON TABLE
 	quirofan,
 	maquina,
 	inventari,
-	reserva_habitacio
+	reserva_habitacio,
+	assignacio_infermer_planta
 TO sanitari;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sanitari;
@@ -179,7 +181,8 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 	maquina,
 	visita,
 	inventari,
-	reserva_habitacio
+	reserva_habitacio,
+	assignacio_infermer_planta
 TO gestio;
 
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO gestio;
@@ -214,6 +217,7 @@ GRANT SELECT, INSERT, UPDATE ON TABLE
 	inventari,
 	reserva_habitacio,
 	supervisio,
+	assignacio_infermer_planta,
 	usuaris
 TO hosp_app;
 

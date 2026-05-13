@@ -16,6 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent
 def connect(username="default"):
     load_dotenv()
     db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("DB_PORT", "5432")
     db_database = os.getenv("DB_DATABASE")
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
@@ -24,6 +25,7 @@ def connect(username="default"):
     try:
         con = psycopg2.connect(
             host=db_host,
+            port=db_port,
             database=db_database,
             user=db_user,
             password=db_password,
