@@ -1,0 +1,19 @@
+Table Counts:
+pacient: 50000
+visita: 100000
+metge: 100
+enfermer: 200
+personal: 450
+
+Grouped counts by personal.tipus_feina:
+tecnic: 100
+infermer: 200
+administrador: 50
+metge: 100
+
+5 rows with Cyrillic names from pacient:
+София
+Мокей
+Ипполит
+Милан
+Галина

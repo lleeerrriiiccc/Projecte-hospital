@@ -1,0 +1,42 @@
+[
+  {
+    "nom": "Ressonancia Magnetica",
+    "descripcio": "La ressonància magnètica és una tècnica d'imatge mèdica que utilitza camps magnètics i ones de ràdio per crear imatges detallades dels òrgans i teixits del cos. És especialment útil per a l'estudi del cervell, la medul·la espinal, les articulacions i els òrgans internals."
+  },
+  {
+    "nom": "TAC",
+    "descripcio": "La tomografia axial computeritzada és una tècnica d'imatge mèdica que utilitza raigs X per crear imatges detallades dels òrgans i teixits del cos."
+  },
+  {
+    "nom": "Ecograf",
+    "descripcio": "L'ecografia és una tècnica d'imatge mèdica que utilitza ondes sonores per crear imatges dels òrgans i teixits del cos."
+  },
+  {
+    "nom": "Monitor Cardiac",
+    "descripcio": "El monitor cardíac és un dispositiu que registra i mostra la activitat elèctrica del cor."
+  },
+  {
+    "nom": "Respirador",
+    "descripcio": "El respirador és un dispositiu mèdic que ajuda els pacients a respirar quan no poden fer-ho de manera autònoma."
+  },
+  {
+    "nom": "Desfibrilador",
+    "descripcio": "El desfibrilador és un dispositiu mèdic que proporciona un xoc elèctric al cor per restablir un ritme normal."
+  },
+  {
+    "nom": "Bomba d'infusio",
+    "descripcio": "La bomba d'infusió és un dispositiu que administra líquids o medicaments al cos a través d'una vena."
+  },
+  {
+    "nom": "Electrocardiograf",
+    "descripcio": "L'electrocardiògraf és un dispositiu que registra l'activitat elèctrica del cor."
+  },
+  {
+    "nom": "Raigs X",
+    "descripcio": "Els raigs X són una forma de radiació electromagnètica que es utilitza en medicina per crear imatges dels òrgans i teixits del cos."
+  },
+  {
+    "nom": "Maquina anestesia",
+    "descripcio": "La màquina d'anestèsia és un dispositiu mèdic que administra anestèsics als pacients durant les intervencions quirúrgiques."
+  }
+]

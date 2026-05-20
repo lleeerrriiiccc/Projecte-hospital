@@ -108,16 +108,24 @@ BEGIN
 	ELSE
 		ALTER ROLE rol_pacient LOGIN PASSWORD 'P@ssw0rd';
 	END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'powerbi_reader') THEN
+		CREATE ROLE powerbi_reader LOGIN PASSWORD 'P@ssw0rd!bi';
+	ELSE
+		ALTER ROLE powerbi_reader LOGIN PASSWORD 'P@ssw0rd!bi';
+	END IF;
 END
 $$;
 
 GRANT CONNECT ON DATABASE hosp_blanes TO hosp_admin, hosp_app,
 	rol_administrador, rol_metge, rol_infermer, rol_administratiu, rol_tecnic,
-	rol_personal_neteja, rol_personal_seguretat, rol_personal_cuina, rol_pacient;
+	rol_personal_neteja, rol_personal_seguretat, rol_personal_cuina, rol_pacient,
+	powerbi_reader;
 GRANT USAGE, CREATE ON SCHEMA public TO hosp_admin;
 GRANT USAGE ON SCHEMA public TO hosp_app,
 	rol_administrador, rol_metge, rol_infermer, rol_administratiu, rol_tecnic,
-	rol_personal_neteja, rol_personal_seguretat, rol_personal_cuina, rol_pacient;
+	rol_personal_neteja, rol_personal_seguretat, rol_personal_cuina, rol_pacient,
+	powerbi_reader;
 
 -- Administració tècnica total.
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO hosp_admin;
@@ -252,6 +260,85 @@ ALTER DEFAULT PRIVILEGES FOR ROLE hosp_admin IN SCHEMA public
 
 ALTER DEFAULT PRIVILEGES FOR ROLE hosp_admin IN SCHEMA public
 	GRANT SELECT ON TABLES TO serveis;
+
+-- Perfil de lectura per al dashboard de Power BI.
+-- Si les vistes s'han creat despres d'una execucio previa d'aquest fitxer,
+-- reexecuta aquest script per aplicar els permisos sobre les vistes noves.
+DO $$
+BEGIN
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_visites_area_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_visites_area_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_visites_metge_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_visites_metge_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_visites_franja_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_visites_franja_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_ocupacio_habitacions_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_ocupacio_habitacions_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_quirofans_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_quirofans_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_malalties_dia'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_malalties_dia TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_planta_recursos'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_planta_recursos TO powerbi_reader';
+	END IF;
+
+	IF EXISTS (
+		SELECT 1
+		FROM information_schema.views
+		WHERE table_schema = 'public'
+		  AND table_name = 'vw_dashboard_visites_detall'
+	) THEN
+		EXECUTE 'GRANT SELECT ON TABLE public.vw_dashboard_visites_detall TO powerbi_reader';
+	END IF;
+END
+$$;
 
 -- Matriu funcional de l'aplicació:
 -- administrador: accés total dins de l'aplicació.

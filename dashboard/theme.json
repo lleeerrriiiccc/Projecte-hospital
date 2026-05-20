@@ -1,0 +1,15 @@
+{
+  "name": "Projecte Hospital",
+  "dataColors": [
+    "#0b5d7a",
+    "#ee9b00",
+    "#84a7c1",
+    "#5b6a78",
+    "#18603c",
+    "#8f1d2c",
+    "#c7d5df"
+  ],
+  "background": "#edf3f7",
+  "foreground": "#13212f",
+  "tableAccent": "#0b5d7a"
+}

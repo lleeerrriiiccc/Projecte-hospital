@@ -22,7 +22,10 @@ Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreS
 - `client/desktop/views/`: pantalles de la interfície Tkinter.
 - `database/sql/implementacio.sql`: esquema principal de la base de dades.
 - `database/sql/esquemadeseguretat.sql`: esquema de seguretat i permisos.
+- `database/sql/dashboard_views.sql`: vistes analítiques per al dashboard de Power BI.
 - `database/sql/test_data.sql`: dades de prova per fer consultes i comprovacions.
+- `scripts/apply_dashboard_setup.py`: aplica les vistes del dashboard, actualitza `powerbi_reader` i valida l'accés de Power BI.
+- `dashboard/`: documentació i tema visual del dashboard Power BI.
 
 ## Base de dades
 
@@ -247,12 +250,69 @@ python desktop_main.py
 
 ```bash
 psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/dashboard_views.sql
 psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
 psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
 ```
+
+**Aplicació ràpida del paquet Power BI sobre una base ja existent:**
+
+```bash
+python scripts/apply_dashboard_setup.py
+```
+
+Aquest script reaplica les vistes analítiques, ajusta el login `powerbi_reader` i comprova que pot llegir com a minim `vw_dashboard_visites_area_dia` i `vw_dashboard_quirofans_dia`.
 
 ### Millores opcionals pendents
 
 - Ajustos visuals pixel-perfect respecte HTML/CSS original.
 - Carrega en segon pla de crides API per evitar bloqueig temporal de la UI en consultes pesades.
+
+## Dashboard Power BI
+
+El projecte incorpora una capa de vistes SQL pensada per alimentar un dashboard extern fet amb Power BI, sense dependre del backend Flask ni del client Tkinter.
+
+### Vistes del dashboard
+
+El fitxer `database/sql/dashboard_views.sql` crea aquestes vistes en `public`:
+
+- `vw_dashboard_visites_area_dia`
+- `vw_dashboard_visites_metge_dia`
+- `vw_dashboard_visites_franja_dia`
+- `vw_dashboard_ocupacio_habitacions_dia`
+- `vw_dashboard_quirofans_dia`
+- `vw_dashboard_malalties_dia`
+- `vw_dashboard_planta_recursos`
+- `vw_dashboard_visites_detall`
+
+Aquestes vistes cobreixen el minim demanat per al quadre de comandament i amplien el dashboard a ocupacio, quirofans i vista clinica.
+
+### Usuari de Power BI
+
+`database/sql/esquemadeseguretat.sql` crea l'usuari `powerbi_reader`, pensat exclusivament per llegir les vistes del dashboard.
+
+- `powerbi_reader` te `CONNECT` a la base.
+- `powerbi_reader` te `USAGE` sobre `public`.
+- `powerbi_reader` te `SELECT` nomes sobre les vistes `vw_dashboard_*` quan aquestes existeixen.
+
+Si executes `esquemadeseguretat.sql` abans de crear les vistes del dashboard, cal tornar-lo a executar despres per aplicar els grants.
+
+### Ordre recomanat d'execucio
+
+Per deixar la base preparada per al dashboard:
+
+```bash
+psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/dashboard_views.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
+```
+
+### Entregable Power BI
+
+La carpeta `dashboard/` inclou:
+
+- `README.md` amb els passos de connexio i construccio del report.
+- `theme.json` amb el tema visual recomanat.
+- espai per guardar el fitxer `hospital_dashboard.pbix`.
 
