@@ -58,6 +58,12 @@ CREATE TABLE medicament (
     descripcio TEXT NOT NULL
 );
 
+--MALALTIA
+CREATE TABLE malaltia (
+    id_malaltia SERIAL PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL UNIQUE
+);
+
 --QUIROFAN
 CREATE TABLE quirofan (
     id_quirofan SERIAL PRIMARY KEY,
@@ -77,10 +83,13 @@ CREATE TABLE visita (
     id_visita SERIAL PRIMARY KEY,
     id_pacient INT NOT NULL,
     id_metge INT NOT NULL,
+    id_malaltia INT,
     data_visita DATE NOT NULL,
     hora_visita TIME NOT NULL,
+    diagnostic TEXT NOT NULL,
     FOREIGN KEY (id_pacient) REFERENCES pacient(id_pacient),
-    FOREIGN KEY (id_metge) REFERENCES metge(id_intern)
+    FOREIGN KEY (id_metge) REFERENCES metge(id_intern),
+    FOREIGN KEY (id_malaltia) REFERENCES malaltia(id_malaltia)
 );
 
 --RECEPTA
@@ -144,12 +153,131 @@ CREATE TABLE supervisio (
     PRIMARY KEY (id_intern, id_metge)
 );
 
+--ASSIGNACIO_INFERMER_PLANTA
+CREATE TABLE assignacio_infermer_planta (
+    id_intern INT NOT NULL,
+    id_planta INT NOT NULL,
+    FOREIGN KEY (id_intern) REFERENCES enfermer(id_intern),
+    FOREIGN KEY (id_planta) REFERENCES planta(id_planta),
+    PRIMARY KEY (id_intern, id_planta)
+);
+
 --USUARIS
 CREATE TABLE usuaris (
     id_user SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     id_intern INT NOT NULL,
-    rol VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_intern) REFERENCES personal(id_intern)
-)
+);
+
+CREATE INDEX personal_tipus_feina ON personal(tipus_feina);
+
+CREATE INDEX visita_data_visita ON visita(data_visita);
+CREATE INDEX visita_id_malaltia ON visita(id_malaltia);
+CREATE INDEX IF NOT EXISTS visita_id_pacient ON visita(id_pacient);
+CREATE INDEX IF NOT EXISTS visita_id_metge ON visita(id_metge);
+CREATE INDEX IF NOT EXISTS visita_metge_data ON visita(id_metge, data_visita);
+
+CREATE INDEX IF NOT EXISTS habitacio_id_planta ON habitacio(id_planta);
+CREATE INDEX IF NOT EXISTS quirofan_id_planta ON quirofan(id_planta);
+
+CREATE INDEX IF NOT EXISTS recepta_id_medicament ON recepta(id_medicament);
+
+CREATE INDEX IF NOT EXISTS operacio_id_quirofan ON operacio(id_quirofan);
+CREATE INDEX IF NOT EXISTS operacio_id_pacient ON operacio(id_pacient);
+CREATE INDEX IF NOT EXISTS operacio_metge_responsable ON operacio(metge_responsable);
+CREATE INDEX IF NOT EXISTS operacio_data_operacio ON operacio(data_operacio);
+
+CREATE INDEX IF NOT EXISTS assisteix_id_intern ON assisteix(id_intern);
+CREATE INDEX IF NOT EXISTS inventari_id_maquina ON inventari(id_maquina);
+
+CREATE INDEX IF NOT EXISTS reserva_habitacio_num_habitacio ON reserva_habitacio(num_habitacio);
+CREATE INDEX IF NOT EXISTS reserva_habitacio_data_inici ON reserva_habitacio(data_inici);
+
+CREATE INDEX IF NOT EXISTS supervisio_id_metge ON supervisio(id_metge);
+CREATE INDEX IF NOT EXISTS assignacio_infermer_planta_id_planta ON assignacio_infermer_planta(id_planta);
+
+CREATE INDEX IF NOT EXISTS usuaris_id_intern ON usuaris(id_intern);
+
+-- MIGRACIO DES DE LA VERSIO ACTUAL
+-- Executa aquest bloc si ja tens la base de dades creada amb l'esquema anterior
+-- i vols afegir la relacio entre infermers i plantes sense reconstruir-ho tot.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'assignacio_infermer_planta'
+    ) THEN
+        CREATE TABLE assignacio_infermer_planta (
+            id_intern INT NOT NULL,
+            id_planta INT NOT NULL,
+            FOREIGN KEY (id_intern) REFERENCES enfermer(id_intern),
+            FOREIGN KEY (id_planta) REFERENCES planta(id_planta),
+            PRIMARY KEY (id_intern, id_planta)
+        );
+    END IF;
+END $$;
+
+-- MIGRACIO PER A LES MALALTIES
+-- Executa aquest bloc si ja tens l'esquema anterior i vols convertir els
+-- diagnòstics de les visites en una taula normalitzada de malalties.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'malaltia'
+    ) THEN
+        CREATE TABLE malaltia (
+            id_malaltia SERIAL PRIMARY KEY,
+            nom VARCHAR(100) NOT NULL UNIQUE
+        );
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'visita'
+          AND column_name = 'id_malaltia'
+    ) THEN
+        ALTER TABLE visita ADD COLUMN id_malaltia INT;
+    END IF;
+END $$;
+
+INSERT INTO malaltia (nom)
+VALUES
+    ('Grip'),
+    ('Bronquitis'),
+    ('Migranya')
+ON CONFLICT (nom) DO NOTHING;
+
+INSERT INTO malaltia (nom)
+SELECT DISTINCT INITCAP(TRIM(diagnostic))
+FROM visita
+WHERE diagnostic IS NOT NULL AND TRIM(diagnostic) <> ''
+ON CONFLICT (nom) DO NOTHING;
+
+UPDATE visita v
+SET id_malaltia = m.id_malaltia
+FROM malaltia m
+WHERE LOWER(TRIM(v.diagnostic)) = LOWER(TRIM(m.nom));
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.table_constraints
+        WHERE table_schema = 'public'
+          AND table_name = 'visita'
+          AND constraint_name = 'visita_id_malaltia_fkey'
+    ) THEN
+        ALTER TABLE visita
+            ADD CONSTRAINT visita_id_malaltia_fkey
+            FOREIGN KEY (id_malaltia) REFERENCES malaltia(id_malaltia);
+    END IF;
+END $$;

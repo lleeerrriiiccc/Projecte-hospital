@@ -175,6 +175,30 @@ CREATE INDEX personal_tipus_feina ON personal(tipus_feina);
 
 CREATE INDEX visita_data_visita ON visita(data_visita);
 CREATE INDEX visita_id_malaltia ON visita(id_malaltia);
+CREATE INDEX IF NOT EXISTS visita_id_pacient ON visita(id_pacient);
+CREATE INDEX IF NOT EXISTS visita_id_metge ON visita(id_metge);
+CREATE INDEX IF NOT EXISTS visita_metge_data ON visita(id_metge, data_visita);
+
+CREATE INDEX IF NOT EXISTS habitacio_id_planta ON habitacio(id_planta);
+CREATE INDEX IF NOT EXISTS quirofan_id_planta ON quirofan(id_planta);
+
+CREATE INDEX IF NOT EXISTS recepta_id_medicament ON recepta(id_medicament);
+
+CREATE INDEX IF NOT EXISTS operacio_id_quirofan ON operacio(id_quirofan);
+CREATE INDEX IF NOT EXISTS operacio_id_pacient ON operacio(id_pacient);
+CREATE INDEX IF NOT EXISTS operacio_metge_responsable ON operacio(metge_responsable);
+CREATE INDEX IF NOT EXISTS operacio_data_operacio ON operacio(data_operacio);
+
+CREATE INDEX IF NOT EXISTS assisteix_id_intern ON assisteix(id_intern);
+CREATE INDEX IF NOT EXISTS inventari_id_maquina ON inventari(id_maquina);
+
+CREATE INDEX IF NOT EXISTS reserva_habitacio_num_habitacio ON reserva_habitacio(num_habitacio);
+CREATE INDEX IF NOT EXISTS reserva_habitacio_data_inici ON reserva_habitacio(data_inici);
+
+CREATE INDEX IF NOT EXISTS supervisio_id_metge ON supervisio(id_metge);
+CREATE INDEX IF NOT EXISTS assignacio_infermer_planta_id_planta ON assignacio_infermer_planta(id_planta);
+
+CREATE INDEX IF NOT EXISTS usuaris_id_intern ON usuaris(id_intern);
 
 -- MIGRACIO DES DE LA VERSIO ACTUAL
 -- Executa aquest bloc si ja tens la base de dades creada amb l'esquema anterior

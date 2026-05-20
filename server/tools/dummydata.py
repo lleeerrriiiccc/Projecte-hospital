@@ -805,6 +805,26 @@ def validate_counts(cursor):
         if real < expected:
             raise RuntimeError(f'{table_name}: esperat minim {expected}, obtingut {real}')
 
+    cursor.execute(
+        """
+        SELECT tipus_feina, COUNT(*)
+        FROM personal
+        GROUP BY tipus_feina
+        """
+    )
+    personal_counts = {row[0]: row[1] for row in cursor.fetchall()}
+    required_personal = {
+        'metge': TOTAL_METGES,
+        'infermer': TOTAL_INFERMERS,
+        'tecnic': TOTAL_NETEJA,
+        'administrador': TOTAL_ADMIN,
+    }
+
+    for tipus_feina, expected in required_personal.items():
+        real = personal_counts.get(tipus_feina, 0)
+        if real < expected:
+            raise RuntimeError(f'personal.{tipus_feina}: esperat minim {expected}, obtingut {real}')
+
 
 def delete_dummy_data(username):
     preserved_user = _require_admin_context(username)
