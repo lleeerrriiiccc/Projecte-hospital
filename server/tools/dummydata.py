@@ -229,10 +229,11 @@ def _dni_collides_with_dummy_range(dni):
     return False
 
 
-def _expected_insert_counts():
+def _expected_insert_counts(preserve_current_admin=False):
+    generated_admins = TOTAL_ADMIN - 1 if preserve_current_admin else TOTAL_ADMIN
     return {
-        'personal': TOTAL_METGES + TOTAL_INFERMERS + TOTAL_NETEJA + TOTAL_ADMIN,
-        'usuaris': TOTAL_METGES + min(TOTAL_INFERMERS, TOTAL_ADMIN) + TOTAL_ADMIN,
+        'personal': TOTAL_METGES + TOTAL_INFERMERS + TOTAL_NETEJA + generated_admins,
+        'usuaris': TOTAL_METGES + min(TOTAL_INFERMERS, TOTAL_ADMIN) + generated_admins,
         'pacient': TOTAL_PACIENTS,
         'visita': TOTAL_VISITES,
         'operacio': TOTAL_OPERACIONS,
@@ -366,8 +367,8 @@ def validate_dummy_data(username):
             generate_issues.append('Falten fitxers de dades dummy: ' + ', '.join(missing_sources))
 
         if _dni_collides_with_dummy_range(context.get('dni')):
-            generate_issues.append(
-                f"El DNI preservat {context.get('dni')} collisiona amb el rang de DNI del dummy data actual."
+            warnings.append(
+                f"El DNI preservat {context.get('dni')} forma part del rang dummy i es reservara automaticament durant la generacio."
             )
 
         if str(context.get('username', '')).lower().startswith('user_'):
@@ -397,7 +398,7 @@ def validate_dummy_data(username):
             'job_status': job_status,
             'table_counts': table_counts,
             'source_files': source_files,
-            'expected_insert_counts': _expected_insert_counts(),
+            'expected_insert_counts': _expected_insert_counts(preserve_current_admin=True),
             'users_to_delete': max(count_map.get('usuaris', 0) - 1, 0),
             'personal_to_delete': max(count_map.get('personal', 0) - 1, 0),
             'trigger_exists': trigger_exists,
@@ -448,6 +449,17 @@ def dni_from_index(index):
     return f'{number:08d}{letters[number % 23]}'
 
 
+def _dummy_dni_values(total_needed, reserved_dni=None):
+    values = []
+    index = 0
+    while len(values) < total_needed:
+        dni = dni_from_index(index)
+        if dni != reserved_dni:
+            values.append(dni)
+        index += 1
+    return values
+
+
 def maybe_cyrillic_person():
     if random.random() < CYRILLIC_RATIO:
         return (
@@ -486,11 +498,14 @@ def create_catalogs(cursor):
     )
 
 
-def create_personal(cursor):
-    total = TOTAL_METGES + TOTAL_INFERMERS + TOTAL_NETEJA + TOTAL_ADMIN
+def create_personal(cursor, preserved_user=None):
+    generated_admins = TOTAL_ADMIN - 1 if preserved_user else TOTAL_ADMIN
+    total = TOTAL_METGES + TOTAL_INFERMERS + TOTAL_NETEJA + generated_admins
+    reserved_dni = preserved_user.get('dni') if preserved_user else None
+    dni_values = _dummy_dni_values(total, reserved_dni=reserved_dni)
     rows = []
 
-    for index in range(total):
+    for index, dni in enumerate(dni_values):
         nom, cognom, cognom2 = maybe_cyrillic_person()
         if index < TOTAL_METGES:
             tipus = 'metge'
@@ -511,7 +526,7 @@ def create_personal(cursor):
                 _random_phone_number(),
                 f'{_random_username(index)}@example.com',
                 f'{nom.lower()}.{cognom.lower()}.{index}@hospblanes.local'.replace(' ', ''),
-                dni_from_index(index),
+                dni,
                 tipus,
                 random_recent_date(days_back=3650),
             )
@@ -831,7 +846,7 @@ def generate_dummy_data(username):
         create_catalogs(cur)
 
         _set_job_status(message='Creant personal, usuaris i relacions dummy...')
-        metges, infermers = create_personal(cur)
+        metges, infermers = create_personal(cur, preserved_user=preserved_user)
 
         _set_job_status(message='Creant pacients dummy...')
         create_pacients(cur)
