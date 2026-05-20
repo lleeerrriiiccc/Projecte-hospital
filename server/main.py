@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import dotenv
 from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 
+import tools.dummydata as dummydata
 import tools.masking as masking
 import tools.manager as m
 
@@ -617,6 +618,23 @@ def _require_login():
 def _require_plain_api_login():
     if 'username' not in session:
         return _plain_json_error('Unauthorized', 401)
+    return None
+
+
+def _require_admin_api():
+    unauthorized = _require_plain_api_login()
+    if unauthorized:
+        return unauthorized
+
+    user_context = dummydata.get_user_context(_current_username())
+    if user_context is None:
+        _clear_logged_user()
+        return _json_error('L\'usuari autenticat ja no existeix.', 401)
+
+    session['role'] = user_context['tipus_feina']
+    if user_context['tipus_feina'] != 'administrador':
+        return _json_error('No tens permis per gestionar el dummy data.', 403)
+
     return None
 
 
@@ -1274,6 +1292,65 @@ def me():
     if unauthorized:
         return unauthorized
     return jsonify({'username': _current_username(), 'role': session.get('role')})
+
+
+@app.route('/api/admin/dummy-data/status')
+def get_dummy_data_status():
+    unauthorized = _require_admin_api()
+    if unauthorized:
+        return unauthorized
+
+    return jsonify({'ok': True, 'status': dummydata.get_job_status()})
+
+
+@app.route('/api/admin/dummy-data/validate')
+def validate_dummy_data():
+    unauthorized = _require_admin_api()
+    if unauthorized:
+        return unauthorized
+
+    try:
+        validation = dummydata.validate_dummy_data(_current_username())
+    except PermissionError as exc:
+        return _json_error(str(exc), 403)
+    except Exception as exc:
+        return _json_error(str(exc), 500)
+
+    return jsonify({'ok': True, 'validation': validation})
+
+
+@app.route('/api/admin/dummy-data/generate', methods=['POST'])
+def start_generate_dummy_data():
+    unauthorized = _require_admin_api()
+    if unauthorized:
+        return unauthorized
+
+    ok, payload = dummydata.start_generate_job(_current_username())
+    if not ok:
+        return _json_error(payload, 409)
+
+    return jsonify({
+        'ok': True,
+        'message': 'Generacio de dummy data iniciada.',
+        'status': payload,
+    }), 202
+
+
+@app.route('/api/admin/dummy-data/delete', methods=['POST'])
+def start_delete_dummy_data():
+    unauthorized = _require_admin_api()
+    if unauthorized:
+        return unauthorized
+
+    ok, payload = dummydata.start_delete_job(_current_username())
+    if not ok:
+        return _json_error(payload, 409)
+
+    return jsonify({
+        'ok': True,
+        'message': 'Eliminacio de dummy data iniciada.',
+        'status': payload,
+    }), 202
 
 
 def _mask_payload(payload):

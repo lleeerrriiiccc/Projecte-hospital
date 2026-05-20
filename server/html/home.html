@@ -10,15 +10,49 @@
 	<header class="topbar">
 		<div class="container">
 			<h1>GESTIO HOSPITALARIA</h1>
-			<p class="username">Hola, {{ session['username'] }}</p>
+			<p class="username">Hola, {{ session['username'] }} ({{ session.get('role', 'sense rol') }})</p>
 		</div>
 	</header>
 
 	<main class="layout">
-		<section class="workspace" aria-label="Internal workspace"></section>
+		<section class="workspace" aria-label="Internal workspace">
+			<div class="workspace-card">
+				<h2>Panell web</h2>
+				<p class="workspace-copy">Des d'aqui pots consultar l'estat general de l'aplicacio. El menu lateral continua sent el punt principal de navegacio.</p>
+			</div>
+
+			{% if session.get('role') == 'administrador' %}
+			<div class="workspace-card admin-card" id="dummy-data-panel">
+				<div class="admin-card-header">
+					<div>
+						<h2>Dummy Data</h2>
+						<p class="workspace-copy">Valida l'impacte abans d'executar cap accio destructiva.</p>
+					</div>
+					<span class="admin-role-pill">Administrador</span>
+				</div>
+
+				<div class="admin-actions">
+					<button type="button" class="admin-button admin-button-secondary" id="dummy-validate-button">Validar abans d'executar</button>
+					<button type="button" class="admin-button" id="dummy-generate-button">Generar dummy data</button>
+					<button type="button" class="admin-button admin-button-danger" id="dummy-delete-button">Eliminar dummy data</button>
+				</div>
+
+				<p class="admin-status" id="dummy-status">Consultant estat del dummy data...</p>
+				<pre class="admin-preview" id="dummy-preview">Carregant validacio previa...</pre>
+			</div>
+			{% endif %}
+		</section>
 		<aside class="side-menu" aria-label="Main menu">
 			<h2>Menu</h2>
 			<ul class="menu-categories">
+				{% if session.get('role') == 'administrador' %}
+				<li class="menu-category">
+					<label class="category-toggle">Administracio</label>
+					<ul class="category-options" hidden>
+						<li><a href="#dummy-data-panel">Dummy data</a></li>
+					</ul>
+				</li>
+				{% endif %}
 				<li class="menu-category">
 					<label class="category-toggle">Consultes i informes</label>
 					<ul class="category-options" hidden>
@@ -76,6 +110,202 @@
 			</ul>
 		</aside>
 	</main>
+
+	<script>
+		const toggles = document.querySelectorAll('.category-toggle');
+		for (const toggle of toggles) {
+			toggle.addEventListener('click', () => {
+				const options = toggle.nextElementSibling;
+				if (!options) {
+					return;
+				}
+				options.hidden = !options.hidden;
+			});
+		}
+
+		const previewElement = document.getElementById('dummy-preview');
+		const statusElement = document.getElementById('dummy-status');
+		const validateButton = document.getElementById('dummy-validate-button');
+		const generateButton = document.getElementById('dummy-generate-button');
+		const deleteButton = document.getElementById('dummy-delete-button');
+		let statusTimer = null;
+
+		function setAdminButtonsDisabled(disabled) {
+			for (const button of [validateButton, generateButton, deleteButton]) {
+				if (button) {
+					button.disabled = disabled;
+				}
+			}
+		}
+
+		function renderStatus(status) {
+			if (!statusElement) {
+				return;
+			}
+
+			const state = status?.state ?? 'idle';
+			const action = status?.action ?? 'dummy data';
+			const message = status?.message ?? 'No hi ha operacions recents.';
+			statusElement.textContent = `Estat ${action}: ${message}`;
+
+			if (state === 'running') {
+				setAdminButtonsDisabled(true);
+			} else {
+				setAdminButtonsDisabled(false);
+			}
+		}
+
+		function renderValidation(validation) {
+			if (!previewElement) {
+				return;
+			}
+
+			const preservedUser = validation?.preserved_user ?? {};
+			const tableCounts = validation?.table_counts ?? [];
+			const expectedInsertCounts = validation?.expected_insert_counts ?? {};
+			const sourceFiles = validation?.source_files ?? [];
+			const generateIssues = validation?.generate_issues ?? [];
+			const deleteIssues = validation?.delete_issues ?? [];
+			const warnings = validation?.warnings ?? [];
+
+			const lines = [
+				'Validacio previa del dummy data',
+				`Usuari preservat: ${preservedUser.username ?? '-'} | id_intern ${preservedUser.id_intern ?? '-'} | ${preservedUser.tipus_feina ?? '-'} | DNI ${preservedUser.dni ?? '-'}`,
+				`Preparat per generar: ${validation?.ready_for_generate ? 'SI' : 'NO'}`,
+				`Preparat per eliminar: ${validation?.ready_for_delete ? 'SI' : 'NO'}`,
+				`Usuaris que s'eliminarien: ${validation?.users_to_delete ?? 0}`,
+				`Registres de personal que s'eliminarien: ${validation?.personal_to_delete ?? 0}`,
+				'',
+				'Impacte actual per taula:',
+			];
+
+			for (const entry of tableCounts) {
+				lines.push(`- ${entry.table}: ${entry.count}`);
+			}
+
+			lines.push('', 'Impacte previst en generar:');
+			for (const [tableName, value] of Object.entries(expectedInsertCounts)) {
+				lines.push(`- ${tableName}: +${value}`);
+			}
+
+			lines.push('', 'Fonts de dades dummy:');
+			for (const source of sourceFiles) {
+				lines.push(`- ${source.file}: ${source.exists ? 'OK' : 'FALTA'}, elements=${source.items}`);
+			}
+
+			if (generateIssues.length) {
+				lines.push('', 'Bloquejos per generar:');
+				for (const issue of generateIssues) {
+					lines.push(`- ${issue}`);
+				}
+			}
+
+			if (deleteIssues.length) {
+				lines.push('', 'Bloquejos per eliminar:');
+				for (const issue of deleteIssues) {
+					lines.push(`- ${issue}`);
+				}
+			}
+
+			if (warnings.length) {
+				lines.push('', 'Avisos:');
+				for (const warning of warnings) {
+					lines.push(`- ${warning}`);
+				}
+			}
+
+			previewElement.textContent = lines.join('\n');
+		}
+
+		async function requestJson(path, options = {}) {
+			const response = await fetch(path, {
+				credentials: 'same-origin',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				...options,
+			});
+
+			const payload = await response.json().catch(() => ({}));
+			if (!response.ok || payload.ok === false) {
+				throw new Error(payload.error || `HTTP ${response.status}`);
+			}
+
+			return payload;
+		}
+
+		async function refreshStatus(reschedule = false) {
+			if (!statusElement) {
+				return;
+			}
+
+			try {
+				const payload = await requestJson('/api/admin/dummy-data/status');
+				renderStatus(payload.status);
+				if (reschedule || payload.status?.state === 'running') {
+					statusTimer = window.setTimeout(() => refreshStatus(true), 2000);
+				}
+			} catch (error) {
+				statusElement.textContent = `Error consultant l'estat: ${error.message}`;
+				setAdminButtonsDisabled(false);
+			}
+		}
+
+		async function validateBeforeExecute(showAlert = false) {
+			if (!previewElement) {
+				return;
+			}
+
+			previewElement.textContent = 'Validant impacte i coherencia abans d\'executar...';
+			try {
+				const payload = await requestJson('/api/admin/dummy-data/validate');
+				renderValidation(payload.validation);
+			} catch (error) {
+				previewElement.textContent = `Error fent la validacio previa: ${error.message}`;
+				if (showAlert) {
+					window.alert(error.message);
+				}
+			}
+		}
+
+		async function startAction(path, confirmationText) {
+			if (!window.confirm(confirmationText)) {
+				return;
+			}
+
+			try {
+				const payload = await requestJson(path, { method: 'POST' });
+				renderStatus(payload.status);
+				previewElement.textContent = 'Operacio iniciada. Torna a validar quan acabi per revisar l\'estat final.';
+				refreshStatus(true);
+			} catch (error) {
+				window.alert(error.message);
+			}
+		}
+
+		if (validateButton) {
+			validateButton.addEventListener('click', () => validateBeforeExecute(true));
+		}
+
+		if (generateButton) {
+			generateButton.addEventListener('click', () => startAction(
+				'/api/admin/dummy-data/generate',
+				"Aquesta accio eliminara totes les dades actuals excepte el teu usuari administrador i carregara dades dummy noves. Vols continuar?"
+			));
+		}
+
+		if (deleteButton) {
+			deleteButton.addEventListener('click', () => startAction(
+				'/api/admin/dummy-data/delete',
+				"Aquesta accio eliminara totes les dades dummy i conservara nomes el teu usuari administrador. Vols continuar?"
+			));
+		}
+
+		if (statusElement && previewElement) {
+			refreshStatus();
+			validateBeforeExecute(false);
+		}
+	</script>
 
 </body>
 </html>

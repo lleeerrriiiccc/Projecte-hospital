@@ -92,6 +92,28 @@ def create_personal(payload):
     return _request('POST', '/api/personal', json=payload)
 
 
+def generate_dummy_data():
+    return _request('POST', '/api/admin/dummy-data/generate')
+
+
+def delete_dummy_data():
+    return _request('POST', '/api/admin/dummy-data/delete')
+
+
+def get_dummy_data_status():
+    payload = _request('GET', '/api/admin/dummy-data/status')
+    if isinstance(payload, dict):
+        return payload.get('status', {})
+    return {}
+
+
+def validate_dummy_data():
+    payload = _request('GET', '/api/admin/dummy-data/validate')
+    if isinstance(payload, dict):
+        return payload.get('validation', {})
+    return {}
+
+
 def get_metges():
     return _request('GET', '/api/metges')
 

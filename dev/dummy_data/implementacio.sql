@@ -167,7 +167,6 @@ CREATE TABLE usuaris (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     id_intern INT NOT NULL,
-    rol VARCHAR(20) NOT NULL,
     FOREIGN KEY (id_intern) REFERENCES personal(id_intern)
 );
 
@@ -199,7 +198,6 @@ CREATE INDEX IF NOT EXISTS supervisio_id_metge ON supervisio(id_metge);
 CREATE INDEX IF NOT EXISTS assignacio_infermer_planta_id_planta ON assignacio_infermer_planta(id_planta);
 
 CREATE INDEX IF NOT EXISTS usuaris_id_intern ON usuaris(id_intern);
-CREATE INDEX IF NOT EXISTS usuaris_rol ON usuaris(rol);
 
 -- MIGRACIO DES DE LA VERSIO ACTUAL
 -- Executa aquest bloc si ja tens la base de dades creada amb l'esquema anterior

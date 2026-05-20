@@ -108,10 +108,10 @@ INSERT INTO assignacio_infermer_planta VALUES
 (4, 3);
 
 -- USUARIS
-INSERT INTO usuaris (username, password, id_intern, rol) VALUES
-('mserra', 'hashed_password_1', 1, 'metge'),
-('lvila', 'hashed_password_2', 2, 'enfermer'),
-('jferrer', 'hashed_password_3', 3, 'metge'),
-('mrius', 'hashed_password_4', 4, 'enfermer'),
-('ncosta', 'hashed_password_5', 5, 'enfermer');
+INSERT INTO usuaris (username, password, id_intern) VALUES
+('mserra', 'hashed_password_1', 1),
+('lvila', 'hashed_password_2', 2),
+('jferrer', 'hashed_password_3', 3),
+('mrius', 'hashed_password_4', 4),
+('ncosta', 'hashed_password_5', 5);
 

@@ -199,41 +199,17 @@ def create_personal(cursor):
         ((i, random.choice(metges)) for i in no_metges),
         page_size=1000,
     )
-    cursor.execute(
-        """
-        SELECT 1
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-          AND table_name = 'usuaris'
-          AND column_name = 'rol'
-        """
-    )
-    has_rol_column = cursor.fetchone() is not None
+    cursor.execute("SELECT id_intern FROM personal WHERE tipus_feina = 'administrador' ORDER BY id_intern")
+    administradors = [r[0] for r in cursor.fetchall()]
 
-    user_source = metges + infermers[: min(len(infermers), TOTAL_ADMIN)]
+    user_source = metges + infermers[: min(len(infermers), TOTAL_ADMIN)] + administradors
     run_suffix = datetime.now().strftime("%Y%m%d%H%M%S")
-    if has_rol_column:
-        execute_values(
-            cursor,
-            "INSERT INTO usuaris (username, password, id_intern, rol) VALUES %s",
-            (
-                (
-                    f"user_{i}_{run_suffix}",
-                    "dummy_password",
-                    i,
-                    random.choice(["metge", "infermer", "admin"]),
-                )
-                for i in user_source
-            ),
-            page_size=1000,
-        )
-    else:
-        execute_values(
-            cursor,
-            "INSERT INTO usuaris (username, password, id_intern) VALUES %s",
-            ((f"user_{i}_{run_suffix}", "dummy_password", i) for i in user_source),
-            page_size=1000,
-        )
+    execute_values(
+        cursor,
+        "INSERT INTO usuaris (username, password, id_intern) VALUES %s",
+        ((f"user_{i}_{run_suffix}", "dummy_password", i) for i in user_source),
+        page_size=1000,
+    )
 
     return metges, infermers
 
