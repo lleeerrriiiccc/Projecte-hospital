@@ -24,7 +24,6 @@ Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreS
 - `database/sql/esquemadeseguretat.sql`: esquema de seguretat i permisos.
 - `database/sql/dashboard_views.sql`: vistes analítiques per al dashboard de Power BI.
 - `database/sql/test_data.sql`: dades de prova per fer consultes i comprovacions.
-- `scripts/apply_dashboard_setup.py`: aplica les vistes del dashboard, actualitza `powerbi_reader` i valida l'accés de Power BI.
 - `dashboard/`: documentació i tema visual del dashboard Power BI.
 
 ## Base de dades
@@ -159,6 +158,8 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - Informe de supervisió
 - Informe d'habitacions
 - Informe de metge
+- Malalties més comunes
+- Ranking de metges
 - Informe de pacient
 
 L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara un bloc d'exportació de dades. Aquest bloc permet descarregar el rang seleccionat en format JSON o XML, i també baixar el JSON Schema i l'XSD corresponents.
@@ -181,6 +182,8 @@ L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara 
 - `GET /api/habitacions`
 - `GET /api/informes/planta`
 - `GET /api/informes/personal`
+- `GET /api/informes/malalties`
+- `GET /api/informes/ranking_metges`
 - `GET /api/informes/visites_dia?date=YYYY-MM-DD`
 - `GET /api/informes/supervisio`
 - `GET /api/informes/visites?date=YYYY-MM-DD` o `GET /api/informes/visites?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
@@ -255,18 +258,9 @@ psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
 psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
 ```
 
-**Aplicació ràpida del paquet Power BI sobre una base ja existent:**
+**Aplicació del paquet Power BI sobre una base ja existent:**
 
-```bash
-python scripts/apply_dashboard_setup.py
-```
-
-Aquest script reaplica les vistes analítiques, ajusta el login `powerbi_reader` i comprova que pot llegir com a minim `vw_dashboard_visites_area_dia` i `vw_dashboard_quirofans_dia`.
-
-### Millores opcionals pendents
-
-- Ajustos visuals pixel-perfect respecte HTML/CSS original.
-- Carrega en segon pla de crides API per evitar bloqueig temporal de la UI en consultes pesades.
+Executa manualment `database/sql/dashboard_views.sql` i, després, `database/sql/esquemadeseguretat.sql` per refrescar les vistes i els permisos de `powerbi_reader`.
 
 ## Dashboard Power BI
 

@@ -27,7 +27,7 @@ El dashboard esta pensat per llegir directament aquestes vistes de PostgreSQL:
 3. Executa `database/sql/esquemadeseguretat.sql` per crear `powerbi_reader` i aplicar els grants sobre les vistes.
 4. Executa `database/sql/test_data.sql` si vols carregar dades de prova.
 
-Com a alternativa, pots executar `python scripts/apply_dashboard_setup.py` per aplicar `dashboard_views.sql`, actualitzar `powerbi_reader` i verificar que pot llegir les vistes principals.
+Aquest repositori no inclou cap script automatitzat per fer aquesta seqüència; si treballes des d'una base ja creada, executa manualment els fitxers SQL en l'ordre indicat més amunt.
 
 Si la base ja existia i `esquemadeseguretat.sql` s'havia executat abans de crear les vistes del dashboard, torna'l a executar per aplicar els permisos de `powerbi_reader`.
 
