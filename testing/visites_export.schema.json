@@ -1,0 +1,63 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "visites_export.schema.json",
+	"title": "Exportacio de visites",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["data_inici", "data_fi", "visites"],
+	"properties": {
+		"data_inici": {
+			"type": "string",
+			"format": "date"
+		},
+		"data_fi": {
+			"type": "string",
+			"format": "date"
+		},
+		"visites": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["id_visita", "dia", "metge", "pacient"],
+				"properties": {
+					"id_visita": {
+						"type": "integer",
+						"minimum": 1
+					},
+					"dia": {
+						"type": "string",
+						"format": "date"
+					},
+					"metge": {
+						"type": "string",
+						"minLength": 1
+					},
+					"pacient": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["id_pacient", "nom", "cognom", "cognom2"],
+						"properties": {
+							"id_pacient": {
+								"type": "integer",
+								"minimum": 1
+							},
+							"nom": {
+								"type": "string",
+								"minLength": 1
+							},
+							"cognom": {
+								"type": "string",
+								"minLength": 1
+							},
+							"cognom2": {
+								"type": "string",
+								"minLength": 1
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

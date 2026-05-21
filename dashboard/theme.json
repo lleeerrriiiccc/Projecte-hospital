@@ -1,15 +1,22 @@
 {
-  "name": "Projecte Hospital",
+  "name": "Projecte Hospital Dashboard",
   "dataColors": [
     "#0b5d7a",
+    "#1271a8",
     "#ee9b00",
-    "#84a7c1",
-    "#5b6a78",
     "#18603c",
-    "#8f1d2c",
-    "#c7d5df"
+    "#b8475a",
+    "#5b6a78",
+    "#84a7c1",
+    "#d1e2ee"
   ],
-  "background": "#edf3f7",
+  "background": "#eef3f6",
   "foreground": "#13212f",
-  "tableAccent": "#0b5d7a"
+  "tableAccent": "#0b5d7a",
+  "good": "#18603c",
+  "neutral": "#5b6a78",
+  "bad": "#b8475a",
+  "minimum": "#d1e2ee",
+  "center": "#84a7c1",
+  "maximum": "#1271a8"
 }

@@ -5,7 +5,7 @@ Aquest directori recull els fitxers i les instruccions del dashboard de Power BI
 ## Fitxers del dashboard
 
 - `theme.json`: tema visual recomanat per a Power BI, alineat amb la paleta de l'aplicacio.
-- `hospital_dashboard.pbix`: guarda aqui el fitxer de Power BI quan el construeixis des d'una maquina amb Power BI Desktop.
+- `dashboard_powerbi.pbix`: fitxer actual del dashboard de Power BI del projecte.
 
 ## Vistes que consumeix Power BI
 
@@ -48,3 +48,18 @@ En aquest entorn no hi ha Power BI Desktop ni `pbi-tools`, aixi que el `.pbix` s
 2. Activitat assistencial: ranking de metges, franges horaries i tendencia de visites.
 3. Recursos hospitalaris: ocupacio per planta i activitat de quirofans.
 4. Vista clinica: malalties mes frequents i pacients afectats.
+
+## Ajustos visuals recomanats
+
+Perque el report sembli un dashboard real i no nomes una pagina amb visuals solts, convé tocar aquests punts directament a Power BI Desktop:
+
+1. Usa format de pagina 16:9 i deixa marges amples, amb fons clar i visuals en targetes blanques.
+2. Reserva la primera fila per a 3 o 4 KPI cards grans: visites del dia, ocupacio, operacions i una metrica d'alerta.
+3. Col·loca els filtres principals a dalt en format slicer horitzontal: data, area i planta.
+4. No barregis massa visuals en una sola pagina; 4 o 5 visuals ben agrupats funcionen millor que 9 petits.
+5. Mantén els titols curts i consistents: mateix estil, mateixa mida i alineacio a l'esquerra.
+6. Oculta capçaleres de visual i evita marcs gruixuts; el pes visual ha d'estar en les dades, no en el contenidor.
+7. Fes servir una jerarquia simple de colors: blau per volum/activitat, verd per correcte, vermell per incidencies i taronja per avisos.
+8. Afegeix una pagina inicial de resum executiu i deixa els detalls per a pagines posteriors, no tot a la portada.
+
+Amb el `theme.json` actualitzat ja tens una base de colors coherent amb l'aplicacio, pero l'efecte de "dashboard real" dependrà sobretot del layout, de la mida dels visuals i de reduir soroll visual dins del report.

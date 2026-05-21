@@ -1,0 +1,4241 @@
+{
+	"data_inici": "2018-11-13",
+	"data_fi": "2018-11-26",
+	"visites": [
+		{
+			"id_visita": 68064,
+			"dia": "2018-11-13",
+			"metge": "Geraldo Llano Mendizábal",
+			"pacient": {
+				"id_pacient": 42713,
+				"nom": "Elvira",
+				"cognom": "Suárez",
+				"cognom2": "Ferrer"
+			}
+		},
+		{
+			"id_visita": 33154,
+			"dia": "2018-11-13",
+			"metge": "Aura Pardo Valentín",
+			"pacient": {
+				"id_pacient": 39532,
+				"nom": "Adalberto",
+				"cognom": "Olivera",
+				"cognom2": "Abella"
+			}
+		},
+		{
+			"id_visita": 3833,
+			"dia": "2018-11-13",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 25278,
+				"nom": "Lino",
+				"cognom": "Baquero",
+				"cognom2": "Garrido"
+			}
+		},
+		{
+			"id_visita": 70191,
+			"dia": "2018-11-13",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 43943,
+				"nom": "Evaristo",
+				"cognom": "Barral",
+				"cognom2": "Rosado"
+			}
+		},
+		{
+			"id_visita": 61329,
+			"dia": "2018-11-13",
+			"metge": "Albina Valverde Criado",
+			"pacient": {
+				"id_pacient": 27202,
+				"nom": "Reyes",
+				"cognom": "Tomás",
+				"cognom2": "Chaves"
+			}
+		},
+		{
+			"id_visita": 68810,
+			"dia": "2018-11-13",
+			"metge": "Margarita Nevado Cardona",
+			"pacient": {
+				"id_pacient": 18257,
+				"nom": "Ovidio",
+				"cognom": "Pou",
+				"cognom2": "Ferrera"
+			}
+		},
+		{
+			"id_visita": 87640,
+			"dia": "2018-11-13",
+			"metge": "Sergio Valbuena Maldonado",
+			"pacient": {
+				"id_pacient": 37181,
+				"nom": "Гаврила",
+				"cognom": "Чернова",
+				"cognom2": "Васильев"
+			}
+		},
+		{
+			"id_visita": 24648,
+			"dia": "2018-11-13",
+			"metge": "Evangelina Madrigal Gordillo",
+			"pacient": {
+				"id_pacient": 2682,
+				"nom": "Matilde",
+				"cognom": "Carrera",
+				"cognom2": "Rozas"
+			}
+		},
+		{
+			"id_visita": 1952,
+			"dia": "2018-11-13",
+			"metge": "Ariel Mendez Pastor",
+			"pacient": {
+				"id_pacient": 40345,
+				"nom": "Dominga",
+				"cognom": "Dueñas",
+				"cognom2": "Cruz"
+			}
+		},
+		{
+			"id_visita": 7816,
+			"dia": "2018-11-13",
+			"metge": "Margarita Nevado Cardona",
+			"pacient": {
+				"id_pacient": 49186,
+				"nom": "María Belén",
+				"cognom": "Perez",
+				"cognom2": "Soler"
+			}
+		},
+		{
+			"id_visita": 61502,
+			"dia": "2018-11-13",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 15611,
+				"nom": "Sergio",
+				"cognom": "Luna",
+				"cognom2": "Lobo"
+			}
+		},
+		{
+			"id_visita": 2052,
+			"dia": "2018-11-13",
+			"metge": "Dolores Zamorano Luna",
+			"pacient": {
+				"id_pacient": 8811,
+				"nom": "Lucio",
+				"cognom": "Vives",
+				"cognom2": "Uría"
+			}
+		},
+		{
+			"id_visita": 90761,
+			"dia": "2018-11-13",
+			"metge": "María Pinilla Lobo",
+			"pacient": {
+				"id_pacient": 23287,
+				"nom": "Felicidad",
+				"cognom": "Angulo",
+				"cognom2": "Alberdi"
+			}
+		},
+		{
+			"id_visita": 84515,
+			"dia": "2018-11-13",
+			"metge": "Inmaculada Gámez Saldaña",
+			"pacient": {
+				"id_pacient": 39085,
+				"nom": "Aroa",
+				"cognom": "Mariño",
+				"cognom2": "Revilla"
+			}
+		},
+		{
+			"id_visita": 93901,
+			"dia": "2018-11-13",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 28665,
+				"nom": "Domingo",
+				"cognom": "Múgica",
+				"cognom2": "Alcántara"
+			}
+		},
+		{
+			"id_visita": 25316,
+			"dia": "2018-11-13",
+			"metge": "Nicolasa Cuesta Anguita",
+			"pacient": {
+				"id_pacient": 36349,
+				"nom": "Rosa María",
+				"cognom": "Pazos",
+				"cognom2": "Ortega"
+			}
+		},
+		{
+			"id_visita": 78096,
+			"dia": "2018-11-13",
+			"metge": "Sigfrido Anglada Valenciano",
+			"pacient": {
+				"id_pacient": 23486,
+				"nom": "Jenaro",
+				"cognom": "Quesada",
+				"cognom2": "Codina"
+			}
+		},
+		{
+			"id_visita": 29339,
+			"dia": "2018-11-13",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 19058,
+				"nom": "Adalberto",
+				"cognom": "Núñez",
+				"cognom2": "Ruano"
+			}
+		},
+		{
+			"id_visita": 14319,
+			"dia": "2018-11-13",
+			"metge": "Lola Mas Vendrell",
+			"pacient": {
+				"id_pacient": 49341,
+				"nom": "Amor",
+				"cognom": "Gallart",
+				"cognom2": "Iñiguez"
+			}
+		},
+		{
+			"id_visita": 78176,
+			"dia": "2018-11-13",
+			"metge": "Claudia Bermúdez Boada",
+			"pacient": {
+				"id_pacient": 10547,
+				"nom": "Ulises",
+				"cognom": "Jurado",
+				"cognom2": "León"
+			}
+		},
+		{
+			"id_visita": 28258,
+			"dia": "2018-11-13",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 40457,
+				"nom": "Carlos",
+				"cognom": "Naranjo",
+				"cognom2": "Carbonell"
+			}
+		},
+		{
+			"id_visita": 45327,
+			"dia": "2018-11-13",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 23524,
+				"nom": "Luz",
+				"cognom": "Vendrell",
+				"cognom2": "Vicente"
+			}
+		},
+		{
+			"id_visita": 51060,
+			"dia": "2018-11-13",
+			"metge": "Evangelina Madrigal Gordillo",
+			"pacient": {
+				"id_pacient": 4062,
+				"nom": "Virginia",
+				"cognom": "Ferrando",
+				"cognom2": "Mateu"
+			}
+		},
+		{
+			"id_visita": 54583,
+			"dia": "2018-11-13",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 35440,
+				"nom": "Fidel",
+				"cognom": "Martí",
+				"cognom2": "Azcona"
+			}
+		},
+		{
+			"id_visita": 76115,
+			"dia": "2018-11-13",
+			"metge": "Dolores Zamorano Luna",
+			"pacient": {
+				"id_pacient": 19094,
+				"nom": "Timoteo",
+				"cognom": "Mena",
+				"cognom2": "Real"
+			}
+		},
+		{
+			"id_visita": 34622,
+			"dia": "2018-11-13",
+			"metge": "Javiera Gimenez Morata",
+			"pacient": {
+				"id_pacient": 7026,
+				"nom": "Lina",
+				"cognom": "Cózar",
+				"cognom2": "Otero"
+			}
+		},
+		{
+			"id_visita": 79315,
+			"dia": "2018-11-13",
+			"metge": "Virginia Salcedo Beltrán",
+			"pacient": {
+				"id_pacient": 14799,
+				"nom": "Godofredo",
+				"cognom": "Franch",
+				"cognom2": "Luque"
+			}
+		},
+		{
+			"id_visita": 39494,
+			"dia": "2018-11-14",
+			"metge": "Vidal Paredes Vilanova",
+			"pacient": {
+				"id_pacient": 22991,
+				"nom": "Basilio",
+				"cognom": "Rius",
+				"cognom2": "Vall"
+			}
+		},
+		{
+			"id_visita": 80134,
+			"dia": "2018-11-14",
+			"metge": "Jenny Pellicer Gaya",
+			"pacient": {
+				"id_pacient": 16930,
+				"nom": "Javier",
+				"cognom": "Cervera",
+				"cognom2": "Elías"
+			}
+		},
+		{
+			"id_visita": 13229,
+			"dia": "2018-11-14",
+			"metge": "Dorotea Vendrell Planas",
+			"pacient": {
+				"id_pacient": 22763,
+				"nom": "Borja",
+				"cognom": "Rosa",
+				"cognom2": "Perelló"
+			}
+		},
+		{
+			"id_visita": 78870,
+			"dia": "2018-11-14",
+			"metge": "Feliciana Vera Flor",
+			"pacient": {
+				"id_pacient": 26416,
+				"nom": "Plácido",
+				"cognom": "Arrieta",
+				"cognom2": "Lerma"
+			}
+		},
+		{
+			"id_visita": 18713,
+			"dia": "2018-11-14",
+			"metge": "Rodrigo Ripoll Hurtado",
+			"pacient": {
+				"id_pacient": 9766,
+				"nom": "Fermín",
+				"cognom": "Ortiz",
+				"cognom2": "Benitez"
+			}
+		},
+		{
+			"id_visita": 88316,
+			"dia": "2018-11-14",
+			"metge": "Albina Valverde Criado",
+			"pacient": {
+				"id_pacient": 35616,
+				"nom": "Sebastián",
+				"cognom": "Marqués",
+				"cognom2": "Villar"
+			}
+		},
+		{
+			"id_visita": 50789,
+			"dia": "2018-11-14",
+			"metge": "Glauco Boada Zabaleta",
+			"pacient": {
+				"id_pacient": 17027,
+				"nom": "Amaro",
+				"cognom": "Cabezas",
+				"cognom2": "Diez"
+			}
+		},
+		{
+			"id_visita": 89443,
+			"dia": "2018-11-14",
+			"metge": "Ildefonso Vila Carbonell",
+			"pacient": {
+				"id_pacient": 30413,
+				"nom": "Macario",
+				"cognom": "Flores",
+				"cognom2": "Mármol"
+			}
+		},
+		{
+			"id_visita": 3510,
+			"dia": "2018-11-14",
+			"metge": "Luciano Sureda Chamorro",
+			"pacient": {
+				"id_pacient": 5228,
+				"nom": "Elba",
+				"cognom": "Gisbert",
+				"cognom2": "Losada"
+			}
+		},
+		{
+			"id_visita": 31388,
+			"dia": "2018-11-14",
+			"metge": "Carina Cruz Benavent",
+			"pacient": {
+				"id_pacient": 2354,
+				"nom": "Abraham",
+				"cognom": "Cantón",
+				"cognom2": "Lopez"
+			}
+		},
+		{
+			"id_visita": 31518,
+			"dia": "2018-11-14",
+			"metge": "Toribio Paredes Segura",
+			"pacient": {
+				"id_pacient": 46522,
+				"nom": "Anastasio",
+				"cognom": "Ramis",
+				"cognom2": "Barral"
+			}
+		},
+		{
+			"id_visita": 97114,
+			"dia": "2018-11-14",
+			"metge": "Vidal Paredes Vilanova",
+			"pacient": {
+				"id_pacient": 34026,
+				"nom": "Emma",
+				"cognom": "Zabala",
+				"cognom2": "Jerez"
+			}
+		},
+		{
+			"id_visita": 66633,
+			"dia": "2018-11-14",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 2834,
+				"nom": "Edu",
+				"cognom": "Esteban",
+				"cognom2": "Bravo"
+			}
+		},
+		{
+			"id_visita": 79024,
+			"dia": "2018-11-14",
+			"metge": "Javiera Gimenez Morata",
+			"pacient": {
+				"id_pacient": 6476,
+				"nom": "Maximiliano",
+				"cognom": "Oliveras",
+				"cognom2": "Barba"
+			}
+		},
+		{
+			"id_visita": 28195,
+			"dia": "2018-11-14",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 33928,
+				"nom": "Renata",
+				"cognom": "Antón",
+				"cognom2": "Font"
+			}
+		},
+		{
+			"id_visita": 29236,
+			"dia": "2018-11-14",
+			"metge": "Toribio Valverde Baquero",
+			"pacient": {
+				"id_pacient": 44909,
+				"nom": "Amarilis",
+				"cognom": "Farré",
+				"cognom2": "Palomares"
+			}
+		},
+		{
+			"id_visita": 92035,
+			"dia": "2018-11-14",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 516,
+				"nom": "Ariel",
+				"cognom": "Ponce",
+				"cognom2": "Campillo"
+			}
+		},
+		{
+			"id_visita": 43230,
+			"dia": "2018-11-14",
+			"metge": "Feliciana Almazán Ayuso",
+			"pacient": {
+				"id_pacient": 18902,
+				"nom": "Adoración",
+				"cognom": "Balaguer",
+				"cognom2": "Terrón"
+			}
+		},
+		{
+			"id_visita": 58348,
+			"dia": "2018-11-14",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 15975,
+				"nom": "Andrés",
+				"cognom": "Exposito",
+				"cognom2": "Tudela"
+			}
+		},
+		{
+			"id_visita": 7541,
+			"dia": "2018-11-14",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 40130,
+				"nom": "Horacio",
+				"cognom": "Rovira",
+				"cognom2": "Pozuelo"
+			}
+		},
+		{
+			"id_visita": 51679,
+			"dia": "2018-11-14",
+			"metge": "Anunciación Garcia Cortes",
+			"pacient": {
+				"id_pacient": 17942,
+				"nom": "Jeremías",
+				"cognom": "Perales",
+				"cognom2": "Castellanos"
+			}
+		},
+		{
+			"id_visita": 27103,
+			"dia": "2018-11-14",
+			"metge": "Margarita Nevado Cardona",
+			"pacient": {
+				"id_pacient": 4369,
+				"nom": "Angelino",
+				"cognom": "Calderón",
+				"cognom2": "Miró"
+			}
+		},
+		{
+			"id_visita": 1265,
+			"dia": "2018-11-14",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 2274,
+				"nom": "Tomás",
+				"cognom": "Posada",
+				"cognom2": "Ferrándiz"
+			}
+		},
+		{
+			"id_visita": 13853,
+			"dia": "2018-11-14",
+			"metge": "Inmaculada Gámez Saldaña",
+			"pacient": {
+				"id_pacient": 43859,
+				"nom": "Espiridión",
+				"cognom": "Isern",
+				"cognom2": "Escolano"
+			}
+		},
+		{
+			"id_visita": 52415,
+			"dia": "2018-11-14",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 679,
+				"nom": "Adora",
+				"cognom": "Navas",
+				"cognom2": "Bou"
+			}
+		},
+		{
+			"id_visita": 170,
+			"dia": "2018-11-14",
+			"metge": "Ileana Almansa Leon",
+			"pacient": {
+				"id_pacient": 40667,
+				"nom": "Gaspar",
+				"cognom": "Chaparro",
+				"cognom2": "Tolosa"
+			}
+		},
+		{
+			"id_visita": 50265,
+			"dia": "2018-11-14",
+			"metge": "Estela Barrena Cabezas",
+			"pacient": {
+				"id_pacient": 24751,
+				"nom": "Armida",
+				"cognom": "Lucas",
+				"cognom2": "Prats"
+			}
+		},
+		{
+			"id_visita": 57519,
+			"dia": "2018-11-14",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 48325,
+				"nom": "Renato",
+				"cognom": "Nevado",
+				"cognom2": "Alcalde"
+			}
+		},
+		{
+			"id_visita": 3560,
+			"dia": "2018-11-14",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 1861,
+				"nom": "Segismundo",
+				"cognom": "Casas",
+				"cognom2": "Cabo"
+			}
+		},
+		{
+			"id_visita": 85926,
+			"dia": "2018-11-14",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 46367,
+				"nom": "Marina",
+				"cognom": "Pizarro",
+				"cognom2": "Quevedo"
+			}
+		},
+		{
+			"id_visita": 60084,
+			"dia": "2018-11-14",
+			"metge": "Olga Sanmartín Olmedo",
+			"pacient": {
+				"id_pacient": 13972,
+				"nom": "Coral",
+				"cognom": "Colomer",
+				"cognom2": "Cifuentes"
+			}
+		},
+		{
+			"id_visita": 40245,
+			"dia": "2018-11-14",
+			"metge": "Valero Aragonés Patiño",
+			"pacient": {
+				"id_pacient": 27512,
+				"nom": "Dolores",
+				"cognom": "Sanchez",
+				"cognom2": "Solé"
+			}
+		},
+		{
+			"id_visita": 98525,
+			"dia": "2018-11-14",
+			"metge": "Soraya Arnaiz Moles",
+			"pacient": {
+				"id_pacient": 22021,
+				"nom": "Godofredo",
+				"cognom": "Miralles",
+				"cognom2": "Santiago"
+			}
+		},
+		{
+			"id_visita": 22985,
+			"dia": "2018-11-14",
+			"metge": "Cornelio Zorrilla Saura",
+			"pacient": {
+				"id_pacient": 2314,
+				"nom": "Cayetano",
+				"cognom": "Elorza",
+				"cognom2": "Novoa"
+			}
+		},
+		{
+			"id_visita": 61925,
+			"dia": "2018-11-15",
+			"metge": "Zaira Castell Amores",
+			"pacient": {
+				"id_pacient": 16196,
+				"nom": "Isidora",
+				"cognom": "Blanco",
+				"cognom2": "Oliva"
+			}
+		},
+		{
+			"id_visita": 64120,
+			"dia": "2018-11-15",
+			"metge": "Heliodoro Benitez Herrero",
+			"pacient": {
+				"id_pacient": 49769,
+				"nom": "Morena",
+				"cognom": "Lledó",
+				"cognom2": "Ferrero"
+			}
+		},
+		{
+			"id_visita": 19634,
+			"dia": "2018-11-15",
+			"metge": "Gabriel Villaverde Sobrino",
+			"pacient": {
+				"id_pacient": 11006,
+				"nom": "Liliana",
+				"cognom": "Larrea",
+				"cognom2": "Marí"
+			}
+		},
+		{
+			"id_visita": 56192,
+			"dia": "2018-11-15",
+			"metge": "Espiridión Castillo Iglesia",
+			"pacient": {
+				"id_pacient": 26733,
+				"nom": "Casemiro",
+				"cognom": "Galván",
+				"cognom2": "Rosell"
+			}
+		},
+		{
+			"id_visita": 29769,
+			"dia": "2018-11-15",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 42105,
+				"nom": "Juan Luis",
+				"cognom": "Arnaiz",
+				"cognom2": "Balaguer"
+			}
+		},
+		{
+			"id_visita": 74992,
+			"dia": "2018-11-15",
+			"metge": "Gertrudis Marqués Medina",
+			"pacient": {
+				"id_pacient": 2431,
+				"nom": "Narciso",
+				"cognom": "Romero",
+				"cognom2": "Llabrés"
+			}
+		},
+		{
+			"id_visita": 57376,
+			"dia": "2018-11-15",
+			"metge": "Emma Machado Tudela",
+			"pacient": {
+				"id_pacient": 10064,
+				"nom": "Cleto",
+				"cognom": "Reig",
+				"cognom2": "Ribera"
+			}
+		},
+		{
+			"id_visita": 84621,
+			"dia": "2018-11-15",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 12669,
+				"nom": "Isa",
+				"cognom": "Sanmartín",
+				"cognom2": "Luján"
+			}
+		},
+		{
+			"id_visita": 72981,
+			"dia": "2018-11-15",
+			"metge": "Inmaculada Gámez Saldaña",
+			"pacient": {
+				"id_pacient": 44708,
+				"nom": "Salvador",
+				"cognom": "Garriga",
+				"cognom2": "Iriarte"
+			}
+		},
+		{
+			"id_visita": 75739,
+			"dia": "2018-11-15",
+			"metge": "Ulises Camacho Hervia",
+			"pacient": {
+				"id_pacient": 13797,
+				"nom": "Priscila",
+				"cognom": "Viñas",
+				"cognom2": "Viña"
+			}
+		},
+		{
+			"id_visita": 4421,
+			"dia": "2018-11-15",
+			"metge": "Ulises Camacho Hervia",
+			"pacient": {
+				"id_pacient": 47224,
+				"nom": "Nilda",
+				"cognom": "Bernal",
+				"cognom2": "Alsina"
+			}
+		},
+		{
+			"id_visita": 80744,
+			"dia": "2018-11-15",
+			"metge": "Nicolasa Cuesta Anguita",
+			"pacient": {
+				"id_pacient": 11379,
+				"nom": "Eloísa",
+				"cognom": "Riquelme",
+				"cognom2": "Roldan"
+			}
+		},
+		{
+			"id_visita": 98535,
+			"dia": "2018-11-15",
+			"metge": "Nicolasa Chacón Ibáñez",
+			"pacient": {
+				"id_pacient": 19165,
+				"nom": "Primitivo",
+				"cognom": "Moreno",
+				"cognom2": "Puerta"
+			}
+		},
+		{
+			"id_visita": 86492,
+			"dia": "2018-11-15",
+			"metge": "Pascual Coloma Guzman",
+			"pacient": {
+				"id_pacient": 24368,
+				"nom": "Félix",
+				"cognom": "Barreda",
+				"cognom2": "Soler"
+			}
+		},
+		{
+			"id_visita": 35782,
+			"dia": "2018-11-15",
+			"metge": "Jafet Carballo Serrano",
+			"pacient": {
+				"id_pacient": 14788,
+				"nom": "Bernardino",
+				"cognom": "Buendía",
+				"cognom2": "Villena"
+			}
+		},
+		{
+			"id_visita": 27850,
+			"dia": "2018-11-15",
+			"metge": "Rómulo Tejero Zaragoza",
+			"pacient": {
+				"id_pacient": 27657,
+				"nom": "Ambrosio",
+				"cognom": "Ruano",
+				"cognom2": "Quintanilla"
+			}
+		},
+		{
+			"id_visita": 32164,
+			"dia": "2018-11-15",
+			"metge": "Edmundo Sáenz Carbó",
+			"pacient": {
+				"id_pacient": 12473,
+				"nom": "Eustaquio",
+				"cognom": "Martí",
+				"cognom2": "Jaume"
+			}
+		},
+		{
+			"id_visita": 64110,
+			"dia": "2018-11-15",
+			"metge": "Jose Manuel Jódar Romero",
+			"pacient": {
+				"id_pacient": 19959,
+				"nom": "Javi",
+				"cognom": "Merino",
+				"cognom2": "Luque"
+			}
+		},
+		{
+			"id_visita": 79534,
+			"dia": "2018-11-15",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 36623,
+				"nom": "Anunciación",
+				"cognom": "Barrera",
+				"cognom2": "Frías"
+			}
+		},
+		{
+			"id_visita": 96555,
+			"dia": "2018-11-15",
+			"metge": "Mar Taboada Sandoval",
+			"pacient": {
+				"id_pacient": 43912,
+				"nom": "Hugo",
+				"cognom": "Huertas",
+				"cognom2": "Roda"
+			}
+		},
+		{
+			"id_visita": 73976,
+			"dia": "2018-11-15",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 30521,
+				"nom": "Leoncio",
+				"cognom": "Arnau",
+				"cognom2": "Carretero"
+			}
+		},
+		{
+			"id_visita": 97213,
+			"dia": "2018-11-15",
+			"metge": "Cesar Vargas Duque",
+			"pacient": {
+				"id_pacient": 4048,
+				"nom": "Elena",
+				"cognom": "Velasco",
+				"cognom2": "Roma"
+			}
+		},
+		{
+			"id_visita": 84445,
+			"dia": "2018-11-15",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 41603,
+				"nom": "Francisco Javier",
+				"cognom": "Corbacho",
+				"cognom2": "Cáceres"
+			}
+		},
+		{
+			"id_visita": 51977,
+			"dia": "2018-11-15",
+			"metge": "Matías Montaña Ojeda",
+			"pacient": {
+				"id_pacient": 17176,
+				"nom": "Vilma",
+				"cognom": "Carnero",
+				"cognom2": "Peña"
+			}
+		},
+		{
+			"id_visita": 49654,
+			"dia": "2018-11-15",
+			"metge": "Luciano Sureda Chamorro",
+			"pacient": {
+				"id_pacient": 6805,
+				"nom": "José Manuel",
+				"cognom": "Diego",
+				"cognom2": "Olivares"
+			}
+		},
+		{
+			"id_visita": 86166,
+			"dia": "2018-11-15",
+			"metge": "América Carmona Cabanillas",
+			"pacient": {
+				"id_pacient": 11673,
+				"nom": "Moreno",
+				"cognom": "Almazán",
+				"cognom2": "Cornejo"
+			}
+		},
+		{
+			"id_visita": 58118,
+			"dia": "2018-11-15",
+			"metge": "Jose Angel Calleja Márquez",
+			"pacient": {
+				"id_pacient": 25231,
+				"nom": "Galo",
+				"cognom": "Larrea",
+				"cognom2": "Escribano"
+			}
+		},
+		{
+			"id_visita": 3119,
+			"dia": "2018-11-15",
+			"metge": "Carina Cruz Benavent",
+			"pacient": {
+				"id_pacient": 32385,
+				"nom": "José",
+				"cognom": "Contreras",
+				"cognom2": "Nieto"
+			}
+		},
+		{
+			"id_visita": 12822,
+			"dia": "2018-11-15",
+			"metge": "Virginia Salcedo Beltrán",
+			"pacient": {
+				"id_pacient": 8161,
+				"nom": "Vinicio",
+				"cognom": "Francisco",
+				"cognom2": "Monreal"
+			}
+		},
+		{
+			"id_visita": 88982,
+			"dia": "2018-11-15",
+			"metge": "León Sevillano Iborra",
+			"pacient": {
+				"id_pacient": 49230,
+				"nom": "Eulalia",
+				"cognom": "Garmendia",
+				"cognom2": "Monreal"
+			}
+		},
+		{
+			"id_visita": 78014,
+			"dia": "2018-11-16",
+			"metge": "Genoveva Rosa Pablo",
+			"pacient": {
+				"id_pacient": 17584,
+				"nom": "Jenny",
+				"cognom": "Collado",
+				"cognom2": "Ariza"
+			}
+		},
+		{
+			"id_visita": 95656,
+			"dia": "2018-11-16",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 22011,
+				"nom": "Joel",
+				"cognom": "Tirado",
+				"cognom2": "Cuéllar"
+			}
+		},
+		{
+			"id_visita": 43669,
+			"dia": "2018-11-16",
+			"metge": "Cristian Alberola Luís",
+			"pacient": {
+				"id_pacient": 11982,
+				"nom": "Tania",
+				"cognom": "Andrés",
+				"cognom2": "Gordillo"
+			}
+		},
+		{
+			"id_visita": 74394,
+			"dia": "2018-11-16",
+			"metge": "Estela Barrena Cabezas",
+			"pacient": {
+				"id_pacient": 19221,
+				"nom": "Catalina",
+				"cognom": "Sobrino",
+				"cognom2": "Lucena"
+			}
+		},
+		{
+			"id_visita": 88131,
+			"dia": "2018-11-16",
+			"metge": "Sigfrido Anglada Valenciano",
+			"pacient": {
+				"id_pacient": 29214,
+				"nom": "Lino",
+				"cognom": "Sanabria",
+				"cognom2": "Pujol"
+			}
+		},
+		{
+			"id_visita": 63724,
+			"dia": "2018-11-16",
+			"metge": "Geraldo Llano Mendizábal",
+			"pacient": {
+				"id_pacient": 3231,
+				"nom": "María Dolores",
+				"cognom": "Casals",
+				"cognom2": "Cadenas"
+			}
+		},
+		{
+			"id_visita": 71709,
+			"dia": "2018-11-16",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 36780,
+				"nom": "Adela",
+				"cognom": "Torrens",
+				"cognom2": "Giner"
+			}
+		},
+		{
+			"id_visita": 95065,
+			"dia": "2018-11-16",
+			"metge": "Toribio Valverde Baquero",
+			"pacient": {
+				"id_pacient": 21762,
+				"nom": "Eusebio",
+				"cognom": "Llorens",
+				"cognom2": "Quevedo"
+			}
+		},
+		{
+			"id_visita": 30582,
+			"dia": "2018-11-16",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 41234,
+				"nom": "Cruz",
+				"cognom": "Méndez",
+				"cognom2": "Ayllón"
+			}
+		},
+		{
+			"id_visita": 89135,
+			"dia": "2018-11-16",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 48006,
+				"nom": "Antonio",
+				"cognom": "Bolaños",
+				"cognom2": "Aragonés"
+			}
+		},
+		{
+			"id_visita": 49896,
+			"dia": "2018-11-16",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 28810,
+				"nom": "Luciano",
+				"cognom": "Rovira",
+				"cognom2": "Hoyos"
+			}
+		},
+		{
+			"id_visita": 18098,
+			"dia": "2018-11-16",
+			"metge": "Espiridión Castillo Iglesia",
+			"pacient": {
+				"id_pacient": 5464,
+				"nom": "Fernanda",
+				"cognom": "Artigas",
+				"cognom2": "Lobato"
+			}
+		},
+		{
+			"id_visita": 88943,
+			"dia": "2018-11-16",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 11815,
+				"nom": "Abigaíl",
+				"cognom": "Gelabert",
+				"cognom2": "Pintor"
+			}
+		},
+		{
+			"id_visita": 35849,
+			"dia": "2018-11-16",
+			"metge": "Ariel Mendez Pastor",
+			"pacient": {
+				"id_pacient": 38416,
+				"nom": "Prudencio",
+				"cognom": "Llorens",
+				"cognom2": "Goicoechea"
+			}
+		},
+		{
+			"id_visita": 93134,
+			"dia": "2018-11-16",
+			"metge": "María Pinilla Lobo",
+			"pacient": {
+				"id_pacient": 9563,
+				"nom": "Rodolfo",
+				"cognom": "Alcántara",
+				"cognom2": "Caro"
+			}
+		},
+		{
+			"id_visita": 36870,
+			"dia": "2018-11-16",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 29479,
+				"nom": "Mauricio",
+				"cognom": "Jordán",
+				"cognom2": "León"
+			}
+		},
+		{
+			"id_visita": 24384,
+			"dia": "2018-11-16",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 28351,
+				"nom": "Candelaria",
+				"cognom": "Cabo",
+				"cognom2": "Lastra"
+			}
+		},
+		{
+			"id_visita": 89438,
+			"dia": "2018-11-16",
+			"metge": "Paz Blázquez Buendía",
+			"pacient": {
+				"id_pacient": 27890,
+				"nom": "Román",
+				"cognom": "Pinilla",
+				"cognom2": "Quiroga"
+			}
+		},
+		{
+			"id_visita": 29112,
+			"dia": "2018-11-16",
+			"metge": "Rómulo Tejero Zaragoza",
+			"pacient": {
+				"id_pacient": 15543,
+				"nom": "Марк",
+				"cognom": "Горбачева",
+				"cognom2": "Евсеева"
+			}
+		},
+		{
+			"id_visita": 59382,
+			"dia": "2018-11-16",
+			"metge": "Anunciación Garcia Cortes",
+			"pacient": {
+				"id_pacient": 20360,
+				"nom": "Reina",
+				"cognom": "Ojeda",
+				"cognom2": "Font"
+			}
+		},
+		{
+			"id_visita": 85257,
+			"dia": "2018-11-16",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 22844,
+				"nom": "Cristian",
+				"cognom": "Morera",
+				"cognom2": "Flor"
+			}
+		},
+		{
+			"id_visita": 55480,
+			"dia": "2018-11-16",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 23402,
+				"nom": "Segismundo",
+				"cognom": "Rosa",
+				"cognom2": "Alberdi"
+			}
+		},
+		{
+			"id_visita": 92865,
+			"dia": "2018-11-16",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 40762,
+				"nom": "Seve",
+				"cognom": "Ortuño",
+				"cognom2": "Cabello"
+			}
+		},
+		{
+			"id_visita": 10836,
+			"dia": "2018-11-16",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 21113,
+				"nom": "Porfirio",
+				"cognom": "Pellicer",
+				"cognom2": "Guijarro"
+			}
+		},
+		{
+			"id_visita": 13268,
+			"dia": "2018-11-16",
+			"metge": "Florentina Rivas Giménez",
+			"pacient": {
+				"id_pacient": 41311,
+				"nom": "Mamen",
+				"cognom": "Puig",
+				"cognom2": "Esteban"
+			}
+		},
+		{
+			"id_visita": 90102,
+			"dia": "2018-11-16",
+			"metge": "Vidal Paredes Vilanova",
+			"pacient": {
+				"id_pacient": 49200,
+				"nom": "Nilda",
+				"cognom": "Cabrero",
+				"cognom2": "Arrieta"
+			}
+		},
+		{
+			"id_visita": 47777,
+			"dia": "2018-11-16",
+			"metge": "Jafet Carballo Serrano",
+			"pacient": {
+				"id_pacient": 26726,
+				"nom": "Fermín",
+				"cognom": "Feijoo",
+				"cognom2": "Company"
+			}
+		},
+		{
+			"id_visita": 88884,
+			"dia": "2018-11-16",
+			"metge": "Gema Yáñez Molina",
+			"pacient": {
+				"id_pacient": 24309,
+				"nom": "Gloria",
+				"cognom": "Olivera",
+				"cognom2": "Aroca"
+			}
+		},
+		{
+			"id_visita": 7457,
+			"dia": "2018-11-16",
+			"metge": "Dulce Malo Saavedra",
+			"pacient": {
+				"id_pacient": 35677,
+				"nom": "Isa",
+				"cognom": "Bueno",
+				"cognom2": "Jimenez"
+			}
+		},
+		{
+			"id_visita": 34664,
+			"dia": "2018-11-16",
+			"metge": "Gabriel Villaverde Sobrino",
+			"pacient": {
+				"id_pacient": 9870,
+				"nom": "Perlita",
+				"cognom": "Bautista",
+				"cognom2": "Hurtado"
+			}
+		},
+		{
+			"id_visita": 33498,
+			"dia": "2018-11-16",
+			"metge": "Teresa Pomares Nicolau",
+			"pacient": {
+				"id_pacient": 4623,
+				"nom": "Dan",
+				"cognom": "Muro",
+				"cognom2": "Nogués"
+			}
+		},
+		{
+			"id_visita": 92723,
+			"dia": "2018-11-16",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 28371,
+				"nom": "Tito",
+				"cognom": "Marin",
+				"cognom2": "Villalonga"
+			}
+		},
+		{
+			"id_visita": 55944,
+			"dia": "2018-11-17",
+			"metge": "Lara Luna Santiago",
+			"pacient": {
+				"id_pacient": 39937,
+				"nom": "Saturnino",
+				"cognom": "Seco",
+				"cognom2": "Amo"
+			}
+		},
+		{
+			"id_visita": 99233,
+			"dia": "2018-11-17",
+			"metge": "Albina Valverde Criado",
+			"pacient": {
+				"id_pacient": 20722,
+				"nom": "Jovita",
+				"cognom": "Aguiló",
+				"cognom2": "Bello"
+			}
+		},
+		{
+			"id_visita": 33311,
+			"dia": "2018-11-17",
+			"metge": "Claudia Bermúdez Boada",
+			"pacient": {
+				"id_pacient": 39401,
+				"nom": "Lilia",
+				"cognom": "Lladó",
+				"cognom2": "Abad"
+			}
+		},
+		{
+			"id_visita": 4322,
+			"dia": "2018-11-17",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 49861,
+				"nom": "Isidora",
+				"cognom": "Miguel",
+				"cognom2": "Luque"
+			}
+		},
+		{
+			"id_visita": 75708,
+			"dia": "2018-11-17",
+			"metge": "Jose Manuel Jódar Romero",
+			"pacient": {
+				"id_pacient": 34450,
+				"nom": "Eric",
+				"cognom": "Guillen",
+				"cognom2": "Espejo"
+			}
+		},
+		{
+			"id_visita": 31279,
+			"dia": "2018-11-17",
+			"metge": "Anunciación Garcia Cortes",
+			"pacient": {
+				"id_pacient": 43958,
+				"nom": "Mariano",
+				"cognom": "Acero",
+				"cognom2": "Carretero"
+			}
+		},
+		{
+			"id_visita": 75854,
+			"dia": "2018-11-17",
+			"metge": "María Fernanda Cervantes Jaume",
+			"pacient": {
+				"id_pacient": 5594,
+				"nom": "Chus",
+				"cognom": "Marquez",
+				"cognom2": "Nadal"
+			}
+		},
+		{
+			"id_visita": 88673,
+			"dia": "2018-11-17",
+			"metge": "Dorotea Vendrell Planas",
+			"pacient": {
+				"id_pacient": 8592,
+				"nom": "Noelia",
+				"cognom": "Patiño",
+				"cognom2": "Galiano"
+			}
+		},
+		{
+			"id_visita": 24642,
+			"dia": "2018-11-17",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 9241,
+				"nom": "Mario",
+				"cognom": "Fuster",
+				"cognom2": "Asenjo"
+			}
+		},
+		{
+			"id_visita": 75863,
+			"dia": "2018-11-17",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 25334,
+				"nom": "Dimas",
+				"cognom": "Lloret",
+				"cognom2": "Egea"
+			}
+		},
+		{
+			"id_visita": 75241,
+			"dia": "2018-11-17",
+			"metge": "Reynaldo Abril Portero",
+			"pacient": {
+				"id_pacient": 42156,
+				"nom": "Amador",
+				"cognom": "Aranda",
+				"cognom2": "Paniagua"
+			}
+		},
+		{
+			"id_visita": 80371,
+			"dia": "2018-11-17",
+			"metge": "Jenny Pellicer Gaya",
+			"pacient": {
+				"id_pacient": 43564,
+				"nom": "Albina",
+				"cognom": "Gordillo",
+				"cognom2": "Alcántara"
+			}
+		},
+		{
+			"id_visita": 24529,
+			"dia": "2018-11-17",
+			"metge": "Bibiana Bueno Valverde",
+			"pacient": {
+				"id_pacient": 2820,
+				"nom": "Jonatan",
+				"cognom": "Garriga",
+				"cognom2": "Mariño"
+			}
+		},
+		{
+			"id_visita": 14673,
+			"dia": "2018-11-17",
+			"metge": "Florentina Rivas Giménez",
+			"pacient": {
+				"id_pacient": 12680,
+				"nom": "Catalina",
+				"cognom": "Santamaría",
+				"cognom2": "Castilla"
+			}
+		},
+		{
+			"id_visita": 90025,
+			"dia": "2018-11-17",
+			"metge": "Cosme Pinto Lobo",
+			"pacient": {
+				"id_pacient": 38895,
+				"nom": "Adelina",
+				"cognom": "Izquierdo",
+				"cognom2": "Arellano"
+			}
+		},
+		{
+			"id_visita": 85940,
+			"dia": "2018-11-17",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 49825,
+				"nom": "Victoria",
+				"cognom": "Esteve",
+				"cognom2": "Sotelo"
+			}
+		},
+		{
+			"id_visita": 89073,
+			"dia": "2018-11-17",
+			"metge": "Feliciana Vera Flor",
+			"pacient": {
+				"id_pacient": 23312,
+				"nom": "Ildefonso",
+				"cognom": "Torres",
+				"cognom2": "Alcaraz"
+			}
+		},
+		{
+			"id_visita": 53562,
+			"dia": "2018-11-17",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 6104,
+				"nom": "Leocadia",
+				"cognom": "Carballo",
+				"cognom2": "Seguí"
+			}
+		},
+		{
+			"id_visita": 24715,
+			"dia": "2018-11-17",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 10152,
+				"nom": "Fidel",
+				"cognom": "Campillo",
+				"cognom2": "Vázquez"
+			}
+		},
+		{
+			"id_visita": 22854,
+			"dia": "2018-11-17",
+			"metge": "Rodrigo Ripoll Hurtado",
+			"pacient": {
+				"id_pacient": 44419,
+				"nom": "Obdulia",
+				"cognom": "Lopez",
+				"cognom2": "Benet"
+			}
+		},
+		{
+			"id_visita": 72933,
+			"dia": "2018-11-17",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 21032,
+				"nom": "Rubén",
+				"cognom": "Anglada",
+				"cognom2": "Cortés"
+			}
+		},
+		{
+			"id_visita": 77176,
+			"dia": "2018-11-17",
+			"metge": "María Manuela Castrillo Juárez",
+			"pacient": {
+				"id_pacient": 5123,
+				"nom": "Rocío",
+				"cognom": "Cáceres",
+				"cognom2": "Verdú"
+			}
+		},
+		{
+			"id_visita": 70927,
+			"dia": "2018-11-17",
+			"metge": "Rómulo Tejero Zaragoza",
+			"pacient": {
+				"id_pacient": 13810,
+				"nom": "Nico",
+				"cognom": "Gómez",
+				"cognom2": "Azcona"
+			}
+		},
+		{
+			"id_visita": 59235,
+			"dia": "2018-11-17",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 18341,
+				"nom": "Teobaldo",
+				"cognom": "Blanes",
+				"cognom2": "Fabra"
+			}
+		},
+		{
+			"id_visita": 12590,
+			"dia": "2018-11-17",
+			"metge": "Alfredo Priego Llobet",
+			"pacient": {
+				"id_pacient": 366,
+				"nom": "Jose Carlos",
+				"cognom": "Benavente",
+				"cognom2": "Elorza"
+			}
+		},
+		{
+			"id_visita": 99124,
+			"dia": "2018-11-17",
+			"metge": "Modesta Cadenas Vera",
+			"pacient": {
+				"id_pacient": 7724,
+				"nom": "Ovidio",
+				"cognom": "Valle",
+				"cognom2": "Pinedo"
+			}
+		},
+		{
+			"id_visita": 94387,
+			"dia": "2018-11-17",
+			"metge": "Zaira Castell Amores",
+			"pacient": {
+				"id_pacient": 43172,
+				"nom": "Eutimio",
+				"cognom": "Villaverde",
+				"cognom2": "Alcolea"
+			}
+		},
+		{
+			"id_visita": 19859,
+			"dia": "2018-11-17",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 11601,
+				"nom": "Manuelita",
+				"cognom": "Alemán",
+				"cognom2": "Cabrero"
+			}
+		},
+		{
+			"id_visita": 38595,
+			"dia": "2018-11-17",
+			"metge": "Lara Luna Santiago",
+			"pacient": {
+				"id_pacient": 49097,
+				"nom": "Ligia",
+				"cognom": "España",
+				"cognom2": "Vázquez"
+			}
+		},
+		{
+			"id_visita": 38860,
+			"dia": "2018-11-17",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 18708,
+				"nom": "Alonso",
+				"cognom": "Cabello",
+				"cognom2": "Coloma"
+			}
+		},
+		{
+			"id_visita": 9497,
+			"dia": "2018-11-18",
+			"metge": "Aura Pardo Valentín",
+			"pacient": {
+				"id_pacient": 39453,
+				"nom": "Iker",
+				"cognom": "Menéndez",
+				"cognom2": "Cuesta"
+			}
+		},
+		{
+			"id_visita": 22117,
+			"dia": "2018-11-18",
+			"metge": "Margarita Nevado Cardona",
+			"pacient": {
+				"id_pacient": 37902,
+				"nom": "Gil",
+				"cognom": "Valls",
+				"cognom2": "Pinto"
+			}
+		},
+		{
+			"id_visita": 61152,
+			"dia": "2018-11-18",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 897,
+				"nom": "Noemí",
+				"cognom": "Gutierrez",
+				"cognom2": "Mendoza"
+			}
+		},
+		{
+			"id_visita": 13802,
+			"dia": "2018-11-18",
+			"metge": "Alfredo Priego Llobet",
+			"pacient": {
+				"id_pacient": 12197,
+				"nom": "Sandalio",
+				"cognom": "Hervás",
+				"cognom2": "Huerta"
+			}
+		},
+		{
+			"id_visita": 29573,
+			"dia": "2018-11-18",
+			"metge": "Reynaldo Abril Portero",
+			"pacient": {
+				"id_pacient": 21170,
+				"nom": "Graciano",
+				"cognom": "Salcedo",
+				"cognom2": "Guijarro"
+			}
+		},
+		{
+			"id_visita": 76462,
+			"dia": "2018-11-18",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 37299,
+				"nom": "Francisco Javier",
+				"cognom": "Rubio",
+				"cognom2": "Vicens"
+			}
+		},
+		{
+			"id_visita": 30684,
+			"dia": "2018-11-18",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 19408,
+				"nom": "Ainara",
+				"cognom": "Álvarez",
+				"cognom2": "Ballesteros"
+			}
+		},
+		{
+			"id_visita": 8792,
+			"dia": "2018-11-18",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 45986,
+				"nom": "Felipe",
+				"cognom": "Salvà",
+				"cognom2": "Torres"
+			}
+		},
+		{
+			"id_visita": 29208,
+			"dia": "2018-11-18",
+			"metge": "Jose Angel Calleja Márquez",
+			"pacient": {
+				"id_pacient": 13110,
+				"nom": "Juan Bautista",
+				"cognom": "Durán",
+				"cognom2": "Tello"
+			}
+		},
+		{
+			"id_visita": 36110,
+			"dia": "2018-11-18",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 78,
+				"nom": "Pepe",
+				"cognom": "Blanco",
+				"cognom2": "Alberto"
+			}
+		},
+		{
+			"id_visita": 72697,
+			"dia": "2018-11-18",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 1997,
+				"nom": "Petrona",
+				"cognom": "Quintero",
+				"cognom2": "Esparza"
+			}
+		},
+		{
+			"id_visita": 89176,
+			"dia": "2018-11-18",
+			"metge": "Toribio Paredes Segura",
+			"pacient": {
+				"id_pacient": 48133,
+				"nom": "Darío",
+				"cognom": "Guerrero",
+				"cognom2": "Falcón"
+			}
+		},
+		{
+			"id_visita": 13726,
+			"dia": "2018-11-18",
+			"metge": "Glauco Boada Zabaleta",
+			"pacient": {
+				"id_pacient": 27096,
+				"nom": "Alexandra",
+				"cognom": "Coronado",
+				"cognom2": "Pol"
+			}
+		},
+		{
+			"id_visita": 56006,
+			"dia": "2018-11-18",
+			"metge": "Ildefonso Vila Carbonell",
+			"pacient": {
+				"id_pacient": 40544,
+				"nom": "Tamara",
+				"cognom": "Mateu",
+				"cognom2": "Carnero"
+			}
+		},
+		{
+			"id_visita": 3573,
+			"dia": "2018-11-18",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 6307,
+				"nom": "Zoraida",
+				"cognom": "Lago",
+				"cognom2": "Carrión"
+			}
+		},
+		{
+			"id_visita": 43282,
+			"dia": "2018-11-18",
+			"metge": "Evangelina Madrigal Gordillo",
+			"pacient": {
+				"id_pacient": 47202,
+				"nom": "Ainoa",
+				"cognom": "Rincón",
+				"cognom2": "Torrijos"
+			}
+		},
+		{
+			"id_visita": 33685,
+			"dia": "2018-11-18",
+			"metge": "Ruth Fabregat Haro",
+			"pacient": {
+				"id_pacient": 530,
+				"nom": "Reyna",
+				"cognom": "Anguita",
+				"cognom2": "Ayllón"
+			}
+		},
+		{
+			"id_visita": 72898,
+			"dia": "2018-11-18",
+			"metge": "Mar Taboada Sandoval",
+			"pacient": {
+				"id_pacient": 2594,
+				"nom": "Fabio",
+				"cognom": "Somoza",
+				"cognom2": "Colomer"
+			}
+		},
+		{
+			"id_visita": 35247,
+			"dia": "2018-11-18",
+			"metge": "Odalis Castell Zurita",
+			"pacient": {
+				"id_pacient": 32480,
+				"nom": "Lucho",
+				"cognom": "Anguita",
+				"cognom2": "Company"
+			}
+		},
+		{
+			"id_visita": 63279,
+			"dia": "2018-11-18",
+			"metge": "Clarisa Escolano Domínguez",
+			"pacient": {
+				"id_pacient": 36162,
+				"nom": "Natanael",
+				"cognom": "Carranza",
+				"cognom2": "Jáuregui"
+			}
+		},
+		{
+			"id_visita": 35320,
+			"dia": "2018-11-18",
+			"metge": "Nicolasa Chacón Ibáñez",
+			"pacient": {
+				"id_pacient": 46143,
+				"nom": "Odalys",
+				"cognom": "Bosch",
+				"cognom2": "Sancho"
+			}
+		},
+		{
+			"id_visita": 13711,
+			"dia": "2018-11-18",
+			"metge": "Miriam Mir Rubio",
+			"pacient": {
+				"id_pacient": 47061,
+				"nom": "Albert",
+				"cognom": "Ramirez",
+				"cognom2": "Aguirre"
+			}
+		},
+		{
+			"id_visita": 44954,
+			"dia": "2018-11-18",
+			"metge": "Luciano Sureda Chamorro",
+			"pacient": {
+				"id_pacient": 14705,
+				"nom": "Encarnación",
+				"cognom": "Calleja",
+				"cognom2": "Castells"
+			}
+		},
+		{
+			"id_visita": 79348,
+			"dia": "2018-11-18",
+			"metge": "Bibiana Bueno Valverde",
+			"pacient": {
+				"id_pacient": 33532,
+				"nom": "Purificación",
+				"cognom": "Quevedo",
+				"cognom2": "Torre"
+			}
+		},
+		{
+			"id_visita": 57254,
+			"dia": "2018-11-19",
+			"metge": "Rómulo Tejero Zaragoza",
+			"pacient": {
+				"id_pacient": 17261,
+				"nom": "Xavier",
+				"cognom": "Gutiérrez",
+				"cognom2": "Cerro"
+			}
+		},
+		{
+			"id_visita": 97379,
+			"dia": "2018-11-19",
+			"metge": "Dulce Malo Saavedra",
+			"pacient": {
+				"id_pacient": 25133,
+				"nom": "Alberto",
+				"cognom": "Campillo",
+				"cognom2": "Manzanares"
+			}
+		},
+		{
+			"id_visita": 97392,
+			"dia": "2018-11-19",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 27594,
+				"nom": "Fidela",
+				"cognom": "Nicolau",
+				"cognom2": "Ballesteros"
+			}
+		},
+		{
+			"id_visita": 36905,
+			"dia": "2018-11-19",
+			"metge": "Toribio Paredes Segura",
+			"pacient": {
+				"id_pacient": 11443,
+				"nom": "Trinidad",
+				"cognom": "Cepeda",
+				"cognom2": "Antón"
+			}
+		},
+		{
+			"id_visita": 12406,
+			"dia": "2018-11-19",
+			"metge": "Cristian Alberola Luís",
+			"pacient": {
+				"id_pacient": 23065,
+				"nom": "Leonardo",
+				"cognom": "Tejero",
+				"cognom2": "Prieto"
+			}
+		},
+		{
+			"id_visita": 18174,
+			"dia": "2018-11-19",
+			"metge": "Alfredo Priego Llobet",
+			"pacient": {
+				"id_pacient": 1116,
+				"nom": "Joaquín",
+				"cognom": "Arrieta",
+				"cognom2": "Escobar"
+			}
+		},
+		{
+			"id_visita": 30464,
+			"dia": "2018-11-19",
+			"metge": "Espiridión Castillo Iglesia",
+			"pacient": {
+				"id_pacient": 25315,
+				"nom": "Asdrubal",
+				"cognom": "Sánchez",
+				"cognom2": "Ramirez"
+			}
+		},
+		{
+			"id_visita": 61671,
+			"dia": "2018-11-19",
+			"metge": "Olga Sanmartín Olmedo",
+			"pacient": {
+				"id_pacient": 22464,
+				"nom": "Amor",
+				"cognom": "Frías",
+				"cognom2": "Esteban"
+			}
+		},
+		{
+			"id_visita": 83419,
+			"dia": "2018-11-19",
+			"metge": "Javiera Gimenez Morata",
+			"pacient": {
+				"id_pacient": 20346,
+				"nom": "Andrés",
+				"cognom": "Cruz",
+				"cognom2": "Marí"
+			}
+		},
+		{
+			"id_visita": 50671,
+			"dia": "2018-11-19",
+			"metge": "Leoncio Ribera Nieto",
+			"pacient": {
+				"id_pacient": 18888,
+				"nom": "Fernando",
+				"cognom": "Ferrán",
+				"cognom2": "Roig"
+			}
+		},
+		{
+			"id_visita": 7477,
+			"dia": "2018-11-19",
+			"metge": "Narciso Busquets Pomares",
+			"pacient": {
+				"id_pacient": 40390,
+				"nom": "Teresa",
+				"cognom": "Manuel",
+				"cognom2": "Salamanca"
+			}
+		},
+		{
+			"id_visita": 45534,
+			"dia": "2018-11-19",
+			"metge": "Rico Pera Campoy",
+			"pacient": {
+				"id_pacient": 10921,
+				"nom": "Amalia",
+				"cognom": "Galván",
+				"cognom2": "Amorós"
+			}
+		},
+		{
+			"id_visita": 54500,
+			"dia": "2018-11-19",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 38353,
+				"nom": "Teodosio",
+				"cognom": "Bonet",
+				"cognom2": "Plaza"
+			}
+		},
+		{
+			"id_visita": 54951,
+			"dia": "2018-11-19",
+			"metge": "Florentina Rivas Giménez",
+			"pacient": {
+				"id_pacient": 1537,
+				"nom": "Fabricio",
+				"cognom": "Melero",
+				"cognom2": "Perales"
+			}
+		},
+		{
+			"id_visita": 66089,
+			"dia": "2018-11-19",
+			"metge": "María Pinilla Lobo",
+			"pacient": {
+				"id_pacient": 9838,
+				"nom": "Almudena",
+				"cognom": "Isern",
+				"cognom2": "Malo"
+			}
+		},
+		{
+			"id_visita": 39736,
+			"dia": "2018-11-19",
+			"metge": "Mar Taboada Sandoval",
+			"pacient": {
+				"id_pacient": 37680,
+				"nom": "Dani",
+				"cognom": "Valcárcel",
+				"cognom2": "Estevez"
+			}
+		},
+		{
+			"id_visita": 29506,
+			"dia": "2018-11-19",
+			"metge": "Vidal Paredes Vilanova",
+			"pacient": {
+				"id_pacient": 230,
+				"nom": "Hernando",
+				"cognom": "Llamas",
+				"cognom2": "Recio"
+			}
+		},
+		{
+			"id_visita": 46124,
+			"dia": "2018-11-19",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 7211,
+				"nom": "Aura",
+				"cognom": "Castillo",
+				"cognom2": "Barón"
+			}
+		},
+		{
+			"id_visita": 20359,
+			"dia": "2018-11-19",
+			"metge": "Estela Barrena Cabezas",
+			"pacient": {
+				"id_pacient": 48841,
+				"nom": "Claudia",
+				"cognom": "Carranza",
+				"cognom2": "Echeverría"
+			}
+		},
+		{
+			"id_visita": 87269,
+			"dia": "2018-11-19",
+			"metge": "Odalis Castell Zurita",
+			"pacient": {
+				"id_pacient": 27617,
+				"nom": "Clemente",
+				"cognom": "Castell",
+				"cognom2": "Castilla"
+			}
+		},
+		{
+			"id_visita": 42584,
+			"dia": "2018-11-19",
+			"metge": "Sabas Perea Ríos",
+			"pacient": {
+				"id_pacient": 39112,
+				"nom": "Juan Bautista",
+				"cognom": "Villar",
+				"cognom2": "Saura"
+			}
+		},
+		{
+			"id_visita": 80862,
+			"dia": "2018-11-19",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 5077,
+				"nom": "Vasco",
+				"cognom": "Ibáñez",
+				"cognom2": "Pol"
+			}
+		},
+		{
+			"id_visita": 84592,
+			"dia": "2018-11-20",
+			"metge": "Nando Lopez Baños",
+			"pacient": {
+				"id_pacient": 9202,
+				"nom": "Salvador",
+				"cognom": "Donoso",
+				"cognom2": "Álvarez"
+			}
+		},
+		{
+			"id_visita": 74718,
+			"dia": "2018-11-20",
+			"metge": "Heliodoro Benitez Herrero",
+			"pacient": {
+				"id_pacient": 45793,
+				"nom": "Florencio",
+				"cognom": "Suarez",
+				"cognom2": "Azcona"
+			}
+		},
+		{
+			"id_visita": 15000,
+			"dia": "2018-11-20",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 17294,
+				"nom": "Cipriano",
+				"cognom": "Rodriguez",
+				"cognom2": "Pol"
+			}
+		},
+		{
+			"id_visita": 61823,
+			"dia": "2018-11-20",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 40113,
+				"nom": "Nieves",
+				"cognom": "Marquez",
+				"cognom2": "Peña"
+			}
+		},
+		{
+			"id_visita": 70966,
+			"dia": "2018-11-20",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 4902,
+				"nom": "Juan Luis",
+				"cognom": "Delgado",
+				"cognom2": "Valentín"
+			}
+		},
+		{
+			"id_visita": 46637,
+			"dia": "2018-11-20",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 33577,
+				"nom": "Fidel",
+				"cognom": "Sanchez",
+				"cognom2": "Baeza"
+			}
+		},
+		{
+			"id_visita": 78397,
+			"dia": "2018-11-20",
+			"metge": "Jenny Pellicer Gaya",
+			"pacient": {
+				"id_pacient": 21455,
+				"nom": "Gaspar",
+				"cognom": "Hoz",
+				"cognom2": "Morera"
+			}
+		},
+		{
+			"id_visita": 96789,
+			"dia": "2018-11-20",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 26446,
+				"nom": "Cayetano",
+				"cognom": "Sanmiguel",
+				"cognom2": "Aranda"
+			}
+		},
+		{
+			"id_visita": 96607,
+			"dia": "2018-11-20",
+			"metge": "Olga Sanmartín Olmedo",
+			"pacient": {
+				"id_pacient": 35072,
+				"nom": "Luisa",
+				"cognom": "Arnal",
+				"cognom2": "Farré"
+			}
+		},
+		{
+			"id_visita": 36002,
+			"dia": "2018-11-20",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 1099,
+				"nom": "José María",
+				"cognom": "Alberdi",
+				"cognom2": "Rebollo"
+			}
+		},
+		{
+			"id_visita": 64090,
+			"dia": "2018-11-20",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 36385,
+				"nom": "Nacio",
+				"cognom": "Sarmiento",
+				"cognom2": "Tena"
+			}
+		},
+		{
+			"id_visita": 9843,
+			"dia": "2018-11-20",
+			"metge": "Jose Angel Calleja Márquez",
+			"pacient": {
+				"id_pacient": 45131,
+				"nom": "Georgina",
+				"cognom": "Romeu",
+				"cognom2": "Navarro"
+			}
+		},
+		{
+			"id_visita": 46550,
+			"dia": "2018-11-20",
+			"metge": "Toribio Valverde Baquero",
+			"pacient": {
+				"id_pacient": 37950,
+				"nom": "Alejo",
+				"cognom": "Aranda",
+				"cognom2": "Noriega"
+			}
+		},
+		{
+			"id_visita": 16837,
+			"dia": "2018-11-20",
+			"metge": "Cesar Vargas Duque",
+			"pacient": {
+				"id_pacient": 8984,
+				"nom": "Gil",
+				"cognom": "Suarez",
+				"cognom2": "Arteaga"
+			}
+		},
+		{
+			"id_visita": 60815,
+			"dia": "2018-11-20",
+			"metge": "Dolores Zamorano Luna",
+			"pacient": {
+				"id_pacient": 25472,
+				"nom": "Toribio",
+				"cognom": "Doménech",
+				"cognom2": "Vega"
+			}
+		},
+		{
+			"id_visita": 63868,
+			"dia": "2018-11-20",
+			"metge": "Feliciana Cantón Amaya",
+			"pacient": {
+				"id_pacient": 22272,
+				"nom": "Прокл",
+				"cognom": "Фомичев",
+				"cognom2": "Щербаков"
+			}
+		},
+		{
+			"id_visita": 90821,
+			"dia": "2018-11-20",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 49453,
+				"nom": "Victor Manuel",
+				"cognom": "Parejo",
+				"cognom2": "Paniagua"
+			}
+		},
+		{
+			"id_visita": 77210,
+			"dia": "2018-11-20",
+			"metge": "Carina Cruz Benavent",
+			"pacient": {
+				"id_pacient": 23746,
+				"nom": "Fernando",
+				"cognom": "Carrión",
+				"cognom2": "Barrio"
+			}
+		},
+		{
+			"id_visita": 13574,
+			"dia": "2018-11-20",
+			"metge": "Heliodoro Benitez Herrero",
+			"pacient": {
+				"id_pacient": 28532,
+				"nom": "Emiliana",
+				"cognom": "Ángel",
+				"cognom2": "Carvajal"
+			}
+		},
+		{
+			"id_visita": 63539,
+			"dia": "2018-11-20",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 25012,
+				"nom": "Gregorio",
+				"cognom": "Saavedra",
+				"cognom2": "Novoa"
+			}
+		},
+		{
+			"id_visita": 40039,
+			"dia": "2018-11-20",
+			"metge": "Odalis Castell Zurita",
+			"pacient": {
+				"id_pacient": 22067,
+				"nom": "Epifanio",
+				"cognom": "Quesada",
+				"cognom2": "Valverde"
+			}
+		},
+		{
+			"id_visita": 4284,
+			"dia": "2018-11-20",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 32243,
+				"nom": "Felipe",
+				"cognom": "Céspedes",
+				"cognom2": "López"
+			}
+		},
+		{
+			"id_visita": 49909,
+			"dia": "2018-11-20",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 36414,
+				"nom": "Cruz",
+				"cognom": "Sandoval",
+				"cognom2": "Novoa"
+			}
+		},
+		{
+			"id_visita": 71202,
+			"dia": "2018-11-20",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 44568,
+				"nom": "José Ángel",
+				"cognom": "Porcel",
+				"cognom2": "Conde"
+			}
+		},
+		{
+			"id_visita": 78074,
+			"dia": "2018-11-20",
+			"metge": "Feliciana Almazán Ayuso",
+			"pacient": {
+				"id_pacient": 36017,
+				"nom": "Natanael",
+				"cognom": "Rivas",
+				"cognom2": "Montesinos"
+			}
+		},
+		{
+			"id_visita": 53559,
+			"dia": "2018-11-20",
+			"metge": "Dulce Malo Saavedra",
+			"pacient": {
+				"id_pacient": 8712,
+				"nom": "Elodia",
+				"cognom": "Fortuny",
+				"cognom2": "Macías"
+			}
+		},
+		{
+			"id_visita": 22308,
+			"dia": "2018-11-20",
+			"metge": "Claudia Bermúdez Boada",
+			"pacient": {
+				"id_pacient": 20917,
+				"nom": "Agustín",
+				"cognom": "Conesa",
+				"cognom2": "Poza"
+			}
+		},
+		{
+			"id_visita": 47933,
+			"dia": "2018-11-20",
+			"metge": "Espiridión Castillo Iglesia",
+			"pacient": {
+				"id_pacient": 35630,
+				"nom": "Beatriz",
+				"cognom": "Contreras",
+				"cognom2": "Cortina"
+			}
+		},
+		{
+			"id_visita": 22057,
+			"dia": "2018-11-20",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 43007,
+				"nom": "Paulina",
+				"cognom": "Pomares",
+				"cognom2": "García"
+			}
+		},
+		{
+			"id_visita": 51990,
+			"dia": "2018-11-20",
+			"metge": "Clarisa Escolano Domínguez",
+			"pacient": {
+				"id_pacient": 17089,
+				"nom": "Pilar",
+				"cognom": "Mosquera",
+				"cognom2": "Querol"
+			}
+		},
+		{
+			"id_visita": 65730,
+			"dia": "2018-11-20",
+			"metge": "Jafet Carballo Serrano",
+			"pacient": {
+				"id_pacient": 44414,
+				"nom": "Seve",
+				"cognom": "Catalá",
+				"cognom2": "Hernandez"
+			}
+		},
+		{
+			"id_visita": 8093,
+			"dia": "2018-11-20",
+			"metge": "Cornelio Zorrilla Saura",
+			"pacient": {
+				"id_pacient": 9861,
+				"nom": "Demetrio",
+				"cognom": "Quesada",
+				"cognom2": "Alfaro"
+			}
+		},
+		{
+			"id_visita": 77796,
+			"dia": "2018-11-20",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 37897,
+				"nom": "Basilio",
+				"cognom": "Gárate",
+				"cognom2": "Chaves"
+			}
+		},
+		{
+			"id_visita": 98620,
+			"dia": "2018-11-21",
+			"metge": "Ignacio Velasco Lara",
+			"pacient": {
+				"id_pacient": 32180,
+				"nom": "Eutimio",
+				"cognom": "Olmedo",
+				"cognom2": "Raya"
+			}
+		},
+		{
+			"id_visita": 19945,
+			"dia": "2018-11-21",
+			"metge": "María Fernanda Cervantes Jaume",
+			"pacient": {
+				"id_pacient": 4487,
+				"nom": "Ramona",
+				"cognom": "Fonseca",
+				"cognom2": "Jordá"
+			}
+		},
+		{
+			"id_visita": 57807,
+			"dia": "2018-11-21",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 15848,
+				"nom": "Graciana",
+				"cognom": "Morata",
+				"cognom2": "Sosa"
+			}
+		},
+		{
+			"id_visita": 29560,
+			"dia": "2018-11-21",
+			"metge": "Toribio Paredes Segura",
+			"pacient": {
+				"id_pacient": 19700,
+				"nom": "Adoración",
+				"cognom": "Cózar",
+				"cognom2": "Pujol"
+			}
+		},
+		{
+			"id_visita": 18808,
+			"dia": "2018-11-21",
+			"metge": "Evangelina Madrigal Gordillo",
+			"pacient": {
+				"id_pacient": 21305,
+				"nom": "Joaquín",
+				"cognom": "Garrido",
+				"cognom2": "Benítez"
+			}
+		},
+		{
+			"id_visita": 21191,
+			"dia": "2018-11-21",
+			"metge": "Soraya Arnaiz Moles",
+			"pacient": {
+				"id_pacient": 25584,
+				"nom": "Isaac",
+				"cognom": "Pereira",
+				"cognom2": "Solera"
+			}
+		},
+		{
+			"id_visita": 26422,
+			"dia": "2018-11-21",
+			"metge": "Ileana Almansa Leon",
+			"pacient": {
+				"id_pacient": 5007,
+				"nom": "Marcos",
+				"cognom": "Portillo",
+				"cognom2": "Pedrero"
+			}
+		},
+		{
+			"id_visita": 88855,
+			"dia": "2018-11-21",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 2896,
+				"nom": "Luis Ángel",
+				"cognom": "Madrigal",
+				"cognom2": "Domínguez"
+			}
+		},
+		{
+			"id_visita": 50438,
+			"dia": "2018-11-21",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 22290,
+				"nom": "Chita",
+				"cognom": "Segarra",
+				"cognom2": "Antúnez"
+			}
+		},
+		{
+			"id_visita": 55946,
+			"dia": "2018-11-21",
+			"metge": "Mar Taboada Sandoval",
+			"pacient": {
+				"id_pacient": 39082,
+				"nom": "Juan Antonio",
+				"cognom": "Ariño",
+				"cognom2": "Múñiz"
+			}
+		},
+		{
+			"id_visita": 62929,
+			"dia": "2018-11-21",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 32274,
+				"nom": "Dulce",
+				"cognom": "Martin",
+				"cognom2": "Carpio"
+			}
+		},
+		{
+			"id_visita": 3348,
+			"dia": "2018-11-21",
+			"metge": "Ildefonso Vila Carbonell",
+			"pacient": {
+				"id_pacient": 47306,
+				"nom": "Calisto",
+				"cognom": "Aguado",
+				"cognom2": "Palomino"
+			}
+		},
+		{
+			"id_visita": 21025,
+			"dia": "2018-11-21",
+			"metge": "Alfredo Priego Llobet",
+			"pacient": {
+				"id_pacient": 21965,
+				"nom": "María Pilar",
+				"cognom": "Heras",
+				"cognom2": "Vicens"
+			}
+		},
+		{
+			"id_visita": 73941,
+			"dia": "2018-11-21",
+			"metge": "Rico Pera Campoy",
+			"pacient": {
+				"id_pacient": 5017,
+				"nom": "Heliodoro",
+				"cognom": "Martin",
+				"cognom2": "Granados"
+			}
+		},
+		{
+			"id_visita": 52752,
+			"dia": "2018-11-21",
+			"metge": "Geraldo Llano Mendizábal",
+			"pacient": {
+				"id_pacient": 33081,
+				"nom": "Влас",
+				"cognom": "Кондратьев",
+				"cognom2": "Козлова"
+			}
+		},
+		{
+			"id_visita": 31344,
+			"dia": "2018-11-21",
+			"metge": "Inmaculada Gámez Saldaña",
+			"pacient": {
+				"id_pacient": 28574,
+				"nom": "Tomás",
+				"cognom": "Martinez",
+				"cognom2": "Delgado"
+			}
+		},
+		{
+			"id_visita": 34384,
+			"dia": "2018-11-21",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 31125,
+				"nom": "Pepita",
+				"cognom": "Capdevila",
+				"cognom2": "Ledesma"
+			}
+		},
+		{
+			"id_visita": 39163,
+			"dia": "2018-11-21",
+			"metge": "Dulce Malo Saavedra",
+			"pacient": {
+				"id_pacient": 48961,
+				"nom": "Ruperto",
+				"cognom": "Belda",
+				"cognom2": "Lloret"
+			}
+		},
+		{
+			"id_visita": 2568,
+			"dia": "2018-11-21",
+			"metge": "Ildefonso Vila Carbonell",
+			"pacient": {
+				"id_pacient": 41698,
+				"nom": "Eduardo",
+				"cognom": "Espinosa",
+				"cognom2": "Valdés"
+			}
+		},
+		{
+			"id_visita": 45775,
+			"dia": "2018-11-21",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 35165,
+				"nom": "Virginia",
+				"cognom": "Gárate",
+				"cognom2": "Lobo"
+			}
+		},
+		{
+			"id_visita": 57416,
+			"dia": "2018-11-21",
+			"metge": "Feliciana Almazán Ayuso",
+			"pacient": {
+				"id_pacient": 47501,
+				"nom": "Florencia",
+				"cognom": "Alegre",
+				"cognom2": "Coronado"
+			}
+		},
+		{
+			"id_visita": 77306,
+			"dia": "2018-11-21",
+			"metge": "Odalis Castell Zurita",
+			"pacient": {
+				"id_pacient": 45595,
+				"nom": "Aitor",
+				"cognom": "Coll",
+				"cognom2": "Vicens"
+			}
+		},
+		{
+			"id_visita": 48510,
+			"dia": "2018-11-21",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 9949,
+				"nom": "Griselda",
+				"cognom": "Tomé",
+				"cognom2": "Bautista"
+			}
+		},
+		{
+			"id_visita": 8340,
+			"dia": "2018-11-21",
+			"metge": "Sigfrido Anglada Valenciano",
+			"pacient": {
+				"id_pacient": 41228,
+				"nom": "Marcos",
+				"cognom": "Tejedor",
+				"cognom2": "Ramírez"
+			}
+		},
+		{
+			"id_visita": 15081,
+			"dia": "2018-11-22",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 8284,
+				"nom": "Ruben",
+				"cognom": "Palomares",
+				"cognom2": "Alberola"
+			}
+		},
+		{
+			"id_visita": 15662,
+			"dia": "2018-11-22",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 10535,
+				"nom": "José Ángel",
+				"cognom": "Boix",
+				"cognom2": "Carbó"
+			}
+		},
+		{
+			"id_visita": 50960,
+			"dia": "2018-11-22",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 2939,
+				"nom": "Jose Francisco",
+				"cognom": "Roldan",
+				"cognom2": "Arnal"
+			}
+		},
+		{
+			"id_visita": 25321,
+			"dia": "2018-11-22",
+			"metge": "Pascual Coloma Guzman",
+			"pacient": {
+				"id_pacient": 1394,
+				"nom": "Domingo",
+				"cognom": "Falcón",
+				"cognom2": "Gibert"
+			}
+		},
+		{
+			"id_visita": 39290,
+			"dia": "2018-11-22",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 14356,
+				"nom": "Flora",
+				"cognom": "Gordillo",
+				"cognom2": "Acevedo"
+			}
+		},
+		{
+			"id_visita": 67103,
+			"dia": "2018-11-22",
+			"metge": "Feliciana Vera Flor",
+			"pacient": {
+				"id_pacient": 29976,
+				"nom": "Martirio",
+				"cognom": "Gibert",
+				"cognom2": "Benet"
+			}
+		},
+		{
+			"id_visita": 59982,
+			"dia": "2018-11-22",
+			"metge": "Feliciana Almazán Ayuso",
+			"pacient": {
+				"id_pacient": 211,
+				"nom": "Felipa",
+				"cognom": "Mir",
+				"cognom2": "Asensio"
+			}
+		},
+		{
+			"id_visita": 33713,
+			"dia": "2018-11-22",
+			"metge": "Zaira Castell Amores",
+			"pacient": {
+				"id_pacient": 24342,
+				"nom": "Cesar",
+				"cognom": "Paniagua",
+				"cognom2": "Tapia"
+			}
+		},
+		{
+			"id_visita": 21484,
+			"dia": "2018-11-22",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 31545,
+				"nom": "Charo",
+				"cognom": "Real",
+				"cognom2": "Cuevas"
+			}
+		},
+		{
+			"id_visita": 76382,
+			"dia": "2018-11-22",
+			"metge": "Margarita Nevado Cardona",
+			"pacient": {
+				"id_pacient": 22808,
+				"nom": "Jose Angel",
+				"cognom": "Jove",
+				"cognom2": "Miranda"
+			}
+		},
+		{
+			"id_visita": 37477,
+			"dia": "2018-11-22",
+			"metge": "María Fernanda Cervantes Jaume",
+			"pacient": {
+				"id_pacient": 16173,
+				"nom": "Mercedes",
+				"cognom": "Taboada",
+				"cognom2": "Gutierrez"
+			}
+		},
+		{
+			"id_visita": 67190,
+			"dia": "2018-11-22",
+			"metge": "Evangelina Madrigal Gordillo",
+			"pacient": {
+				"id_pacient": 32765,
+				"nom": "Maximino",
+				"cognom": "Sala",
+				"cognom2": "Ureña"
+			}
+		},
+		{
+			"id_visita": 53622,
+			"dia": "2018-11-22",
+			"metge": "Vicente Benítez Cervantes",
+			"pacient": {
+				"id_pacient": 9554,
+				"nom": "Álvaro",
+				"cognom": "Tenorio",
+				"cognom2": "Recio"
+			}
+		},
+		{
+			"id_visita": 76156,
+			"dia": "2018-11-22",
+			"metge": "Gema Yáñez Molina",
+			"pacient": {
+				"id_pacient": 19240,
+				"nom": "Gracia",
+				"cognom": "Carro",
+				"cognom2": "Reina"
+			}
+		},
+		{
+			"id_visita": 41721,
+			"dia": "2018-11-22",
+			"metge": "María Manuela Castrillo Juárez",
+			"pacient": {
+				"id_pacient": 2728,
+				"nom": "Conrado",
+				"cognom": "Verdejo",
+				"cognom2": "Goicoechea"
+			}
+		},
+		{
+			"id_visita": 35725,
+			"dia": "2018-11-22",
+			"metge": "María Pinilla Lobo",
+			"pacient": {
+				"id_pacient": 35572,
+				"nom": "Palmira",
+				"cognom": "Exposito",
+				"cognom2": "Lara"
+			}
+		},
+		{
+			"id_visita": 38087,
+			"dia": "2018-11-22",
+			"metge": "Nando Lopez Baños",
+			"pacient": {
+				"id_pacient": 4843,
+				"nom": "Yolanda",
+				"cognom": "Aguilera",
+				"cognom2": "Suarez"
+			}
+		},
+		{
+			"id_visita": 80649,
+			"dia": "2018-11-22",
+			"metge": "Paz Blázquez Buendía",
+			"pacient": {
+				"id_pacient": 23482,
+				"nom": "Amor",
+				"cognom": "Amo",
+				"cognom2": "Folch"
+			}
+		},
+		{
+			"id_visita": 81878,
+			"dia": "2018-11-22",
+			"metge": "Modesta Cadenas Vera",
+			"pacient": {
+				"id_pacient": 49815,
+				"nom": "María Manuela",
+				"cognom": "Daza",
+				"cognom2": "Perales"
+			}
+		},
+		{
+			"id_visita": 17685,
+			"dia": "2018-11-22",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 6398,
+				"nom": "Petrona",
+				"cognom": "Corral",
+				"cognom2": "Tello"
+			}
+		},
+		{
+			"id_visita": 33164,
+			"dia": "2018-11-22",
+			"metge": "Nando Lopez Baños",
+			"pacient": {
+				"id_pacient": 47694,
+				"nom": "Josué",
+				"cognom": "Maza",
+				"cognom2": "Hernández"
+			}
+		},
+		{
+			"id_visita": 51887,
+			"dia": "2018-11-22",
+			"metge": "Geraldo Llano Mendizábal",
+			"pacient": {
+				"id_pacient": 39968,
+				"nom": "Armida",
+				"cognom": "Tomas",
+				"cognom2": "Lloret"
+			}
+		},
+		{
+			"id_visita": 18766,
+			"dia": "2018-11-22",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 42583,
+				"nom": "Lidia",
+				"cognom": "Marín",
+				"cognom2": "Busquets"
+			}
+		},
+		{
+			"id_visita": 6183,
+			"dia": "2018-11-22",
+			"metge": "Asdrubal Gómez Rivas",
+			"pacient": {
+				"id_pacient": 41101,
+				"nom": "Mohamed",
+				"cognom": "Bastida",
+				"cognom2": "Ribes"
+			}
+		},
+		{
+			"id_visita": 18940,
+			"dia": "2018-11-22",
+			"metge": "León Sevillano Iborra",
+			"pacient": {
+				"id_pacient": 13801,
+				"nom": "Gloria",
+				"cognom": "Lumbreras",
+				"cognom2": "Asenjo"
+			}
+		},
+		{
+			"id_visita": 8971,
+			"dia": "2018-11-22",
+			"metge": "Gertrudis Marqués Medina",
+			"pacient": {
+				"id_pacient": 46388,
+				"nom": "Candelaria",
+				"cognom": "Roca",
+				"cognom2": "Trujillo"
+			}
+		},
+		{
+			"id_visita": 93806,
+			"dia": "2018-11-22",
+			"metge": "Leoncio Ribera Nieto",
+			"pacient": {
+				"id_pacient": 6641,
+				"nom": "Eugenia",
+				"cognom": "Balaguer",
+				"cognom2": "Sevilla"
+			}
+		},
+		{
+			"id_visita": 16221,
+			"dia": "2018-11-22",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 32401,
+				"nom": "Magdalena",
+				"cognom": "Piñeiro",
+				"cognom2": "Bautista"
+			}
+		},
+		{
+			"id_visita": 73377,
+			"dia": "2018-11-23",
+			"metge": "Heliodoro Benitez Herrero",
+			"pacient": {
+				"id_pacient": 27521,
+				"nom": "Candela",
+				"cognom": "Ibañez",
+				"cognom2": "Borrego"
+			}
+		},
+		{
+			"id_visita": 9108,
+			"dia": "2018-11-23",
+			"metge": "Nicolasa Cuesta Anguita",
+			"pacient": {
+				"id_pacient": 34864,
+				"nom": "Ángel",
+				"cognom": "Isern",
+				"cognom2": "Tomas"
+			}
+		},
+		{
+			"id_visita": 10796,
+			"dia": "2018-11-23",
+			"metge": "Jenny Pellicer Gaya",
+			"pacient": {
+				"id_pacient": 37083,
+				"nom": "Etelvina",
+				"cognom": "Atienza",
+				"cognom2": "Zaragoza"
+			}
+		},
+		{
+			"id_visita": 46967,
+			"dia": "2018-11-23",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 5745,
+				"nom": "Gracia",
+				"cognom": "Asenjo",
+				"cognom2": "Canals"
+			}
+		},
+		{
+			"id_visita": 40247,
+			"dia": "2018-11-23",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 22295,
+				"nom": "Benita",
+				"cognom": "Folch",
+				"cognom2": "Baeza"
+			}
+		},
+		{
+			"id_visita": 10739,
+			"dia": "2018-11-23",
+			"metge": "María Manuela Castrillo Juárez",
+			"pacient": {
+				"id_pacient": 20914,
+				"nom": "Julie",
+				"cognom": "Cabrera",
+				"cognom2": "Rozas"
+			}
+		},
+		{
+			"id_visita": 30785,
+			"dia": "2018-11-23",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 23054,
+				"nom": "Ángela",
+				"cognom": "Piña",
+				"cognom2": "Castañeda"
+			}
+		},
+		{
+			"id_visita": 19324,
+			"dia": "2018-11-23",
+			"metge": "Jose Manuel Jódar Romero",
+			"pacient": {
+				"id_pacient": 31131,
+				"nom": "José Ángel",
+				"cognom": "Águila",
+				"cognom2": "Ribas"
+			}
+		},
+		{
+			"id_visita": 64630,
+			"dia": "2018-11-23",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 17224,
+				"nom": "Nilda",
+				"cognom": "Aguado",
+				"cognom2": "Aragón"
+			}
+		},
+		{
+			"id_visita": 88477,
+			"dia": "2018-11-23",
+			"metge": "Edmundo Sáenz Carbó",
+			"pacient": {
+				"id_pacient": 37058,
+				"nom": "Susanita",
+				"cognom": "Cózar",
+				"cognom2": "Tovar"
+			}
+		},
+		{
+			"id_visita": 60641,
+			"dia": "2018-11-23",
+			"metge": "América Carmona Cabanillas",
+			"pacient": {
+				"id_pacient": 16376,
+				"nom": "Amor",
+				"cognom": "Camacho",
+				"cognom2": "Oliver"
+			}
+		},
+		{
+			"id_visita": 56485,
+			"dia": "2018-11-23",
+			"metge": "Feliciana Almazán Ayuso",
+			"pacient": {
+				"id_pacient": 2350,
+				"nom": "Iván",
+				"cognom": "Sales",
+				"cognom2": "Sevillano"
+			}
+		},
+		{
+			"id_visita": 20206,
+			"dia": "2018-11-23",
+			"metge": "Matías Montaña Ojeda",
+			"pacient": {
+				"id_pacient": 26971,
+				"nom": "Graciela",
+				"cognom": "Téllez",
+				"cognom2": "Santiago"
+			}
+		},
+		{
+			"id_visita": 48493,
+			"dia": "2018-11-23",
+			"metge": "Ariel Mendez Pastor",
+			"pacient": {
+				"id_pacient": 24304,
+				"nom": "Marcial",
+				"cognom": "Sobrino",
+				"cognom2": "Almansa"
+			}
+		},
+		{
+			"id_visita": 13936,
+			"dia": "2018-11-23",
+			"metge": "Nando Lopez Baños",
+			"pacient": {
+				"id_pacient": 3653,
+				"nom": "Maura",
+				"cognom": "Bertrán",
+				"cognom2": "Alegre"
+			}
+		},
+		{
+			"id_visita": 78075,
+			"dia": "2018-11-23",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 17944,
+				"nom": "Aitor",
+				"cognom": "Alfaro",
+				"cognom2": "Santamaría"
+			}
+		},
+		{
+			"id_visita": 61604,
+			"dia": "2018-11-23",
+			"metge": "Dorotea Vendrell Planas",
+			"pacient": {
+				"id_pacient": 30609,
+				"nom": "Berto",
+				"cognom": "Mancebo",
+				"cognom2": "Benet"
+			}
+		},
+		{
+			"id_visita": 64683,
+			"dia": "2018-11-23",
+			"metge": "Geraldo Llano Mendizábal",
+			"pacient": {
+				"id_pacient": 5938,
+				"nom": "Ramona",
+				"cognom": "Mancebo",
+				"cognom2": "Cámara"
+			}
+		},
+		{
+			"id_visita": 46900,
+			"dia": "2018-11-23",
+			"metge": "Vidal Paredes Vilanova",
+			"pacient": {
+				"id_pacient": 36852,
+				"nom": "Fito",
+				"cognom": "Ángel",
+				"cognom2": "Olmedo"
+			}
+		},
+		{
+			"id_visita": 75533,
+			"dia": "2018-11-23",
+			"metge": "Feliciana Cantón Amaya",
+			"pacient": {
+				"id_pacient": 19641,
+				"nom": "Isaías",
+				"cognom": "Juliá",
+				"cognom2": "Ocaña"
+			}
+		},
+		{
+			"id_visita": 32636,
+			"dia": "2018-11-23",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 16389,
+				"nom": "Raúl",
+				"cognom": "Barrios",
+				"cognom2": "Guitart"
+			}
+		},
+		{
+			"id_visita": 27238,
+			"dia": "2018-11-23",
+			"metge": "Dorotea Vendrell Planas",
+			"pacient": {
+				"id_pacient": 11521,
+				"nom": "Cintia",
+				"cognom": "Exposito",
+				"cognom2": "Barranco"
+			}
+		},
+		{
+			"id_visita": 30670,
+			"dia": "2018-11-23",
+			"metge": "Dulce Malo Saavedra",
+			"pacient": {
+				"id_pacient": 23936,
+				"nom": "Melchor",
+				"cognom": "Galiano",
+				"cognom2": "Ropero"
+			}
+		},
+		{
+			"id_visita": 65036,
+			"dia": "2018-11-23",
+			"metge": "Rico Pera Campoy",
+			"pacient": {
+				"id_pacient": 17140,
+				"nom": "Artemio",
+				"cognom": "Moreno",
+				"cognom2": "Iñiguez"
+			}
+		},
+		{
+			"id_visita": 12820,
+			"dia": "2018-11-24",
+			"metge": "Valerio Bayo Somoza",
+			"pacient": {
+				"id_pacient": 49398,
+				"nom": "Germán",
+				"cognom": "Barral",
+				"cognom2": "Quero"
+			}
+		},
+		{
+			"id_visita": 66828,
+			"dia": "2018-11-24",
+			"metge": "Cristian Alberola Luís",
+			"pacient": {
+				"id_pacient": 21947,
+				"nom": "Marcia",
+				"cognom": "Zamora",
+				"cognom2": "Barral"
+			}
+		},
+		{
+			"id_visita": 18298,
+			"dia": "2018-11-24",
+			"metge": "Luciano Sureda Chamorro",
+			"pacient": {
+				"id_pacient": 37061,
+				"nom": "Cecilio",
+				"cognom": "Malo",
+				"cognom2": "Colomer"
+			}
+		},
+		{
+			"id_visita": 36311,
+			"dia": "2018-11-24",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 46051,
+				"nom": "Marc",
+				"cognom": "Sierra",
+				"cognom2": "Pereira"
+			}
+		},
+		{
+			"id_visita": 47780,
+			"dia": "2018-11-24",
+			"metge": "Cesar Vargas Duque",
+			"pacient": {
+				"id_pacient": 16819,
+				"nom": "Asunción",
+				"cognom": "Folch",
+				"cognom2": "Rivas"
+			}
+		},
+		{
+			"id_visita": 43242,
+			"dia": "2018-11-24",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 19014,
+				"nom": "Alfredo",
+				"cognom": "Garmendia",
+				"cognom2": "Quintero"
+			}
+		},
+		{
+			"id_visita": 52249,
+			"dia": "2018-11-24",
+			"metge": "Albina Valverde Criado",
+			"pacient": {
+				"id_pacient": 45103,
+				"nom": "Elpidio",
+				"cognom": "Peral",
+				"cognom2": "Caballero"
+			}
+		},
+		{
+			"id_visita": 49354,
+			"dia": "2018-11-24",
+			"metge": "Nicolasa Cuesta Anguita",
+			"pacient": {
+				"id_pacient": 37305,
+				"nom": "Valentina",
+				"cognom": "Cazorla",
+				"cognom2": "Villena"
+			}
+		},
+		{
+			"id_visita": 38638,
+			"dia": "2018-11-24",
+			"metge": "Nicolasa Cuesta Anguita",
+			"pacient": {
+				"id_pacient": 37293,
+				"nom": "Sebastian",
+				"cognom": "Carballo",
+				"cognom2": "Cabrera"
+			}
+		},
+		{
+			"id_visita": 76102,
+			"dia": "2018-11-24",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 28203,
+				"nom": "Reynaldo",
+				"cognom": "Montaña",
+				"cognom2": "Marín"
+			}
+		},
+		{
+			"id_visita": 35955,
+			"dia": "2018-11-24",
+			"metge": "Jafet Carballo Serrano",
+			"pacient": {
+				"id_pacient": 10568,
+				"nom": "Anacleto",
+				"cognom": "Espinosa",
+				"cognom2": "Galán"
+			}
+		},
+		{
+			"id_visita": 20625,
+			"dia": "2018-11-24",
+			"metge": "Espiridión Castillo Iglesia",
+			"pacient": {
+				"id_pacient": 7014,
+				"nom": "Eva María",
+				"cognom": "Pol",
+				"cognom2": "Juárez"
+			}
+		},
+		{
+			"id_visita": 12737,
+			"dia": "2018-11-24",
+			"metge": "Rico Pera Campoy",
+			"pacient": {
+				"id_pacient": 27116,
+				"nom": "Virginia",
+				"cognom": "Jódar",
+				"cognom2": "Rivera"
+			}
+		},
+		{
+			"id_visita": 52188,
+			"dia": "2018-11-24",
+			"metge": "Florentina Rivas Giménez",
+			"pacient": {
+				"id_pacient": 36206,
+				"nom": "Eugenio",
+				"cognom": "Cabrero",
+				"cognom2": "Donaire"
+			}
+		},
+		{
+			"id_visita": 35781,
+			"dia": "2018-11-24",
+			"metge": "Toribio Valverde Baquero",
+			"pacient": {
+				"id_pacient": 2936,
+				"nom": "Reyna",
+				"cognom": "Sánchez",
+				"cognom2": "Meléndez"
+			}
+		},
+		{
+			"id_visita": 51404,
+			"dia": "2018-11-24",
+			"metge": "Jenny Pellicer Gaya",
+			"pacient": {
+				"id_pacient": 48786,
+				"nom": "Emiliano",
+				"cognom": "Ortiz",
+				"cognom2": "Calvet"
+			}
+		},
+		{
+			"id_visita": 43120,
+			"dia": "2018-11-25",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 24462,
+				"nom": "Mónica",
+				"cognom": "Bueno",
+				"cognom2": "Giralt"
+			}
+		},
+		{
+			"id_visita": 48744,
+			"dia": "2018-11-25",
+			"metge": "Heliodoro Benitez Herrero",
+			"pacient": {
+				"id_pacient": 22792,
+				"nom": "Herminia",
+				"cognom": "Azorin",
+				"cognom2": "Blanco"
+			}
+		},
+		{
+			"id_visita": 20093,
+			"dia": "2018-11-25",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 14016,
+				"nom": "Adalberto",
+				"cognom": "Escobar",
+				"cognom2": "Pagès"
+			}
+		},
+		{
+			"id_visita": 1279,
+			"dia": "2018-11-25",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 20001,
+				"nom": "Olimpia",
+				"cognom": "Ferrán",
+				"cognom2": "Jaume"
+			}
+		},
+		{
+			"id_visita": 94110,
+			"dia": "2018-11-25",
+			"metge": "Clarisa Escolano Domínguez",
+			"pacient": {
+				"id_pacient": 29638,
+				"nom": "Estela",
+				"cognom": "Ródenas",
+				"cognom2": "Roda"
+			}
+		},
+		{
+			"id_visita": 11398,
+			"dia": "2018-11-25",
+			"metge": "Anunciación Garcia Cortes",
+			"pacient": {
+				"id_pacient": 2874,
+				"nom": "Victor",
+				"cognom": "Maza",
+				"cognom2": "Real"
+			}
+		},
+		{
+			"id_visita": 13291,
+			"dia": "2018-11-25",
+			"metge": "Odalis Castell Zurita",
+			"pacient": {
+				"id_pacient": 13339,
+				"nom": "Bernardino",
+				"cognom": "Osuna",
+				"cognom2": "Villaverde"
+			}
+		},
+		{
+			"id_visita": 20776,
+			"dia": "2018-11-25",
+			"metge": "Vicenta Angulo Murillo",
+			"pacient": {
+				"id_pacient": 2029,
+				"nom": "Cayetano",
+				"cognom": "Adán",
+				"cognom2": "Pedrosa"
+			}
+		},
+		{
+			"id_visita": 50825,
+			"dia": "2018-11-25",
+			"metge": "Jafet Flor Colom",
+			"pacient": {
+				"id_pacient": 25178,
+				"nom": "Azahar",
+				"cognom": "Riba",
+				"cognom2": "Valentín"
+			}
+		},
+		{
+			"id_visita": 46357,
+			"dia": "2018-11-25",
+			"metge": "Miriam Mir Rubio",
+			"pacient": {
+				"id_pacient": 36099,
+				"nom": "Lorenzo",
+				"cognom": "Revilla",
+				"cognom2": "Mur"
+			}
+		},
+		{
+			"id_visita": 94509,
+			"dia": "2018-11-25",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 49389,
+				"nom": "Teófilo",
+				"cognom": "Ureña",
+				"cognom2": "Campillo"
+			}
+		},
+		{
+			"id_visita": 69180,
+			"dia": "2018-11-25",
+			"metge": "Paz Blázquez Buendía",
+			"pacient": {
+				"id_pacient": 2249,
+				"nom": "José Luis",
+				"cognom": "Priego",
+				"cognom2": "Figueras"
+			}
+		},
+		{
+			"id_visita": 13518,
+			"dia": "2018-11-25",
+			"metge": "Lara Luna Santiago",
+			"pacient": {
+				"id_pacient": 36537,
+				"nom": "Dionisio",
+				"cognom": "Miró",
+				"cognom2": "Calderon"
+			}
+		},
+		{
+			"id_visita": 85889,
+			"dia": "2018-11-25",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 39338,
+				"nom": "Juanito",
+				"cognom": "Asensio",
+				"cognom2": "Sarabia"
+			}
+		},
+		{
+			"id_visita": 23712,
+			"dia": "2018-11-25",
+			"metge": "Carina Cruz Benavent",
+			"pacient": {
+				"id_pacient": 25518,
+				"nom": "Nacio",
+				"cognom": "Barrena",
+				"cognom2": "Gallardo"
+			}
+		},
+		{
+			"id_visita": 54718,
+			"dia": "2018-11-25",
+			"metge": "Judith Carbó Garrido",
+			"pacient": {
+				"id_pacient": 45224,
+				"nom": "Jose Manuel",
+				"cognom": "Lozano",
+				"cognom2": "Jordá"
+			}
+		},
+		{
+			"id_visita": 79187,
+			"dia": "2018-11-25",
+			"metge": "Pascual Coloma Guzman",
+			"pacient": {
+				"id_pacient": 16105,
+				"nom": "Nilo",
+				"cognom": "Novoa",
+				"cognom2": "Álvaro"
+			}
+		},
+		{
+			"id_visita": 21459,
+			"dia": "2018-11-25",
+			"metge": "María Pinilla Lobo",
+			"pacient": {
+				"id_pacient": 44100,
+				"nom": "José Antonio",
+				"cognom": "Cámara",
+				"cognom2": "Albero"
+			}
+		},
+		{
+			"id_visita": 94100,
+			"dia": "2018-11-25",
+			"metge": "Rico Pera Campoy",
+			"pacient": {
+				"id_pacient": 28418,
+				"nom": "Jose Carlos",
+				"cognom": "Cuenca",
+				"cognom2": "Guitart"
+			}
+		},
+		{
+			"id_visita": 18894,
+			"dia": "2018-11-25",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 38055,
+				"nom": "Damián",
+				"cognom": "Bustos",
+				"cognom2": "Anguita"
+			}
+		},
+		{
+			"id_visita": 63562,
+			"dia": "2018-11-25",
+			"metge": "Alfredo Priego Llobet",
+			"pacient": {
+				"id_pacient": 5639,
+				"nom": "Светлана",
+				"cognom": "Павлова",
+				"cognom2": "Константинов"
+			}
+		},
+		{
+			"id_visita": 95147,
+			"dia": "2018-11-25",
+			"metge": "Bibiana Bueno Valverde",
+			"pacient": {
+				"id_pacient": 18099,
+				"nom": "Eloísa",
+				"cognom": "Olivé",
+				"cognom2": "Monreal"
+			}
+		},
+		{
+			"id_visita": 43592,
+			"dia": "2018-11-25",
+			"metge": "Leoncio Ribera Nieto",
+			"pacient": {
+				"id_pacient": 23081,
+				"nom": "Faustino",
+				"cognom": "Sales",
+				"cognom2": "Aramburu"
+			}
+		},
+		{
+			"id_visita": 48779,
+			"dia": "2018-11-25",
+			"metge": "Nicolasa Chacón Ibáñez",
+			"pacient": {
+				"id_pacient": 6995,
+				"nom": "Emma",
+				"cognom": "Peláez",
+				"cognom2": "Pedro"
+			}
+		},
+		{
+			"id_visita": 34080,
+			"dia": "2018-11-25",
+			"metge": "Ileana Almansa Leon",
+			"pacient": {
+				"id_pacient": 2600,
+				"nom": "Luciana",
+				"cognom": "Colom",
+				"cognom2": "Huertas"
+			}
+		},
+		{
+			"id_visita": 79768,
+			"dia": "2018-11-25",
+			"metge": "Adelina Ángel Iglesias",
+			"pacient": {
+				"id_pacient": 26984,
+				"nom": "Cosme",
+				"cognom": "Maestre",
+				"cognom2": "Pazos"
+			}
+		},
+		{
+			"id_visita": 3369,
+			"dia": "2018-11-25",
+			"metge": "Pascual Coloma Guzman",
+			"pacient": {
+				"id_pacient": 7383,
+				"nom": "Jennifer",
+				"cognom": "Guillen",
+				"cognom2": "Saez"
+			}
+		},
+		{
+			"id_visita": 97091,
+			"dia": "2018-11-25",
+			"metge": "Cosme Pinto Lobo",
+			"pacient": {
+				"id_pacient": 3018,
+				"nom": "Fátima",
+				"cognom": "Domínguez",
+				"cognom2": "Guerrero"
+			}
+		},
+		{
+			"id_visita": 98610,
+			"dia": "2018-11-25",
+			"metge": "Lara Luna Santiago",
+			"pacient": {
+				"id_pacient": 21888,
+				"nom": "Seve",
+				"cognom": "Sans",
+				"cognom2": "Bernad"
+			}
+		},
+		{
+			"id_visita": 30601,
+			"dia": "2018-11-25",
+			"metge": "Ruth Fabregat Haro",
+			"pacient": {
+				"id_pacient": 22092,
+				"nom": "Leyre",
+				"cognom": "López",
+				"cognom2": "Rivas"
+			}
+		},
+		{
+			"id_visita": 48015,
+			"dia": "2018-11-25",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 10163,
+				"nom": "Victoriano",
+				"cognom": "Taboada",
+				"cognom2": "Barba"
+			}
+		},
+		{
+			"id_visita": 54209,
+			"dia": "2018-11-25",
+			"metge": "Rodrigo Ripoll Hurtado",
+			"pacient": {
+				"id_pacient": 17888,
+				"nom": "Эмилия",
+				"cognom": "Иванов",
+				"cognom2": "Осипова"
+			}
+		},
+		{
+			"id_visita": 72980,
+			"dia": "2018-11-25",
+			"metge": "Manuela Arnal Rubio",
+			"pacient": {
+				"id_pacient": 47910,
+				"nom": "Palmira",
+				"cognom": "Viñas",
+				"cognom2": "Vizcaíno"
+			}
+		},
+		{
+			"id_visita": 94860,
+			"dia": "2018-11-25",
+			"metge": "Dorotea Vendrell Planas",
+			"pacient": {
+				"id_pacient": 18028,
+				"nom": "Aránzazu",
+				"cognom": "Miralles",
+				"cognom2": "Amigó"
+			}
+		},
+		{
+			"id_visita": 56870,
+			"dia": "2018-11-25",
+			"metge": "Virgilio Hervás Sobrino",
+			"pacient": {
+				"id_pacient": 4024,
+				"nom": "Hipólito",
+				"cognom": "Pardo",
+				"cognom2": "Badía"
+			}
+		},
+		{
+			"id_visita": 47713,
+			"dia": "2018-11-25",
+			"metge": "Florentina Rivas Giménez",
+			"pacient": {
+				"id_pacient": 2381,
+				"nom": "Elisa",
+				"cognom": "Dávila",
+				"cognom2": "Abella"
+			}
+		},
+		{
+			"id_visita": 44356,
+			"dia": "2018-11-25",
+			"metge": "Aura Pardo Valentín",
+			"pacient": {
+				"id_pacient": 43246,
+				"nom": "Tiburcio",
+				"cognom": "Valencia",
+				"cognom2": "Cuadrado"
+			}
+		},
+		{
+			"id_visita": 10808,
+			"dia": "2018-11-25",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 48606,
+				"nom": "Íngrid",
+				"cognom": "Silva",
+				"cognom2": "Barriga"
+			}
+		},
+		{
+			"id_visita": 87737,
+			"dia": "2018-11-26",
+			"metge": "Ariel Mendez Pastor",
+			"pacient": {
+				"id_pacient": 20826,
+				"nom": "Eli",
+				"cognom": "Pou",
+				"cognom2": "Bejarano"
+			}
+		},
+		{
+			"id_visita": 73726,
+			"dia": "2018-11-26",
+			"metge": "Ámbar Márquez Requena",
+			"pacient": {
+				"id_pacient": 15431,
+				"nom": "José Luis",
+				"cognom": "Amo",
+				"cognom2": "Blanes"
+			}
+		},
+		{
+			"id_visita": 4871,
+			"dia": "2018-11-26",
+			"metge": "David Campo Cortés",
+			"pacient": {
+				"id_pacient": 17296,
+				"nom": "Tatiana",
+				"cognom": "Padilla",
+				"cognom2": "Díaz"
+			}
+		},
+		{
+			"id_visita": 41823,
+			"dia": "2018-11-26",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 45394,
+				"nom": "Narciso",
+				"cognom": "Rosselló",
+				"cognom2": "Campo"
+			}
+		},
+		{
+			"id_visita": 47181,
+			"dia": "2018-11-26",
+			"metge": "Che Hernández Ramos",
+			"pacient": {
+				"id_pacient": 33466,
+				"nom": "Félix",
+				"cognom": "Coll",
+				"cognom2": "Ferrer"
+			}
+		},
+		{
+			"id_visita": 31813,
+			"dia": "2018-11-26",
+			"metge": "Lara Luna Santiago",
+			"pacient": {
+				"id_pacient": 5082,
+				"nom": "Sol",
+				"cognom": "Cadenas",
+				"cognom2": "Durán"
+			}
+		},
+		{
+			"id_visita": 66627,
+			"dia": "2018-11-26",
+			"metge": "Narciso Busquets Pomares",
+			"pacient": {
+				"id_pacient": 48019,
+				"nom": "Adriana",
+				"cognom": "Bernat",
+				"cognom2": "Codina"
+			}
+		},
+		{
+			"id_visita": 52155,
+			"dia": "2018-11-26",
+			"metge": "Aura Pardo Valentín",
+			"pacient": {
+				"id_pacient": 40715,
+				"nom": "Angelino",
+				"cognom": "Reina",
+				"cognom2": "Pallarès"
+			}
+		},
+		{
+			"id_visita": 2533,
+			"dia": "2018-11-26",
+			"metge": "Obdulia Mateu Blázquez",
+			"pacient": {
+				"id_pacient": 24349,
+				"nom": "Haydée",
+				"cognom": "Cañellas",
+				"cognom2": "Julián"
+			}
+		},
+		{
+			"id_visita": 98209,
+			"dia": "2018-11-26",
+			"metge": "Omar Roig Muro",
+			"pacient": {
+				"id_pacient": 49384,
+				"nom": "Sosimo",
+				"cognom": "Ortiz",
+				"cognom2": "Huerta"
+			}
+		},
+		{
+			"id_visita": 33263,
+			"dia": "2018-11-26",
+			"metge": "Cornelio Zorrilla Saura",
+			"pacient": {
+				"id_pacient": 26011,
+				"nom": "Olga",
+				"cognom": "Blanch",
+				"cognom2": "Álvaro"
+			}
+		},
+		{
+			"id_visita": 33894,
+			"dia": "2018-11-26",
+			"metge": "Modesta Cadenas Vera",
+			"pacient": {
+				"id_pacient": 38387,
+				"nom": "Ainoa",
+				"cognom": "Aguilar",
+				"cognom2": "Gelabert"
+			}
+		},
+		{
+			"id_visita": 37214,
+			"dia": "2018-11-26",
+			"metge": "Aura Pardo Valentín",
+			"pacient": {
+				"id_pacient": 19627,
+				"nom": "José Mari",
+				"cognom": "Coca",
+				"cognom2": "Coronado"
+			}
+		},
+		{
+			"id_visita": 47097,
+			"dia": "2018-11-26",
+			"metge": "Jerónimo Piñol Corominas",
+			"pacient": {
+				"id_pacient": 6834,
+				"nom": "Jesusa",
+				"cognom": "Barberá",
+				"cognom2": "Villegas"
+			}
+		},
+		{
+			"id_visita": 61263,
+			"dia": "2018-11-26",
+			"metge": "Dolores Zamorano Luna",
+			"pacient": {
+				"id_pacient": 11500,
+				"nom": "César",
+				"cognom": "Requena",
+				"cognom2": "Puente"
+			}
+		},
+		{
+			"id_visita": 48249,
+			"dia": "2018-11-26",
+			"metge": "Dolores Zamorano Luna",
+			"pacient": {
+				"id_pacient": 39587,
+				"nom": "Javier",
+				"cognom": "Rodriguez",
+				"cognom2": "Plana"
+			}
+		},
+		{
+			"id_visita": 38785,
+			"dia": "2018-11-26",
+			"metge": "Omar Lamas Aroca",
+			"pacient": {
+				"id_pacient": 5133,
+				"nom": "Emigdio",
+				"cognom": "Vilaplana",
+				"cognom2": "Sanmiguel"
+			}
+		},
+		{
+			"id_visita": 56012,
+			"dia": "2018-11-26",
+			"metge": "Genoveva Rosa Pablo",
+			"pacient": {
+				"id_pacient": 15118,
+				"nom": "Perlita",
+				"cognom": "Vidal",
+				"cognom2": "Palomo"
+			}
+		},
+		{
+			"id_visita": 9998,
+			"dia": "2018-11-26",
+			"metge": "Estela Barrena Cabezas",
+			"pacient": {
+				"id_pacient": 18390,
+				"nom": "Soledad",
+				"cognom": "Páez",
+				"cognom2": "Narváez"
+			}
+		},
+		{
+			"id_visita": 14676,
+			"dia": "2018-11-26",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 22127,
+				"nom": "Jacinta",
+				"cognom": "Sevilla",
+				"cognom2": "Navas"
+			}
+		},
+		{
+			"id_visita": 71318,
+			"dia": "2018-11-26",
+			"metge": "Mar Taboada Sandoval",
+			"pacient": {
+				"id_pacient": 47787,
+				"nom": "Abilio",
+				"cognom": "Prats",
+				"cognom2": "Molins"
+			}
+		},
+		{
+			"id_visita": 89490,
+			"dia": "2018-11-26",
+			"metge": "Pastor Martín Porta",
+			"pacient": {
+				"id_pacient": 7678,
+				"nom": "Amalia",
+				"cognom": "Jimenez",
+				"cognom2": "Beltran"
+			}
+		},
+		{
+			"id_visita": 95185,
+			"dia": "2018-11-26",
+			"metge": "Cornelio Zorrilla Saura",
+			"pacient": {
+				"id_pacient": 13958,
+				"nom": "Georgina",
+				"cognom": "Barrio",
+				"cognom2": "Osorio"
+			}
+		}
+	]
+}

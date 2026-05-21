@@ -38,7 +38,14 @@
 				</div>
 
 				<p class="admin-status" id="dummy-status">Consultant estat del dummy data...</p>
-				<pre class="admin-preview" id="dummy-preview">Carregant validacio previa...</pre>
+				<div class="admin-validation-box">
+					<div class="admin-validation-header">
+						<h3>Resum de validacio</h3>
+						<button type="button" class="admin-button admin-button-secondary admin-toggle-button" id="dummy-preview-toggle" disabled aria-expanded="false">Mostrar detall</button>
+					</div>
+					<pre class="admin-preview admin-preview-summary" id="dummy-preview-summary">Carregant validacio previa...</pre>
+					<pre class="admin-preview admin-preview-detail" id="dummy-preview-detail" hidden></pre>
+				</div>
 			</div>
 			{% endif %}
 		</section>
@@ -123,12 +130,15 @@
 			});
 		}
 
-		const previewElement = document.getElementById('dummy-preview');
+		const previewSummaryElement = document.getElementById('dummy-preview-summary');
+		const previewDetailElement = document.getElementById('dummy-preview-detail');
+		const previewToggleButton = document.getElementById('dummy-preview-toggle');
 		const statusElement = document.getElementById('dummy-status');
 		const validateButton = document.getElementById('dummy-validate-button');
 		const generateButton = document.getElementById('dummy-generate-button');
 		const deleteButton = document.getElementById('dummy-delete-button');
 		let statusTimer = null;
+		let validationExpanded = false;
 
 		function setAdminButtonsDisabled(disabled) {
 			for (const button of [validateButton, generateButton, deleteButton]) {
@@ -136,6 +146,42 @@
 					button.disabled = disabled;
 				}
 			}
+		}
+
+		function setValidationDetailsEnabled(enabled) {
+			if (!previewToggleButton) {
+				return;
+			}
+
+			previewToggleButton.disabled = !enabled;
+		}
+
+		function setValidationExpanded(expanded) {
+			const hasDetails = Boolean(previewDetailElement && previewDetailElement.textContent.trim());
+			validationExpanded = expanded && hasDetails;
+
+			if (previewToggleButton) {
+				previewToggleButton.textContent = validationExpanded ? 'Ocultar detall' : 'Mostrar detall';
+				previewToggleButton.setAttribute('aria-expanded', validationExpanded ? 'true' : 'false');
+			}
+
+			if (previewDetailElement) {
+				previewDetailElement.hidden = !validationExpanded;
+			}
+
+			setValidationDetailsEnabled(hasDetails);
+		}
+
+		function updateValidationPanel(summaryText, detailText = '') {
+			if (previewSummaryElement) {
+				previewSummaryElement.textContent = summaryText;
+			}
+
+			if (previewDetailElement) {
+				previewDetailElement.textContent = detailText;
+			}
+
+			setValidationExpanded(false);
 		}
 
 		function renderStatus(status) {
@@ -156,7 +202,7 @@
 		}
 
 		function renderValidation(validation) {
-			if (!previewElement) {
+			if (!previewSummaryElement) {
 				return;
 			}
 
@@ -214,7 +260,19 @@
 				}
 			}
 
-			previewElement.textContent = lines.join('\n');
+			const summaryLines = [
+				`Usuari preservat: ${preservedUser.username ?? '-'} (${preservedUser.tipus_feina ?? '-'})`,
+				`Preparat per generar: ${validation?.ready_for_generate ? 'SI' : 'NO'} | Preparat per eliminar: ${validation?.ready_for_delete ? 'SI' : 'NO'}`,
+				`Usuaris a eliminar: ${validation?.users_to_delete ?? 0} | Personal a eliminar: ${validation?.personal_to_delete ?? 0}`,
+			];
+
+			if (generateIssues.length || deleteIssues.length || warnings.length) {
+				summaryLines.push(`Bloquejos generar: ${generateIssues.length} | Bloquejos eliminar: ${deleteIssues.length} | Avisos: ${warnings.length}`);
+			} else {
+				summaryLines.push('No s\'han detectat bloquejos ni avisos.');
+			}
+
+			updateValidationPanel(summaryLines.join('\n'), lines.join('\n'));
 		}
 
 		async function requestJson(path, options = {}) {
@@ -252,16 +310,16 @@
 		}
 
 		async function validateBeforeExecute(showAlert = false) {
-			if (!previewElement) {
+			if (!previewSummaryElement) {
 				return;
 			}
 
-			previewElement.textContent = 'Validant impacte i coherencia abans d\'executar...';
+			updateValidationPanel('Validant impacte i coherencia abans d\'executar...');
 			try {
 				const payload = await requestJson('/api/admin/dummy-data/validate');
 				renderValidation(payload.validation);
 			} catch (error) {
-				previewElement.textContent = `Error fent la validacio previa: ${error.message}`;
+				updateValidationPanel(`Error fent la validacio previa: ${error.message}`);
 				if (showAlert) {
 					window.alert(error.message);
 				}
@@ -276,11 +334,15 @@
 			try {
 				const payload = await requestJson(path, { method: 'POST' });
 				renderStatus(payload.status);
-				previewElement.textContent = 'Operacio iniciada. Torna a validar quan acabi per revisar l\'estat final.';
+				updateValidationPanel('Operacio iniciada. Torna a validar quan acabi per revisar l\'estat final.');
 				refreshStatus(true);
 			} catch (error) {
 				window.alert(error.message);
 			}
+		}
+
+		if (previewToggleButton) {
+			previewToggleButton.addEventListener('click', () => setValidationExpanded(!validationExpanded));
 		}
 
 		if (validateButton) {
@@ -301,7 +363,7 @@
 			));
 		}
 
-		if (statusElement && previewElement) {
+		if (statusElement && previewSummaryElement) {
 			refreshStatus();
 			validateBeforeExecute(false);
 		}
