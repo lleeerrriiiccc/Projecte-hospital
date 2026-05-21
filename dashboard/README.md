@@ -1,65 +1,68 @@
 # Dashboard Power BI
 
-Aquest directori recull els fitxers i les instruccions del dashboard de Power BI del projecte.
+Aquest directori conté els fitxers i les instruccions del dashboard de Power BI del projecte.
 
 ## Fitxers del dashboard
 
-- `theme.json`: tema visual recomanat per a Power BI, alineat amb la paleta de l'aplicacio.
-- `dashboard_powerbi.pbix`: fitxer actual del dashboard de Power BI del projecte.
+- `dashboard_powerbi.pbix` — fitxer del dashboard de Power BI del projecte.
+- `theme.json` — tema visual recomanat per a Power BI, alineat amb la paleta de l'aplicació.
 
 ## Vistes que consumeix Power BI
 
-El dashboard esta pensat per llegir directament aquestes vistes de PostgreSQL:
+El dashboard es connecta directament a PostgreSQL i llegeix aquestes vistes, definides a `database/sql/dashboard_views.sql`:
 
-- `vw_dashboard_visites_area_dia`
-- `vw_dashboard_visites_metge_dia`
-- `vw_dashboard_visites_franja_dia`
-- `vw_dashboard_ocupacio_habitacions_dia`
-- `vw_dashboard_quirofans_dia`
-- `vw_dashboard_malalties_dia`
-- `vw_dashboard_planta_recursos`
-- `vw_dashboard_visites_detall`
+- `vw_dashboard_visites_area_dia` — visites agrupades per àrea i dia
+- `vw_dashboard_visites_metge_dia` — visites per metge i dia
+- `vw_dashboard_visites_franja_dia` — visites per franja horària i dia
+- `vw_dashboard_ocupacio_habitacions_dia` — ocupació d'habitacions per dia
+- `vw_dashboard_quirofans_dia` — activitat de quiròfans per dia
+- `vw_dashboard_malalties_dia` — malalties diagnosticades per dia
+- `vw_dashboard_planta_recursos` — recursos humans per planta
+- `vw_dashboard_visites_detall` — detall de cada visita
 
-## Ordre recomanat de preparacio
+## Usuari de Power BI
+
+`database/sql/esquemadeseguretat.sql` crea l'usuari `powerbi_reader`, pensat exclusivament per llegir les vistes del dashboard:
+
+- Té `CONNECT` a la base de dades.
+- Té `USAGE` sobre l'esquema `public`.
+- Té `SELECT` només sobre les vistes `vw_dashboard_*`.
+
+## Ordre recomanat de preparació
 
 1. Executa `database/sql/implementacio.sql`.
-2. Executa `database/sql/dashboard_views.sql`.
-3. Executa `database/sql/esquemadeseguretat.sql` per crear `powerbi_reader` i aplicar els grants sobre les vistes.
-4. Executa `database/sql/test_data.sql` si vols carregar dades de prova.
+2. Executa `database/sql/funcions_metge_infermer.sql`.
+3. Executa `database/sql/trigger_usuari.sql`.
+4. Executa `database/sql/dashboard_views.sql`.
+5. Executa `database/sql/esquemadeseguretat.sql` per crear `powerbi_reader` i aplicar els permisos sobre les vistes.
+6. Executa `database/sql/test_data.sql` si vols carregar dades de prova.
 
-Aquest repositori no inclou cap script automatitzat per fer aquesta seqüència; si treballes des d'una base ja creada, executa manualment els fitxers SQL en l'ordre indicat més amunt.
+Si `esquemadeseguretat.sql` s'havia executat abans de crear les vistes del dashboard, torna'l a executar per aplicar els permisos de `powerbi_reader`.
 
-Si la base ja existia i `esquemadeseguretat.sql` s'havia executat abans de crear les vistes del dashboard, torna'l a executar per aplicar els permisos de `powerbi_reader`.
-
-## Connexio des de Power BI Desktop
+## Connexió des de Power BI Desktop
 
 1. Obre Power BI Desktop.
-2. Selecciona PostgreSQL com a font de dades.
+2. Selecciona **PostgreSQL** com a font de dades.
 3. Introdueix el servidor i la base de dades del projecte.
-4. Fes login amb `powerbi_reader`.
-5. Importa les vistes del dashboard.
+4. Fes login amb l'usuari `powerbi_reader`.
+5. Importa les vistes del dashboard (`vw_dashboard_*`).
 6. Carrega `theme.json` com a tema del report.
 
-En aquest entorn no hi ha Power BI Desktop ni `pbi-tools`, aixi que el `.pbix` s'ha de generar en una maquina que si disposi d'aquestes eines.
+## Pàgines del dashboard
 
-## Pagines recomanades
-
-1. Resum executiu: visites avui, visites per area, operacions avui i ocupacio actual.
-2. Activitat assistencial: ranking de metges, franges horaries i tendencia de visites.
-3. Recursos hospitalaris: ocupacio per planta i activitat de quirofans.
-4. Vista clinica: malalties mes frequents i pacients afectats.
+1. **Resum executiu** — visites avui, visites per àrea, operacions avui i ocupació actual.
+2. **Activitat assistencial** — ranking de metges, franges horàries i tendència de visites.
+3. **Recursos hospitalaris** — ocupació per planta i activitat de quiròfans.
+4. **Vista clínica** — malalties més freqüents i pacients afectats.
 
 ## Ajustos visuals recomanats
 
-Perque el report sembli un dashboard real i no nomes una pagina amb visuals solts, convé tocar aquests punts directament a Power BI Desktop:
+- Usa format de pàgina 16:9 amb fons clar i visuals en targetes blanques.
+- Reserva la primera fila per a KPI cards grans: visites del dia, ocupació, operacions i una mètrica d'alerta.
+- Col·loca els filtres principals a dalt en format slicer horitzontal: data, àrea i planta.
+- No barregis massa visuals en una sola pàgina; 4 o 5 ben agrupats funcionen millor que 9 petits.
+- Mantén els títols curts i consistents: mateix estil, mateixa mida i alineació a l'esquerra.
+- Oculta capçaleres de visual i evita marcs gruixuts; el pes visual ha d'estar en les dades.
+- Jerarquia de colors: blau per volum/activitat, verd per correcte, vermell per incidències i taronja per avisos.
 
-1. Usa format de pagina 16:9 i deixa marges amples, amb fons clar i visuals en targetes blanques.
-2. Reserva la primera fila per a 3 o 4 KPI cards grans: visites del dia, ocupacio, operacions i una metrica d'alerta.
-3. Col·loca els filtres principals a dalt en format slicer horitzontal: data, area i planta.
-4. No barregis massa visuals en una sola pagina; 4 o 5 visuals ben agrupats funcionen millor que 9 petits.
-5. Mantén els titols curts i consistents: mateix estil, mateixa mida i alineacio a l'esquerra.
-6. Oculta capçaleres de visual i evita marcs gruixuts; el pes visual ha d'estar en les dades, no en el contenidor.
-7. Fes servir una jerarquia simple de colors: blau per volum/activitat, verd per correcte, vermell per incidencies i taronja per avisos.
-8. Afegeix una pagina inicial de resum executiu i deixa els detalls per a pagines posteriors, no tot a la portada.
-
-Amb el `theme.json` actualitzat ja tens una base de colors coherent amb l'aplicacio, pero l'efecte de "dashboard real" dependrà sobretot del layout, de la mida dels visuals i de reduir soroll visual dins del report.
+El `theme.json` ja proporciona una base de colors coherent amb l'aplicació.

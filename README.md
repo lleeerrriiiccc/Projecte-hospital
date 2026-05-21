@@ -1,34 +1,87 @@
-# Projecte-hospital
+# Projecte Intermodular — Gestió Hospitalària
+
+**Base de Dades · Programació · XML/JSON**  
+ASIX M372 · M377 · M0003 · M0373 — Curs 25/26
+
+**Autors:** Eric Lopez, Nil Parra  
+**Cicle:** 1r ASIX
+
+---
 
 Aplicació de gestió hospitalària feta amb Python, Flask, HTML, CSS i PostgreSQL.
 
+El projecte té tres capes principals: un backend Flask que exposa una API REST, un client d'escriptori Tkinter que la consumeix, i un dashboard de Power BI connectat directament a vistes SQL de PostgreSQL.
+
 ## Estructura del projecte
 
-- `iniciar.py`: script per arrencar el servidor i el client d'un sol cop.
-- `server/main.py`: punt d'entrada de l'aplicació web (Flask).
-- `server/tools/db_driver.py`: connexió a PostgreSQL i funcions bàsiques de base de dades.
-- `server/tools/manager.py`: lògica de login, registre i gestió d'usuaris i dades.
-- `server/tools/crypt.py`: funcions per xifrar i verificar contrasenyes amb bcrypt.
-- `server/tools/masking.py`: emmascarament de dades sensibles segons el rol de l'usuari.
-- `server/html/`: plantilles HTML.
-- `server/css/`: fitxers CSS.
-- `server/uploads/`: fitxers pujats pel backend (CV de metges).
-- `server/sql/`: consultes SQL dels informes.
-- `client/desktop_main.py`: punt d'entrada del client d'escriptori.
-- `client/desktop/app.py`: bootstrap de la finestra Tkinter i navegació entre pantalles.
-- `client/desktop/api_client.py`: funcions per fer peticions HTTP al backend Flask.
-- `client/desktop/config.py`: configuració del client (URL del servidor, mida de finestra).
-- `client/desktop/theme.py`: paleta de colors i estils visuals de la interfície.
-- `client/desktop/views/`: pantalles de la interfície Tkinter.
-- `database/sql/implementacio.sql`: esquema principal de la base de dades.
-- `database/sql/esquemadeseguretat.sql`: esquema de seguretat i permisos.
-- `database/sql/dashboard_views.sql`: vistes analítiques per al dashboard de Power BI.
-- `database/sql/test_data.sql`: dades de prova per fer consultes i comprovacions.
-- `dashboard/`: documentació i tema visual del dashboard Power BI.
+```
+Projecte-hospital/
+├── iniciar.py                          # Script per arrencar el servidor i el client d'un sol cop
+├── requirements.txt                    # Dependències Python del projecte
+├── server/
+│   ├── main.py                         # Punt d'entrada del backend Flask
+│   ├── tools/
+│   │   ├── db_driver.py                # Connexió a PostgreSQL i funcions bàsiques de BD
+│   │   ├── manager.py                  # Lògica de login, registre i gestió de dades
+│   │   ├── crypt.py                    # Xifratge i verificació de contrasenyes amb bcrypt
+│   │   ├── masking.py                  # Emmascarament de dades sensibles per rol
+│   │   └── dummydata.py                # Generació de dades de prova per als informes
+│   ├── html/                           # Plantilles HTML del frontend web
+│   ├── css/                            # Fitxers CSS del frontend web
+│   ├── sql/                            # Consultes SQL dels informes i exportacions
+│   ├── schemas/
+│   │   ├── visites_export.schema.json  # JSON Schema de l'exportació de visites
+│   │   └── visites_export.xsd          # XSD de l'exportació de visites en XML
+│   └── uploads/                        # Fitxers pujats pel backend (CV de metges)
+├── client/
+│   ├── desktop_main.py                 # Punt d'entrada del client d'escriptori
+│   └── desktop/
+│       ├── app.py                      # Bootstrap de la finestra Tkinter i navegació
+│       ├── api_client.py               # Peticions HTTP al backend Flask
+│       ├── config.py                   # Configuració del client (URL, mida de finestra)
+│       ├── theme.py                    # Paleta de colors i estils de la interfície
+│       └── views/                      # Pantalles del client Tkinter
+├── database/
+│   ├── design/
+│   │   ├── diagrama_ER_hospital.drawio # Diagrama ER editable
+│   │   ├── diagrama_ER_hospital.pdf    # Diagrama ER en PDF
+│   │   └── diagrama_ER_hospital.png    # Diagrama ER en PNG
+│   └── sql/
+│       ├── implementacio.sql           # Esquema principal de la base de dades
+│       ├── funcions_metge_infermer.sql # Funcions SQL per donar d'alta metges i infermers
+│       ├── trigger_usuari.sql          # Trigger que crea el rol PostgreSQL en registrar usuari
+│       ├── dashboard_views.sql         # Vistes analítiques per al dashboard de Power BI
+│       ├── esquemadeseguretat.sql      # Rols, permisos i usuari powerbi_reader
+│       └── test_data.sql               # Dades de prova per a consultes i comprovacions
+├── scripts/
+│   ├── backups/
+│   │   ├── full_backup.py              # Backup complet de la BD amb pg_dumpall i pujada a Drive
+│   │   ├── wal_backup.py               # Backup incremental WAL amb pg_basebackup
+│   │   ├── drive_manager.py            # Gestió de la pujada a Google Drive
+│   │   └── utils.py                    # Utilitats de logging per als scripts de backup
+│   └── crash/
+│       ├── crash_auto.sh               # Script de vigilància que detecta la caiguda del primari
+│       └── failover.sh                 # Script de promoció del servidor de rèplica a primari
+├── dashboard/
+│   ├── README.md                       # Instruccions de connexió i construcció del report
+│   ├── theme.json                      # Tema visual per a Power BI
+│   └── dashboard_powerbi.pbix          # Fitxer del dashboard de Power BI
+└── extras/
+    ├── tailscale_doc.md                # Documentació de la instal·lació de Tailscale
+    └── tailscale_installation.md       # Resum de la instal·lació de Tailscale
+```
 
 ## Base de dades
 
-La base de dades està pensada per a PostgreSQL i modela l'entorn hospitalari.
+La base de dades s'ha dissenyat per a PostgreSQL i modela l'entorn d'un hospital.
+
+### Diagrama ER
+
+El diagrama entitat-relació del projecte es troba a `database/design/`:
+
+- `diagrama_ER_hospital.drawio` — versió editable amb draw.io
+- `diagrama_ER_hospital.pdf` — versió en PDF per a lliurament
+- `diagrama_ER_hospital.png` — versió en imatge per a previsualització ràpida
 
 ### Taules principals
 
@@ -60,31 +113,41 @@ La base de dades està pensada per a PostgreSQL i modela l'entorn hospitalari.
 - `assisteix` relaciona personal amb operacions.
 - `inventari` relaciona quiròfans amb màquines.
 - `reserva_habitacio` relaciona pacients amb habitacions.
-- `supervisio` relaciona personal amb metges.
-- `assignacio_infermer_planta` relaciona els infermers amb la planta on treballen per poder fer informes per planta.
-- `usuaris` guarda les credencials de l'aplicació i el vincle amb personal.
+- `supervisio` relaciona personal amb metges supervisors.
+- `assignacio_infermer_planta` relaciona els infermers amb la planta on treballen, per poder fer informes de plantilla per planta.
+- `usuaris` guarda les credencials de l'aplicació i el vincle amb el registre de `personal`.
 
 ### Dades de prova
 
-El fitxer `database/sql/test_data.sql` conté dades de prova per omplir totes les taules i poder fer consultes i comprovacions sense dades reals.
-També inclou exemples d'assignació d'infermers a plantes per poder provar el bloc de consultes i informes.
+El fitxer `database/sql/test_data.sql` conté dades de prova per omplir totes les taules i poder fer consultes i comprovacions sense dades reals. Inclou exemples d'assignació d'infermers a plantes per provar el bloc de consultes i informes.
 
-### Canvi de model per als informes
+### Funcions i trigger SQL
 
-Per poder calcular quants infermers treballen a cada planta s'ha afegit la taula de relació `assignacio_infermer_planta` entre `enfermer` i `planta`.
+**`database/sql/funcions_metge_infermer.sql`** defineix dues funcions PL/pgSQL:
 
-Si la base de dades ja tenia la versió anterior de l'esquema, només cal executar el bloc de migració afegit al final de `database/sql/implementacio.sql` per crear aquesta relació nova sense reconstruir tota la base de dades.
+- `afegir_metge(...)` — insereix una fila a `personal` i una a `metge` en una sola transacció.
+- `afegir_infermer(...)` — insereix una fila a `personal`, una a `enfermer` i una a `supervisio`.
+
+Aquestes funcions garanteixen que les dues insercions es fan sempre juntes i simplifiquen la lògica del backend.
+
+**`database/sql/trigger_usuari.sql`** defineix el trigger `trigger_create_con_rol`:
+
+- S'executa automàticament a l'`INSERT` sobre la taula `usuaris`.
+- Llegeix el camp `tipus_feina` del registre de `personal` associat.
+- Crea un rol de PostgreSQL per a l'usuari nou i li assigna el rol funcional corresponent (`rol_metge`, `rol_infermer`, `rol_administrador`, etc.).
+- Garanteix que cada usuari de l'aplicació té un rol de base de dades assignat sense intervenció manual.
 
 ## Esquema de seguretat
 
-L'esquema de seguretat s'ha plantejat amb rols de login i rols de grup.
+L'esquema de seguretat es troba a `database/sql/esquemadeseguretat.sql` i es planteja amb rols de login i rols de grup.
 
 ### Rols de PostgreSQL
 
 - `hosp_admin`: usuari tècnic amb administració completa de la base de dades.
-- `hosp_app`: usuari tècnic que farà servir el backend de l'aplicació.
+- `hosp_app`: usuari tècnic que fa servir el backend de l'aplicació.
 - `administrador`, `personal`, `sanitari`, `gestio`, `serveis` i `pacient`: rols de grup.
 - `rol_administrador`, `rol_metge`, `rol_infermer`, `rol_administratiu`, `rol_tecnic`, `rol_personal_neteja`, `rol_personal_seguretat`, `rol_personal_cuina` i `rol_pacient`: rols de login amb contrasenya d'exemple `P@ssw0rd`.
+- `powerbi_reader`: usuari de només lectura per al dashboard de Power BI.
 
 ### Criteri de permisos
 
@@ -94,31 +157,14 @@ L'esquema de seguretat s'ha plantejat amb rols de login i rols de grup.
 - `personal` dona accés base de lectura a dades comunes.
 - `sanitari`, `gestio` i `serveis` agrupen els perfils específics de la plantilla.
 - `pacient` queda preparat per a un accés restringit amb vistes o RLS.
-- Les operacions de DDL no es fan des de l'aplicació, sinó des del compte d'administració.
+- `powerbi_reader` té accés de només lectura sobre les vistes `vw_dashboard_*`.
+- Les operacions DDL no es fan des de l'aplicació, sinó des del compte d'administració.
 
 ### Usuaris de l'aplicació
 
 - Els usuaris reals de la web es desen a la taula `usuaris`.
-- Els rols funcionals de l'aplicació també existeixen com a rols de PostgreSQL i tambe es guarden a la base de dades per poder identificar a cada usuari correctament.
-- El backend continua controlant la lògica de negoci i el filtratge funcional.
-- La relació `assignacio_infermer_planta` s'ha afegit per poder fer informes de plantilla per planta de manera clara i senzilla.
-
-### Accés del pacient
-
-- De moment no és obligatori fer servir vistes per a pacient.
-- L'opció més simple és que el backend faci consultes filtrades amb l'identificador del pacient autenticat.
-- Si més endavant cal més aïllament a nivell de base de dades, es poden afegir vistes de només lectura.
-
-## Certificat SSL
-
-Per garantir una connexió segura, més endavant s'implementarà l'ús d'un certificat SSL al servidor.
-
-### Com es faria
-
-- Es generaria o s'obtindria un certificat vàlid per al domini o entorn de proves amb certbot.
-- El servidor web s'encarregaria de fer servir HTTPS i de redirigir el trànsit HTTP cap a HTTPS.
-- La renovació del certificat es faria de manera automàtica quan el certificat ho requereixi amb un cron dintre del servidor.
-- La configuració de seguretat es mantindria fora del codi de l'aplicació, a nivell de servidor.
+- En inserir un usuari, el trigger `trigger_create_con_rol` crea automàticament el rol PostgreSQL corresponent i el vincula a `hosp_app`.
+- El backend controla la lògica de negoci i el filtratge funcional.
 
 ## Emmascarament de dades
 
@@ -135,13 +181,10 @@ El backend disposa d'un sistema d'emmascarament implementat a `server/tools/mask
 
 - Els rols `hosp_admin`, `administrador` i `rol_administrador` veuen les dades senceres.
 - La resta d'usuaris veuen els camps sensibles amb una màscara parcial.
-- Si més endavant cal més aïllament, es poden afegir vistes o consultes específiques per a cada rol.
 
 ## Client d'escriptori Tkinter
 
 La interfície principal de l'aplicació és un client d'escriptori fet amb Tkinter que es connecta al backend Flask per HTTP.
-
-Estat actual: client completament funcional, conviu amb el frontend web original.
 
 ### Pantalles disponibles
 
@@ -152,7 +195,7 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - Informe per planta
 - Informe de personal
 - Visites per dia
-- Informe de visites
+- Informe de visites (amb exportació JSON/XML)
 - Informe de quiròfans
 - Informe d'aparells
 - Informe de supervisió
@@ -162,9 +205,21 @@ Estat actual: client completament funcional, conviu amb el frontend web original
 - Ranking de metges
 - Informe de pacient
 
-L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara un bloc d'exportació de dades. Aquest bloc permet descarregar el rang seleccionat en format JSON o XML, i també baixar el JSON Schema i l'XSD corresponents.
+L'informe de visites incorpora un bloc d'exportació de dades que permet descarregar el rang seleccionat en format JSON o XML, i baixar el JSON Schema i l'XSD corresponents. Els esquemes es troben a `server/schemas/`.
 
-### Endpoints del backend
+## Frontend web
+
+A més del client Tkinter, el backend Flask serveix un frontend web accessible des del navegador. Les pantalles web disponibles són:
+
+- `/login` — formulari d'autenticació
+- `/register` — registre d'un nou usuari (vinculat a un `id_intern` de `personal`)
+- `/home` — pantalla principal
+- `/alta_pacient` — formulari d'alta de pacient
+- `/alta_personal` — formulari d'alta de personal
+
+Els informes del frontend web s'accedeixen via les mateixes rutes API que usa el client Tkinter.
+
+## Endpoints del backend
 
 **Autenticació:**
 - `POST /api/login`
@@ -186,7 +241,7 @@ L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara 
 - `GET /api/informes/ranking_metges`
 - `GET /api/informes/visites_dia?date=YYYY-MM-DD`
 - `GET /api/informes/supervisio`
-- `GET /api/informes/visites?date=YYYY-MM-DD` o `GET /api/informes/visites?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
+- `GET /api/informes/visites?date=YYYY-MM-DD` o `?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
 - `GET /api/informes/quirofans?date=YYYY-MM-DD`
 - `GET /api/informes/habitacions?habitacio=NUM`
 - `GET /api/informes/metge?metge=ID&date=YYYY-MM-DD`
@@ -201,29 +256,105 @@ L'informe de visites, tant al frontend web com al client Tkinter, incorpora ara 
 
 Els fitxers d'exportació inclouen el rang de dates i, per a cada visita, `id_visita`, `dia`, `metge` i un bloc `pacient` amb `id_pacient`, `nom`, `cognom` i `cognom2`. Tant el JSON com l'XML es generen indentats amb tabulacions.
 
-### Variables d'entorn
+## Dashboard Power BI
 
-- `FLASK_USE_SSL`: `true` o `false` per activar/desactivar SSL al backend.
-- `FLASK_HOST`: host de Flask (per defecte `127.0.0.1`).
-- `FLASK_PORT`: port de Flask (per defecte `5000`).
-- `FLASK_SECRET`: clau secreta de Flask per a les sessions.
-- `DESKTOP_API_BASE_URL`: URL base que usa el client desktop (per defecte `http://127.0.0.1:5000`).
-- `DESKTOP_API_VERIFY_TLS`: `true` o `false` per verificar certificat TLS al client desktop.
-- `DB_HOST`: adreça del servidor PostgreSQL.
-- `DB_PORT`: port del servidor PostgreSQL o de PgBouncer. Per defecte `5432`.
-- `DB_DATABASE`: nom de la base de dades (per exemple `hosp_blanes`).
-- `DB_USER`: usuari de connexió a PostgreSQL.
-- `DB_PASSWORD`: contrasenya de l'usuari de PostgreSQL.
-- `DB_SSLMODE`: mode SSL de PostgreSQL. Per treballar en local és recomanable `prefer`.
+El projecte incorpora una capa de vistes SQL pensada per alimentar un dashboard extern fet amb Power BI, sense dependre del backend Flask ni del client Tkinter.
 
-### Requisits per executar-ho
+### Vistes del dashboard
 
-- Cal tenir PostgreSQL instal·lat i en marxa.
+El fitxer `database/sql/dashboard_views.sql` crea aquestes vistes en `public`:
+
+- `vw_dashboard_visites_area_dia`
+- `vw_dashboard_visites_metge_dia`
+- `vw_dashboard_visites_franja_dia`
+- `vw_dashboard_ocupacio_habitacions_dia`
+- `vw_dashboard_quirofans_dia`
+- `vw_dashboard_malalties_dia`
+- `vw_dashboard_planta_recursos`
+- `vw_dashboard_visites_detall`
+
+El fitxer del dashboard `dashboard/dashboard_powerbi.pbix` es connecta directament a PostgreSQL i usa aquestes vistes com a font de dades.
+
+## Alta disponibilitat i còpies de seguretat
+
+El projecte inclou scripts d'infraestructura per garantir la continuïtat del servei. Aquests scripts s'executen als servidors i les còpies d'aquí al repositori són de referència.
+
+### Scripts de backup (`scripts/backups/`)
+
+- `full_backup.py` — fa un backup complet de la base de dades amb `pg_dumpall`, el comprimeix i el puja a Google Drive.
+- `wal_backup.py` — fa un backup incremental WAL amb `pg_basebackup` i el puja a Google Drive.
+- `drive_manager.py` — gestiona l'autenticació i la pujada de fitxers a Google Drive via l'API de Google.
+- `utils.py` — funcions de logging comunes per als scripts de backup.
+
+### Scripts de failover (`scripts/crash/`)
+
+L'arquitectura contempla un servidor primari i un servidor de rèplica en streaming (PostgreSQL hot standby).
+
+- `crash_auto.sh` — script de vigilància que s'executa periòdicament al servidor primari. Si detecta que PostgreSQL ha caigut, executa el failover al servidor de rèplica via SSH i crea un fitxer de bloqueig per no fer-ho dues vegades.
+- `failover.sh` — script que s'executa al servidor de rèplica per promoure'l a primari: atura PostgreSQL, elimina el fitxer `standby.signal` i el torna a arrencar com a primari.
+
+### Tailscale
+
+La comunicació entre el servidor local i el servidor cloud per a la replicació de streaming es fa a través d'una VPN Tailscale. La documentació de la instal·lació es troba a `extras/tailscale_doc.md`.
+
+## Certificat SSL
+
+El backend suporta connexió SSL. S'activa amb la variable d'entorn `FLASK_USE_SSL=true`. Per a entorns de producció, el certificat s'hauria de generar amb certbot i gestionar-ne la renovació automàtica amb un cron al servidor. En entorn local és habitual usar `FLASK_USE_SSL=false`.
+
+## Variables d'entorn
+
+Cal un fitxer `.env` a l'arrel del projecte (o a `server/`) amb les variables següents:
+
+| Variable | Descripció | Valor per defecte |
+|---|---|---|
+| `FLASK_USE_SSL` | Activa SSL al backend | `false` |
+| `FLASK_HOST` | Host de Flask | `127.0.0.1` |
+| `FLASK_PORT` | Port de Flask | `5000` |
+| `FLASK_SECRET` | Clau secreta per a les sessions Flask | — |
+| `DESKTOP_API_BASE_URL` | URL base del client desktop | `http://127.0.0.1:5000` |
+| `DESKTOP_API_VERIFY_TLS` | Verifica certificat TLS al client desktop | `false` |
+| `DB_HOST` | Adreça del servidor PostgreSQL | — |
+| `DB_PORT` | Port de PostgreSQL o PgBouncer | `5432` |
+| `DB_DATABASE` | Nom de la base de dades | `hosp_blanes` |
+| `DB_USER` | Usuari de connexió a PostgreSQL | — |
+| `DB_PASSWORD` | Contrasenya de l'usuari de PostgreSQL | — |
+| `DB_SSLMODE` | Mode SSL de PostgreSQL | `prefer` |
+
+## Dependències Python
+
+Les dependències es troben a `requirements.txt`:
+
+- `Flask` — backend web i API REST
+- `psycopg2-binary` — connexió a PostgreSQL
+- `python-dotenv` — lectura del fitxer `.env`
+- `requests` — peticions HTTP del client Tkinter al backend
+- `gunicorn` — servidor WSGI per a desplegament en producció
+- `bcrypt` — xifratge de contrasenyes
+- `Faker` — generació de dades falses per a proves
+
+## Requisits per executar-ho
+
+- Python 3.10 o superior.
+- PostgreSQL instal·lat i en marxa.
 - La base de dades ha d'existir i tenir l'esquema carregat abans de fer login o carregar dades.
-- Si PostgreSQL no està arrencat, el backend i el client s'obriran igualment, però les accions que depenen de base de dades retornaran error.
-- Cal un fitxer `.env` a l'arrel del projecte (o a `server/`) amb les variables d'entorn.
+- Fitxer `.env` amb les variables d'entorn configurades.
 
-### Execució en local
+## Preparació de la base de dades (primera vegada)
+
+Cal executar els fitxers SQL en aquest ordre:
+
+```bash
+psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/funcions_metge_infermer.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/trigger_usuari.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/dashboard_views.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
+psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
+```
+
+Si la base ja existia i `esquemadeseguretat.sql` s'havia executat abans de crear les vistes del dashboard, torna'l a executar per aplicar els permisos de `powerbi_reader`.
+
+## Execució en local
 
 **Opció 1 — script d'inici ràpid (recomanat):**
 
@@ -248,65 +379,3 @@ python main.py
 cd client
 python desktop_main.py
 ```
-
-**Preparació de la base de dades (primera vegada):**
-
-```bash
-psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/dashboard_views.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
-```
-
-**Aplicació del paquet Power BI sobre una base ja existent:**
-
-Executa manualment `database/sql/dashboard_views.sql` i, després, `database/sql/esquemadeseguretat.sql` per refrescar les vistes i els permisos de `powerbi_reader`.
-
-## Dashboard Power BI
-
-El projecte incorpora una capa de vistes SQL pensada per alimentar un dashboard extern fet amb Power BI, sense dependre del backend Flask ni del client Tkinter.
-
-### Vistes del dashboard
-
-El fitxer `database/sql/dashboard_views.sql` crea aquestes vistes en `public`:
-
-- `vw_dashboard_visites_area_dia`
-- `vw_dashboard_visites_metge_dia`
-- `vw_dashboard_visites_franja_dia`
-- `vw_dashboard_ocupacio_habitacions_dia`
-- `vw_dashboard_quirofans_dia`
-- `vw_dashboard_malalties_dia`
-- `vw_dashboard_planta_recursos`
-- `vw_dashboard_visites_detall`
-
-Aquestes vistes cobreixen el minim demanat per al quadre de comandament i amplien el dashboard a ocupacio, quirofans i vista clinica.
-
-### Usuari de Power BI
-
-`database/sql/esquemadeseguretat.sql` crea l'usuari `powerbi_reader`, pensat exclusivament per llegir les vistes del dashboard.
-
-- `powerbi_reader` te `CONNECT` a la base.
-- `powerbi_reader` te `USAGE` sobre `public`.
-- `powerbi_reader` te `SELECT` nomes sobre les vistes `vw_dashboard_*` quan aquestes existeixen.
-
-Si executes `esquemadeseguretat.sql` abans de crear les vistes del dashboard, cal tornar-lo a executar despres per aplicar els grants.
-
-### Ordre recomanat d'execucio
-
-Per deixar la base preparada per al dashboard:
-
-```bash
-psql -U hosp_admin -d hosp_blanes -f database/sql/implementacio.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/dashboard_views.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/esquemadeseguretat.sql
-psql -U hosp_admin -d hosp_blanes -f database/sql/test_data.sql
-```
-
-### Entregable Power BI
-
-La carpeta `dashboard/` inclou:
-
-- `README.md` amb els passos de connexio i construccio del report.
-- `theme.json` amb el tema visual recomanat.
-- espai per guardar el fitxer `hospital_dashboard.pbix`.
-
