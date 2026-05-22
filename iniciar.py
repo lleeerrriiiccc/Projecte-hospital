@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 def _load_environment():
 	load_dotenv()
-	load_dotenv(os.path.join("server", ".env"), override=False)
+	load_dotenv(os.path.join("server", ".env"), override=True)
 
 
 def _wait_for_server(host, port, timeout=30):
