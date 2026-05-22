@@ -8,6 +8,53 @@ from psycopg2 import sql
 
 BASE_DIR = Path(__file__).resolve().parent
 
+ROLE_BY_JOB_TYPE = {
+    "administrador": "rol_administrador",
+    "metge": "rol_metge",
+    "infermer": "rol_infermer",
+    "administratiu": "rol_administratiu",
+    "tecnic": "rol_tecnic",
+    "personal neteja": "rol_personal_neteja",
+    "personal seguretat": "rol_personal_seguretat",
+    "personal cuina": "rol_personal_cuina",
+    "pacient": "rol_pacient",
+}
+
+
+def _role_exists(cursor, role_name):
+    cursor.execute("SELECT 1 FROM pg_roles WHERE rolname=%s", (role_name,))
+    return cursor.fetchone() is not None
+
+
+def _resolve_db_role(cursor, username):
+    if _role_exists(cursor, username):
+        return username
+
+    cursor.execute(
+        """
+        SELECT p.tipus_feina
+        FROM usuaris u
+        JOIN personal p ON p.id_intern = u.id_intern
+        WHERE LOWER(u.username) = LOWER(%s)
+        """,
+        (username,),
+    )
+    row = cursor.fetchone()
+
+    if row is None:
+        raise ValueError(f"User '{username}' does not exist in the database.")
+
+    job_type = str(row[0] or "").strip().lower()
+    role_name = ROLE_BY_JOB_TYPE.get(job_type)
+
+    if not role_name:
+        raise ValueError(f"No database role mapping found for job type '{row[0]}'.")
+
+    if not _role_exists(cursor, role_name):
+        raise ValueError(f"Database role '{role_name}' does not exist.")
+
+    return role_name
+
 
 
 ############
@@ -36,11 +83,8 @@ def connect(username="default"):
         if username is None or username == "default":
             return con, cursor
 
-        cursor.execute("SELECT 1 FROM pg_roles WHERE rolname=%s", (username,))
-        if cursor.fetchone() is None:
-            raise ValueError(f"User '{username}' does not exist in the database.")
-
-        cursor.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(username)))
+        role_name = _resolve_db_role(cursor, username)
+        cursor.execute(sql.SQL("SET ROLE {}").format(sql.Identifier(role_name)))
         return con, cursor
     except Exception:
         if con is not None:

@@ -281,3 +281,43 @@ BEGIN
             FOREIGN KEY (id_malaltia) REFERENCES malaltia(id_malaltia);
     END IF;
 END $$;
+
+-- Si la taula malaltia s'afegeix en una base ja existent, assegura els
+-- permisos funcionals sense dependre d'una reexecucio manual posterior.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'malaltia'
+    ) THEN
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hosp_admin') THEN
+            EXECUTE 'GRANT ALL PRIVILEGES ON TABLE public.malaltia TO hosp_admin';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'administrador') THEN
+            EXECUTE 'GRANT ALL PRIVILEGES ON TABLE public.malaltia TO administrador';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'hosp_app') THEN
+            EXECUTE 'GRANT SELECT, INSERT, UPDATE ON TABLE public.malaltia TO hosp_app';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'personal') THEN
+            EXECUTE 'GRANT SELECT ON TABLE public.malaltia TO personal';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'sanitari') THEN
+            EXECUTE 'GRANT SELECT, INSERT, UPDATE ON TABLE public.malaltia TO sanitari';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'gestio') THEN
+            EXECUTE 'GRANT SELECT, INSERT, UPDATE ON TABLE public.malaltia TO gestio';
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'serveis') THEN
+            EXECUTE 'GRANT SELECT ON TABLE public.malaltia TO serveis';
+        END IF;
+    END IF;
+END $$;
