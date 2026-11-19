@@ -177,3 +177,16 @@ dev/backup/service_account.json
 .env
 **/.env
 !.env.example
+
+# Virtual environment and build output
+.venv/
+venv/
+package/
+
+# User uploads (keep the folder only)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Office temp files and editor backups
+~$*
+*.bkp
