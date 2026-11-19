@@ -303,7 +303,7 @@ El backend suporta connexió SSL. S'activa amb la variable d'entorn `FLASK_USE_S
 
 ## Variables d'entorn
 
-Cal un fitxer `.env` a l'arrel del projecte (o a `server/`) amb les variables següents:
+Cal un fitxer `.env` a l'arrel del projecte (o a `server/`). Es pot crear a partir de la plantilla `.env.example` (`cp .env.example .env`) i omplir-ne els valors. El `.env` no es puja al repositori. Variables disponibles:
 
 | Variable | Descripció | Valor per defecte |
 |---|---|---|

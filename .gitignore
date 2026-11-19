@@ -173,3 +173,7 @@ cython_debug/
 
 # Local backup credentials
 dev/backup/service_account.json
+# Environment files (keep only the template)
+.env
+**/.env
+!.env.example
